@@ -1,0 +1,115 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  name: "How to Convert an Image to STL",
+  description: "Complete guide to converting images to STL files for 3D printing.",
+  step: [
+    { "@type": "HowToStep", position: 1, name: "Choose an image", text: "Select a high-contrast JPG, PNG, or SVG image." },
+    { "@type": "HowToStep", position: 2, name: "Upload to converter", text: "Upload your image to the Image to STL Converter." },
+    { "@type": "HowToStep", position: 3, name: "Adjust parameters", text: "Tune height, smoothness, and base for best results." },
+    { "@type": "HowToStep", position: 4, name: "Download STL", text: "Preview in 3D and download the STL for printing." },
+  ],
+};
+---
+
+<BaseLayout
+  title="How to Convert Image to STL for 3D Printing — Complete Guide"
+  description="Step-by-step guide on converting images to STL files. Compare online tools, software methods, and learn best practices for 3D printing your photos."
+  canonical="https://image-to-stl.com/how-to-convert-image-to-stl"
+  schema={schema}
+>
+  <article class="max-w-3xl mx-auto px-4 sm:px-6 py-12">
+    <h1 class="text-2xl sm:text-3xl font-bold tracking-tighter text-surface-900 dark:text-surface-100 mb-4">
+      How to Convert an Image to STL
+    </h1>
+    <p class="text-surface-500 mb-8">
+      Converting a 2D image into a 3D-printable STL file is a common need for makers, hobbyists,
+      and 3D printing enthusiasts. This guide covers three methods — from quick online conversion
+      to professional software workflows.
+    </p>
+
+    <section class="mb-10">
+      <h2 class="text-xl font-semibold mb-3 text-surface-900 dark:text-surface-100">Method 1: Online Converter (Recommended)</h2>
+      <p class="text-surface-500 text-sm mb-4">
+        The fastest way is using our <a href="/" class="text-accent-600 dark:text-accent-400 hover:underline">online Image to STL converter</a>.
+        No software to install, no registration required. Simply:
+      </p>
+      <ol class="list-decimal pl-5 space-y-2 text-sm text-surface-500 mb-4">
+        <li>Upload your image (JPG, PNG, or SVG).</li>
+        <li>Adjust the height, smoothness, and base thickness using sliders.</li>
+        <li>Preview the 3D model in real-time — rotate, zoom, inspect.</li>
+        <li>Download the STL file and open in your slicer.</li>
+      </ol>
+      <a href="/" class="inline-flex items-center px-4 py-2 rounded-tool bg-accent-600 text-white text-sm font-medium hover:bg-accent-700 transition-colors">
+        Try the Converter
+      </a>
+    </section>
+
+    <section class="mb-10 border-t border-surface-200 dark:border-surface-800 pt-8">
+      <h2 class="text-xl font-semibold mb-3 text-surface-900 dark:text-surface-100">Method 2: Using Blender</h2>
+      <p class="text-surface-500 text-sm mb-4">
+        Blender is a free, open-source 3D modeling suite. Its Displace modifier can generate
+        a mesh from any grayscale image. Steps:
+      </p>
+      <ol class="list-decimal pl-5 space-y-2 text-sm text-surface-500">
+        <li>Create a subdivided plane (Add &rarr; Mesh &rarr; Plane, then subdivide 50+ times).</li>
+        <li>Add a Displace modifier, set the texture to your image.</li>
+        <li>Adjust the strength to control relief depth.</li>
+        <li>Apply the modifier, then export as STL (File &rarr; Export &rarr; STL).</li>
+      </ol>
+    </section>
+
+    <section class="mb-10 border-t border-surface-200 dark:border-surface-800 pt-8">
+      <h2 class="text-xl font-semibold mb-3 text-surface-900 dark:text-surface-100">Method 3: Cura Image Import</h2>
+      <p class="text-surface-500 text-sm mb-4">
+        UltiMaker Cura (the popular 3D printing slicer) can directly import images and
+        generate lithophane-style prints:
+      </p>
+      <ol class="list-decimal pl-5 space-y-2 text-sm text-surface-500">
+        <li>Drag and drop a JPG or PNG into Cura.</li>
+        <li>Configure the height, base, and width/depth settings.</li>
+        <li>Cura generates the model and you can slice directly.</li>
+        <li>Works great for lithophanes but less flexible for custom relief designs.</li>
+      </ol>
+    </section>
+
+    <section class="border-t border-surface-200 dark:border-surface-800 pt-8">
+      <h2 class="text-xl font-semibold mb-6 text-surface-900 dark:text-surface-100">Method Comparison</h2>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b border-surface-200 dark:border-surface-800">
+              <th class="text-left py-2 font-medium text-surface-700 dark:text-surface-300">Method</th>
+              <th class="text-left py-2 font-medium text-surface-700 dark:text-surface-300">Speed</th>
+              <th class="text-left py-2 font-medium text-surface-700 dark:text-surface-300">Control</th>
+              <th class="text-left py-2 font-medium text-surface-700 dark:text-surface-300">Cost</th>
+            </tr>
+          </thead>
+          <tbody class="text-surface-500">
+            <tr class="border-b border-surface-100 dark:border-surface-900">
+              <td class="py-2">Online Converter</td>
+              <td class="py-2">Instant</td>
+              <td class="py-2">Basic</td>
+              <td class="py-2">Free</td>
+            </tr>
+            <tr class="border-b border-surface-100 dark:border-surface-900">
+              <td class="py-2">Blender</td>
+              <td class="py-2">10-20 min</td>
+              <td class="py-2">Full</td>
+              <td class="py-2">Free</td>
+            </tr>
+            <tr>
+              <td class="py-2">Cura</td>
+              <td class="py-2">2-5 min</td>
+              <td class="py-2">Limited</td>
+              <td class="py-2">Free</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </article>
+</BaseLayout>

@@ -1,0 +1,51 @@
+---
+ export interface Props {
+   title: string;
+   description: string;
+   canonical?: string;
+   schema?: object;
+   keywords?: string;
+   ogImage?: string;
+   ogType?: string;
+   publishDate?: string;
+   modifyDate?: string;
+ }
+
+ const {
+   title,
+   description,
+   canonical = "https://image-to-stl.com",
+   schema,
+   keywords,
+   ogImage = "/og-default.png",
+   ogType = "website",
+   publishDate,
+   modifyDate,
+ } = Astro.props;
+
+ const fullTitle = title;
+---
+
+<title>{fullTitle}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+{keywords && <meta name="keywords" content={keywords} />}
+
+<meta property="og:title" content={fullTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:type" content={ogType} />
+<meta property="og:url" content={canonical} />
+<meta property="og:image" content={ogImage} />
+<meta property="og:site_name" content="Image to STL Converter" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={fullTitle} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={ogImage} />
+
+ {schema && (
+   <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+ )}
+ 
+ {publishDate && <meta property="article:published_time" content={publishDate} />}
+ {modifyDate && <meta property="article:modified_time" content={modifyDate} />}

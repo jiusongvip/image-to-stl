@@ -1,0 +1,110 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import HeightmapEditor from "../components/HeightmapEditor";
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: "Heightmap to STL Editor",
+  applicationCategory: "Multimedia",
+  operatingSystem: "Web",
+  offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+  description: "Advanced heightmap editor with contrast, brightness, threshold, and invert controls. Learn how to fix common image problems for optimal 3D relief generation.",
+};
+
+const keywords = "heightmap editor, heightmap to stl, heightmap generator, 3d relief editor, stl heightmap, depth map to stl, contrast for stl";
+---
+
+<BaseLayout
+  title="Heightmap Editor — Advanced Image Processing for 3D Reliefs"
+  description="Fine-tune heightmaps before STL conversion. Adjust contrast, brightness, and threshold for precise 3D reliefs. Free browser tool with live preview."
+  canonical="https://image-to-stl.com/heightmap-editor"
+  schema={schema}
+  keywords={keywords}
+>
+  <div class="max-w-[1400px] mx-auto px-4 sm:px-6 py-8 sm:py-12">
+
+    <section class="mb-10 max-w-3xl">
+      <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-surface-900 dark:text-surface-100 leading-tight">Heightmap Editor &mdash; Pixel-Level Control for Perfect Reliefs</h1>
+      <p class="mt-3 text-surface-500 text-sm sm:text-base leading-relaxed">The main converter's height and smoothness sliders are enough for most images. But when a photo has poor contrast, a busy background, or uneven lighting, you need finer control. The heightmap editor gives you the same adjustments a photo editor would &mdash; contrast, brightness, threshold, invert &mdash; applied directly to the heightmap before the 3D mesh is generated. Each pixel's brightness determines its final height. By adjusting the brightness distribution, you control exactly which parts of your image become raised surfaces and which become recessed.</p>
+    </section>
+
+    <div class="mb-10 max-w-3xl rounded-xl overflow-hidden border border-surface-200 dark:border-surface-800">
+      <img src="/images/topographic-terrain-map.webp" alt="3D printed topographic terrain map showing mountain ranges with elevation detail" width="1024" height="1024" loading="eager" decoding="async" class="w-full h-auto" />
+    </div>
+
+    <HeightmapEditor client:only="react" />
+
+    <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16 max-w-3xl">
+      <h2 class="text-xl font-semibold mb-6 text-surface-900 dark:text-surface-100">Understanding the Controls: What Each Slider Actually Does</h2>
+
+      <div class="space-y-5">
+        <div class="p-5 rounded-tool border border-surface-200 dark:border-surface-800">
+          <h3 class="font-semibold text-surface-900 dark:text-surface-100 text-sm mb-2">Contrast — The Most Important Slider</h3>
+          <p class="text-xs text-surface-500 leading-relaxed">Contrast stretches the brightness histogram. Increasing contrast makes light pixels lighter and dark pixels darker, expanding the brightness range. <strong>This directly increases the height range of your 3D relief.</strong> An image with a narrow brightness range (lots of medium-gray, few blacks or whites) produces a shallow relief. Boosting contrast spreads those medium values toward the extremes, creating a taller, more dramatic 3D surface. <strong>Start with contrast before touching any other setting.</strong> Increase until the lightest areas are near-white and darkest areas near-black. Avoid "clipping" (pushing pixels to pure white or black) which loses detail in those regions.</p>
+        </div>
+        <div class="p-5 rounded-tool border border-surface-200 dark:border-surface-800">
+          <h3 class="font-semibold text-surface-900 dark:text-surface-100 text-sm mb-2">Brightness — Shift the Entire Relief Up or Down</h3>
+          <p class="text-xs text-surface-500 leading-relaxed">Brightness adds or subtracts a constant value from every pixel. Increasing brightness makes the entire heightmap lighter, which makes every part of the relief taller &mdash; effectively adding a uniform base thickness. Decreasing brightness makes everything darker and shorter. <strong>Use brightness to adjust the "floor" level of your relief.</strong> If the background of your image should be flush with the base plate, decrease brightness until those background pixels approach black (height = 0). If your subject is too recessed, increase brightness to raise it.</p>
+        </div>
+        <div class="p-5 rounded-tool border border-surface-200 dark:border-surface-800">
+          <h3 class="font-semibold text-surface-900 dark:text-surface-100 text-sm mb-2">Threshold — The Binary Cut</h3>
+          <p class="text-xs text-surface-500 leading-relaxed">Threshold converts the smooth grayscale heightmap into a binary (black/white) one. All pixels brighter than the threshold become white (maximum height). All pixels darker become black (zero height). <strong>This creates a two-level relief with a flat top and vertical walls.</strong> Use threshold when you want a clean stamp or embossing die &mdash; no gradients, just raised or not raised. The threshold slider lets you choose exactly where the cut happens in the brightness range. Lower threshold = more of the image is raised. Higher threshold = only the brightest parts are raised.</p>
+        </div>
+        <div class="p-5 rounded-tool border border-surface-200 dark:border-surface-800">
+          <h3 class="font-semibold text-surface-900 dark:text-surface-100 text-sm mb-2">Invert — Embossed vs Engraved</h3>
+          <p class="text-xs text-surface-500 leading-relaxed">Invert flips the heightmap: light becomes dark, dark becomes light. <strong>Embossed (default):</strong> bright areas are raised, like a coin with a raised portrait. <strong>Engraved (inverted):</strong> bright areas are recessed, like text carved into stone. For portraits, embossed typically looks more natural. For text and logos, engraved can look more elegant. Always preview both before downloading &mdash; what looks right for one image may look wrong for another. The heightmap editor's live preview lets you toggle instantly.</p>
+        </div>
+      </div>
+    </section>
+
+    
+
+    <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16 max-w-3xl">
+      <h2 class="text-xl font-semibold mb-6 text-surface-900 dark:text-surface-100">Reading and Using the Histogram</h2>
+      <p class="text-sm text-surface-500 leading-relaxed mb-6">The histogram is a graph of how many pixels exist at each brightness level. Understanding it is the key to mastering the heightmap editor.</p>
+      <div class="space-y-4">
+        <div class="p-4 rounded-tool border border-surface-200 dark:border-surface-800"><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">What the Histogram Tells You</h3><p class="text-xs text-surface-500 leading-relaxed">The histogram shows brightness from 0 (black, left edge) to 255 (white, right edge). <strong>A good histogram for 3D conversion</strong> has data spread across the full width, with peaks at both ends and a smooth distribution in between. <strong>A bad histogram</strong> has all the data clustered in a narrow band in the middle &mdash; this means all pixels are similar medium-gray, producing a flat relief. <strong>A clipped histogram</strong> shows data pushed against the left or right edge, meaning shadow or highlight detail has been lost. In 3D, clipped shadows become flat black areas (zero height), and clipped highlights become flat white plateaus (maximum height with no surface detail).</p></div>
+        <div class="p-4 rounded-tool border border-surface-200 dark:border-surface-800"><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">Common Histogram Shapes and Their 3D Implications</h3><p class="text-xs text-surface-500 leading-relaxed"><strong>Narrow peak in center (bell curve):</strong> Low-contrast image. The relief will be shallow. Increase contrast to spread the data outward. <strong>Two peaks (left and right):</strong> High-contrast image with clear subject/background separation. This is ideal &mdash; it produces a relief with a distinct subject raised above a flat background. <strong>Data bunched on left (dark image):</strong> Underexposed. Most of the relief will be near zero height. Increase brightness first, then contrast. <strong>Data bunched on right (bright image):</strong> Overexposed. Most of the relief will be near maximum height &mdash; like a plateau with little detail. Decrease brightness, then increase contrast. <strong>Gaps or spikes:</strong> Indicates posterization or color reduction. The heightmap will have visible steps instead of smooth gradients.</p></div>
+      </div>
+    </section>
+
+    <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16 max-w-3xl">
+      <h2 class="text-xl font-semibold mb-6 text-surface-900 dark:text-surface-100">Advanced Techniques: Beyond the Basics</h2>
+      <div class="space-y-5">
+        <div class="p-4 rounded-tool border border-surface-200 dark:border-surface-800"><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">Multi-Level Threshold for Terrain-Like Reliefs</h3><p class="text-xs text-surface-500 leading-relaxed">Instead of a single binary threshold (raised or not raised), you can simulate multiple height levels: <strong>1.</strong> Set threshold to create the base level (background = 0, subject = max). Download this STL. <strong>2.</strong> Lower the threshold to include more of the image. Download this as a second STL. <strong>3.</strong> In your slicer, place both models at different Z-heights. The lower-threshold model (more raised area) sits below the higher-threshold model (less raised area), creating a stepped terrain effect. <strong>This is an approximation of multi-level relief</strong> and works best with images that have natural brightness bands (topographic data, architectural sections).</p></div>
+        <div class="p-4 rounded-tool border border-surface-200 dark:border-surface-800"><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">Dual-Pass Conversion: Separate Foreground and Background</h3><p class="text-xs text-surface-500 leading-relaxed">For images where you want different treatment for the subject and background: <strong>1.</strong> Use threshold to create a binary mask of just the subject (high threshold = only the brightest subject pixels). Export this as a stamp. <strong>2.</strong> Return to the original image, invert, and apply different contrast settings for the background. Export as a separate relief. <strong>3.</strong> Combine both STLs in your slicer with the subject stamp raised above the background relief. This technique gives you independent control over the subject's surface detail and the background's texture &mdash; something impossible with a single-pass conversion.</p></div>
+        <div class="p-4 rounded-tool border border-surface-200 dark:border-surface-800"><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">Edge Enhancement for Crisp Boundaries</h3><p class="text-xs text-surface-500 leading-relaxed">If your subject has soft edges (gradual transition from subject to background), the 3D relief will have a gradual slope instead of a sharp vertical wall. <strong>To crisp the edges:</strong> increase contrast to maximum briefly, then apply a slight threshold (just enough to remove the softest gradient pixels), then reduce contrast back to normal. This "shocks" the edge pixels toward black or white, creating a harder boundary. The effect is subtle but noticeable in the printed model. <strong>Alternatively:</strong> use an external tool to apply an unsharp mask or edge detection filter to your image before uploading, then use the heightmap editor for final tuning.</p></div>
+      </div>
+    </section>
+
+    <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16 max-w-3xl">
+      <h2 class="text-xl font-semibold mb-6 text-surface-900 dark:text-surface-100">Real-World Case Studies: Before and After Editing</h2>
+      <div class="space-y-4">
+        <div class="p-4 rounded-tool border border-surface-200 dark:border-surface-800"><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">Case 1: Underexposed Indoor Portrait</h3><p class="text-xs text-surface-500 leading-relaxed"><strong>Problem:</strong> A portrait taken indoors without flash. Histogram bunched at the left (dark) with a small bump in the mid-tones for the face. Default conversion produces a nearly flat pancake with a barely-visible face outline. <strong>Solution:</strong> Brightness +40 to shift the entire histogram right. Contrast +35 to spread the face tones across a wider brightness range. The face now emerges from the background with visible nose, eye sockets, and jawline contours. Took 30 seconds to fix a photo that would have been unusable.</p></div>
+        <div class="p-4 rounded-tool border border-surface-200 dark:border-surface-800"><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">Case 2: Logo on a Gradient Background</h3><p class="text-xs text-surface-500 leading-relaxed"><strong>Problem:</strong> A company logo with a white-to-gray gradient background. The gradient creates a sloping surface behind the logo, making it look like the logo is sinking into a hill. <strong>Solution:</strong> Threshold set to 60% &mdash; this cuts off the gray gradient completely, making the background pure black. The logo (white) remains raised at full height. Result: clean, flat background with crisp logo extrusion. The gradient is completely eliminated.</p></div>
+        <div class="p-4 rounded-tool border border-surface-200 dark:border-surface-800"><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">Case 3: Overexposed Landscape</h3><p class="text-xs text-surface-500 leading-relaxed"><strong>Problem:</strong> A bright, washed-out landscape photo. Sky is pure white (clipped), foreground is pale gray. No dark areas anywhere. Histogram bunched at the right. Default conversion produces a plateau with no detail. <strong>Solution:</strong> Brightness -50 to shift the histogram left, recovering the clipped sky area into the mid-tones. Contrast +50 to stretch the remaining mid-tones into a usable range. The result still has less detail than a properly-exposed photo, but now shows discernible landforms and sky gradient instead of a flat white block.</p></div>
+        <div class="p-4 rounded-tool border border-surface-200 dark:border-surface-800"><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">Case 4: Hand-Drawn Sketch with Paper Texture</h3><p class="text-xs text-surface-500 leading-relaxed"><strong>Problem:</strong> A pencil sketch scanned from paper. The paper texture creates a noisy heightmap. Pencil lines are thin and gray, not black. Default conversion produces a bumpy surface with faint, barely-visible lines. <strong>Solution:</strong> Contrast +60 to darken the pencil lines and lighten the paper. Threshold +25 to cut off the paper texture noise. The result: a clean two-level relief (raised lines on flat background) &mdash; like a printing plate. The pencil sketch is now a usable 3D stamp.</p></div>
+      </div>
+    </section>
+<section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16 max-w-3xl" id="faq">
+      <h2 class="text-xl font-semibold mb-6 text-surface-900 dark:text-surface-100">Heightmap Editor Questions</h2>
+      <dl class="space-y-5">
+        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">What order should I adjust the controls?</dt><dd class="text-sm text-surface-500 leading-relaxed"><strong>1. Contrast</strong> — always first. Spread the brightness values across the full range. <strong>2. Brightness</strong> — shift the overall floor level. <strong>3. Threshold</strong> — only if you want a binary relief. Skip for smooth gradients. <strong>4. Invert</strong> — try both and choose. <strong>5. In the 3D panel:</strong> adjust height scale and smoothness last, once the heightmap itself looks right. This order works because each step builds on the previous one. Changing contrast after threshold, for example, will shift where the threshold cut happens.</dd></div>
+        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">My image is too dark overall. Which control fixes that?</dt><dd class="text-sm text-surface-500 leading-relaxed">If the entire image is dark (underexposed), all pixels cluster near black, producing a very shallow relief. <strong>Increase brightness first</strong> to shift the whole histogram upward. Then increase contrast to spread the mid-tones. You may need to increase both significantly for a severely underexposed image. The live preview shows the effect instantly.</dd></div>
+        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">When should I NOT use the heightmap editor?</dt><dd class="text-sm text-surface-500 leading-relaxed">Skip the editor when: your source image already has good contrast (clear blacks and whites), you are converting text or simple logos (the main converter handles these well), or you want the fastest possible workflow. The heightmap editor is for images that need fixing &mdash; not a required step for every image. Most well-lit photos convert fine without it.</dd></div>
+        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">Can I save my heightmap adjustments as a preset?</dt><dd class="text-sm text-surface-500 leading-relaxed">The editor does not save presets, but the controls are simple enough that you can remember or write down the values (e.g., "contrast +30, brightness -10, threshold off"). Once you find a combination that works for your typical image type, re-applying it takes seconds. All processing is local and instant, so you are never waiting for results.</dd></div>
+      </dl>
+    </section>
+
+    <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16 max-w-3xl mb-8">
+      <div class="text-center">
+        <p class="text-sm text-surface-500 mb-4">The heightmap editor pairs well with these tools for complete control over your 3D reliefs.</p>
+        <div class="flex flex-wrap gap-2 justify-center">
+          <a href="/" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400 hover:text-accent-600 text-sm transition-colors">Image to STL (main converter)</a>
+          <a href="/photo-to-3d" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400 hover:text-accent-600 text-sm transition-colors">Photo to 3D (photography guide)</a>
+        </div>
+      </div>
+    </section>
+  </div>
+</BaseLayout>

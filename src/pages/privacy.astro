@@ -1,0 +1,66 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="Privacy Policy — How We Protect Your Data | Image to STL"
+  description="Our privacy policy: no data collection, no tracking, no cookies, no uploads. All processing happens locally in your browser. Learn how we protect your privacy."
+  canonical="https://image-to-stl.com/privacy"
+>
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 py-12">
+    <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-surface-900 dark:text-surface-100 mb-2">Privacy Policy</h1>
+    <p class="text-sm text-surface-500 mb-10">Last updated: August 8, 2026</p>
+
+    <section class="mb-8">
+      <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-100 mb-3">Our Privacy Promise</h2>
+      <p class="text-sm text-surface-500 leading-relaxed mb-4">
+        We collect nothing. This is not a simplification or a euphemism — it is a precise description of how this site works. We have designed the entire application so that we never receive, store, or process your data in any form.
+      </p>
+      <div class="p-4 rounded-tool border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/10 mb-4">
+        <p class="text-sm text-green-700 dark:text-green-400">
+          <strong>Your images never leave your device.</strong> All image processing, 3D rendering, and STL generation happens in your browser using JavaScript, Canvas API, and WebGL. No file is ever uploaded to any server.
+        </p>
+      </div>
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-100 mb-3">Information We Do Not Collect</h2>
+      <ul class="space-y-2 text-sm text-surface-500">
+        <li class="flex gap-2"><span class="text-green-600 font-bold">—</span> <strong>Personal information:</strong> We do not collect names, email addresses, or any identifying information.</li>
+        <li class="flex gap-2"><span class="text-green-600 font-bold">—</span> <strong>Images or files:</strong> Your uploaded images and generated STL files remain entirely on your device.</li>
+        <li class="flex gap-2"><span class="text-green-600 font-bold">—</span> <strong>Usage data:</strong> We do not track which tools you use, how often you visit, or what you convert.</li>
+        <li class="flex gap-2"><span class="text-green-600 font-bold">—</span> <strong>Cookies:</strong> We do not set any cookies. There are no authentication, tracking, or preference cookies.</li>
+        <li class="flex gap-2"><span class="text-green-600 font-bold">—</span> <strong>Analytics:</strong> We do not use Google Analytics, Plausible, Fathom, or any other analytics service.</li>
+        <li class="flex gap-2"><span class="text-green-600 font-bold">—</span> <strong>IP addresses:</strong> Our hosting provider (Cloudflare) may process IP addresses as part of standard network operations, but we do not log or store them.</li>
+      </ul>
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-100 mb-3">How the Tool Works</h2>
+      <p class="text-sm text-surface-500 leading-relaxed mb-4">
+        Understanding how our tool works explains why we can make these privacy claims:
+      </p>
+      <ol class="space-y-2 text-sm text-surface-500 list-decimal pl-5">
+        <li>The website is a set of static HTML, CSS, and JavaScript files served by a CDN.</li>
+        <li>When you upload an image by dragging it into the converter, the image is loaded into your browser memory — not transmitted to any server.</li>
+        <li>The JavaScript code on the page reads the image pixels, converts them to a heightmap, and generates a 3D mesh — all within your browser.</li>
+        <li>The STL file is assembled and downloaded directly from your browser memory to your device.</li>
+        <li>At no point in this process does any data leave your device.</li>
+      </ol>
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-100 mb-3">Third-Party Services</h2>
+      <p class="text-sm text-surface-500 leading-relaxed">
+        We use Cloudflare for DNS and CDN services. Cloudflare may process your IP address and browser metadata as part of standard network operations. Cloudflare does not have access to your images or conversion data because those never leave your browser. Learn more at <a href="https://www.cloudflare.com/privacypolicy/" class="text-accent-600 hover:underline" target="_blank" rel="noopener">Cloudflare Privacy Policy</a>.
+      </p>
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-100 mb-3">Contact</h2>
+      <p class="text-sm text-surface-500 leading-relaxed">
+        If you have questions about this privacy policy, please contact us at <strong class="text-surface-700 dark:text-surface-300">hello@image-to-stl.com</strong>.
+      </p>
+    </section>
+  </div>
+</BaseLayout>

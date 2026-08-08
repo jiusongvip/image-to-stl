@@ -1,0 +1,128 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import ConverterTool from "../components/ConverterTool";
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: "SVG to STL Converter",
+  applicationCategory: "Multimedia",
+  operatingSystem: "Web",
+  offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+  description: "Convert SVG to STL with true vector path extrusion. Parse bezier curves into solid 3D geometry. Complete editor preparation guides for Illustrator, Inkscape, Figma, and Affinity.",
+};
+
+const keywords = "svg to stl, convert svg to stl, svg to 3d, svg extrusion, vector to stl, svg path to stl, illustrator to stl, inkscape to stl";
+---
+
+<BaseLayout
+  title="SVG to STL Converter — True Vector Path Extrusion"
+  description="Convert SVG to STL with real bezier path parsing, not rasterization. Crisp vector extrusion for logos, icons, and text. Free browser-based tool with 3D preview."
+  canonical="https://image-to-stl.com/svg-to-stl"
+  schema={schema}
+  keywords={keywords}
+>
+  <div class="max-w-[1400px] mx-auto px-4 sm:px-6 py-8 sm:py-12">
+
+    <section class="mb-10 max-w-3xl">
+      <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-surface-900 dark:text-surface-100 leading-tight">SVG to STL &mdash; Real Vector Path Extrusion, Not Pixel Rasterization</h1>
+      <p class="mt-3 text-surface-500 text-sm sm:text-base leading-relaxed">Every other online "SVG to STL" tool does the same thing: it converts your SVG to a pixel image first, then runs the same heightmap algorithm used for photos. This destroys the mathematical precision of your vector artwork &mdash; curves become stair-stepped, sharp corners become rounded, and small details become invisible noise. Our tool reads the actual SVG XML, parses bezier curves directly, triangulates closed shapes, and extrudes them into solid 3D geometry. The result preserves the exact curves, corners, and proportions of your original design at any scale. This page explains exactly how it works and how to prepare SVGs for the best results in every major design tool.</p>
+    </section>
+
+    <div class="mb-10 max-w-3xl rounded-xl overflow-hidden border border-surface-200 dark:border-surface-800">
+      <img src="/images/logo-3d-extrusion.webp" alt="3D printed logo sign with crisp extruded edges on a display stand" width="1024" height="1024" loading="eager" decoding="async" class="w-full h-auto" />
+    </div>
+
+    <ConverterTool client:only="react" />
+
+    <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16 max-w-3xl">
+      <h2 class="text-xl font-semibold mb-6 text-surface-900 dark:text-surface-100">From Bezier Curve to Solid 3D: How SVG Path Extrusion Works</h2>
+      <p class="text-sm text-surface-500 leading-relaxed mb-6">Understanding what happens under the hood helps you create SVGs that convert perfectly. Here is the pipeline:</p>
+
+      <div class="space-y-5">
+        <div class="flex gap-4">
+          <span class="w-8 h-8 rounded-lg bg-accent-100 dark:bg-accent-900/40 flex items-center justify-center text-sm font-bold text-accent-600 dark:text-accent-400 flex-shrink-0 mt-1">1</span>
+          <div><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-1">SVG Parsing: Reading the XML</h3><p class="text-xs text-surface-500 leading-relaxed">The parser reads the raw SVG file and extracts all shape elements: <code class="bg-surface-100 dark:bg-surface-800 px-1 rounded text-accent-600 text-2xs">&lt;path&gt;</code>, <code class="bg-surface-100 dark:bg-surface-800 px-1 rounded text-accent-600 text-2xs">&lt;polygon&gt;</code>, <code class="bg-surface-100 dark:bg-surface-800 px-1 rounded text-accent-600 text-2xs">&lt;rect&gt;</code>, <code class="bg-surface-100 dark:bg-surface-800 px-1 rounded text-accent-600 text-2xs">&lt;circle&gt;</code>, <code class="bg-surface-100 dark:bg-surface-800 px-1 rounded text-accent-600 text-2xs">&lt;ellipse&gt;</code>, and <code class="bg-surface-100 dark:bg-surface-800 px-1 rounded text-accent-600 text-2xs">&lt;line&gt;</code>. Each shape is converted into a sequence of 2D points defining its outline. Path commands (M, L, C, Q, A, Z) are interpreted to build the contour geometry. <code class="bg-surface-100 dark:bg-surface-800 px-1 rounded text-accent-600 text-2xs">&lt;g&gt;</code> groups and <code class="bg-surface-100 dark:bg-surface-800 px-1 rounded text-accent-600 text-2xs">transform</code> attributes are applied to compute the final position of every point in the global coordinate space.</p></div>
+        </div>
+        <div class="flex gap-4">
+          <span class="w-8 h-8 rounded-lg bg-accent-100 dark:bg-accent-900/40 flex items-center justify-center text-sm font-bold text-accent-600 dark:text-accent-400 flex-shrink-0 mt-1">2</span>
+          <div><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-1">Path Triangulation: From 2D Outline to 3D Faces</h3><p class="text-xs text-surface-500 leading-relaxed">Closed shapes are filled by triangulating the interior region. The triangulator handles concave polygons and shapes with holes (created by nested paths with opposite winding directions). The result is a flat 2D mesh of triangles representing the top face of the extrusion. This is the moment when pixel precision is either preserved or lost &mdash; our triangulator maintains sub-pixel accuracy because it works directly with the mathematical curve definitions, not a rasterized approximation.</p></div>
+        </div>
+        <div class="flex gap-4">
+          <span class="w-8 h-8 rounded-lg bg-accent-100 dark:bg-accent-900/40 flex items-center justify-center text-sm font-bold text-accent-600 dark:text-accent-400 flex-shrink-0 mt-1">3</span>
+          <div><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-1">Extrusion: Adding the Third Dimension</h3><p class="text-xs text-surface-500 leading-relaxed">The 2D mesh is duplicated and offset by the extrusion depth, creating the bottom face. The edge vertices are connected to form the side walls. The result is a watertight 3D mesh where every face is correctly oriented (normals pointing outward). The extrusion depth is controlled by the height slider &mdash; a value of 3mm creates a 3mm thick object. The base plate option adds a flat bottom to the entire model for stability during printing.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16 max-w-3xl">
+      <h2 class="text-xl font-semibold mb-6 text-surface-900 dark:text-surface-100">Preparing SVGs in Your Design Tool</h2>
+      <p class="text-sm text-surface-500 leading-relaxed mb-6">Each design tool exports SVGs differently. These are the exact settings for each one.</p>
+
+      <div class="space-y-4">
+        <div class="p-5 rounded-tool border border-surface-200 dark:border-surface-800">
+          <h3 class="font-semibold text-surface-900 dark:text-surface-100 text-sm mb-2">Adobe Illustrator</h3>
+          <p class="text-xs text-surface-500 leading-relaxed"><strong>1. Convert all text to outlines:</strong> Select all &rarr; Type &rarr; Create Outlines (Ctrl+Shift+O). If you skip this, text elements will fail because the system fonts are not embedded. <strong>2. Expand strokes to filled shapes:</strong> Select stroked paths &rarr; Object &rarr; Expand &rarr; check "Stroke". Thin strokes produce fragile geometry. <strong>3. Merge overlapping shapes:</strong> Window &rarr; Pathfinder &rarr; Unite. Overlapping shapes create redundant internal edges. <strong>4. Simplify paths:</strong> Object &rarr; Path &rarr; Simplify, set Curve Precision to 95-98%. This reduces control points without visible quality loss and produces smaller STL files. <strong>5. Export:</strong> File &rarr; Export &rarr; Export As &rarr; SVG. Settings: Styling = Internal CSS, Font = Convert to Outlines, Decimal = 2, uncheck Responsive.</p>
+        </div>
+        <div class="p-5 rounded-tool border border-surface-200 dark:border-surface-800">
+          <h3 class="font-semibold text-surface-900 dark:text-surface-100 text-sm mb-2">Inkscape (Free)</h3>
+          <p class="text-xs text-surface-500 leading-relaxed"><strong>1. Convert text to paths:</strong> Select text &rarr; Path &rarr; Object to Path. <strong>2. Stroke to path:</strong> Select stroked objects &rarr; Path &rarr; Stroke to Path. <strong>3. Union overlapping shapes:</strong> Select overlapping shapes &rarr; Path &rarr; Union. <strong>4. Simplify:</strong> Path &rarr; Simplify (Ctrl+L). Press multiple times for progressively simpler paths. <strong>5. Save as:</strong> File &rarr; Save As &rarr; Optimized SVG. In the dialog: Number of significant digits = 4, uncheck "Enable viewboxing", check "Shorten color values". The "Optimized SVG" export removes Inkscape-specific metadata that adds unnecessary file size.</p>
+        </div>
+        <div class="p-5 rounded-tool border border-surface-200 dark:border-surface-800">
+          <h3 class="font-semibold text-surface-900 dark:text-surface-100 text-sm mb-2">Figma</h3>
+          <p class="text-xs text-surface-500 leading-relaxed">Figma does not have native SVG path simplification tools, so prepare your design carefully. <strong>1. Outline text:</strong> Right-click text &rarr; Outline stroke (this also outlines text in newer Figma versions) or use the "Text to Path" plugin. <strong>2. Flatten:</strong> Select your design &rarr; right-click &rarr; Flatten (Ctrl+E). This merges all layers into a single vector shape. <strong>3. Export:</strong> Select the flattened shape &rarr; Export panel &rarr; SVG. <strong>Warning:</strong> Figma sometimes adds unnecessary <code class="bg-surface-100 dark:bg-surface-800 px-1 rounded text-accent-600 text-2xs">&lt;clipPath&gt;</code> elements. If your SVG does not convert correctly, open it in Inkscape and re-export using the settings above.</p>
+        </div>
+        <div class="p-5 rounded-tool border border-surface-200 dark:border-surface-800">
+          <h3 class="font-semibold text-surface-900 dark:text-surface-100 text-sm mb-2">Affinity Designer</h3>
+          <p class="text-xs text-surface-500 leading-relaxed"><strong>1. Convert text to curves:</strong> Select text &rarr; Layer &rarr; Convert to Curves. <strong>2. Expand stroke:</strong> Select stroked objects &rarr; Layer &rarr; Expand Stroke. <strong>3. Add/subtract overlapping shapes:</strong> Use the Geometry tools (Add, Subtract, Intersect, Xor, Divide) to create clean, non-overlapping shapes. <strong>4. Export:</strong> File &rarr; Export &rarr; SVG. Settings: Rasterize = Nothing, Flatten transforms = checked, Use relative coordinates = unchecked, Add line breaks = unchecked. Affinity exports clean SVGs but sometimes embeds raster previews &mdash; make sure "Rasterize" is set to "Nothing" for a pure vector output.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16 max-w-3xl">
+      <h2 class="text-xl font-semibold mb-6 text-surface-900 dark:text-surface-100">SVG Elements: What Works and What Does Not</h2>
+      <div class="overflow-x-auto"><table class="w-full text-sm border-collapse"><thead><tr class="border-b border-surface-200 dark:border-surface-700"><th class="text-left py-3 pr-4 font-medium">SVG Element</th><th class="text-left py-3 pr-4 font-medium">Support</th><th class="text-left py-3 font-medium">Notes</th></tr></thead><tbody class="divide-y divide-surface-100 dark:divide-surface-800">
+        <tr><td class="py-2.5 pr-4 font-medium text-surface-900 dark:text-surface-100">&lt;path&gt;</td><td class="py-2.5 pr-4"><span class="text-green-600 dark:text-green-400 text-xs font-medium">Full support</span></td><td class="py-2.5 text-xs text-surface-500">All path commands (M, L, C, Q, A, Z). Closed paths required for extrusion; open paths may produce thin edges.</td></tr>
+        <tr><td class="py-2.5 pr-4 font-medium text-surface-900 dark:text-surface-100">&lt;rect&gt;</td><td class="py-2.5 pr-4"><span class="text-green-600 dark:text-green-400 text-xs font-medium">Full support</span></td><td class="py-2.5 text-xs text-surface-500">Converted to path automatically. Rounded corners (rx, ry) are preserved accurately.</td></tr>
+        <tr><td class="py-2.5 pr-4 font-medium text-surface-900 dark:text-surface-100">&lt;circle&gt;, &lt;ellipse&gt;</td><td class="py-2.5 pr-4"><span class="text-green-600 dark:text-green-400 text-xs font-medium">Full support</span></td><td class="py-2.5 text-xs text-surface-500">Converted to bezier paths. Smooth curves preserved without polygonal approximation.</td></tr>
+        <tr><td class="py-2.5 pr-4 font-medium text-surface-900 dark:text-surface-100">&lt;polygon&gt;</td><td class="py-2.5 pr-4"><span class="text-green-600 dark:text-green-400 text-xs font-medium">Full support</span></td><td class="py-2.5 text-xs text-surface-500">Straight-line shapes with fill. Self-intersecting polygons may produce unexpected triangulation.</td></tr>
+        <tr><td class="py-2.5 pr-4 font-medium text-surface-900 dark:text-surface-100">&lt;line&gt;</td><td class="py-2.5 pr-4"><span class="text-amber-600 dark:text-amber-400 text-xs font-medium">Limited</span></td><td class="py-2.5 text-xs text-surface-500">Lines with stroke only (no fill) produce thin line geometry. Best converted to filled shapes via "Stroke to Path."</td></tr>
+        <tr><td class="py-2.5 pr-4 font-medium text-surface-900 dark:text-surface-100">&lt;text&gt;</td><td class="py-2.5 pr-4"><span class="text-red-600 dark:text-red-400 text-xs font-medium">Not supported</span></td><td class="py-2.5 text-xs text-surface-500">Text requires system fonts. Always convert text to outlines before exporting your SVG.</td></tr>
+        <tr><td class="py-2.5 pr-4 font-medium text-surface-900 dark:text-surface-100">Gradients</td><td class="py-2.5 pr-4"><span class="text-red-600 dark:text-red-400 text-xs font-medium">Raster fallback</span></td><td class="py-2.5 text-xs text-surface-500">Gradients trigger automatic rasterization. The shape is filled but precision is lost. Use solid fills for true extrusion.</td></tr>
+        <tr><td class="py-2.5 pr-4 font-medium text-surface-900 dark:text-surface-100">Nested shapes with holes</td><td class="py-2.5 pr-4"><span class="text-green-600 dark:text-green-400 text-xs font-medium">Full support</span></td><td class="py-2.5 text-xs text-surface-500">Counter-clockwise paths inside clockwise paths create holes. The letter "O" and donut shapes work correctly.</td></tr>
+      </tbody></table></div>
+    </section>
+
+    <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16 max-w-3xl" id="faq">
+      <h2 class="text-xl font-semibold mb-6 text-surface-900 dark:text-surface-100">SVG to STL Questions</h2>
+      <dl class="space-y-5">
+        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">How is this different from uploading an SVG as an image?</dt><dd class="text-sm text-surface-500 leading-relaxed">When you upload an SVG as an image to a standard converter, it is rasterized (converted to pixels) at a fixed resolution &mdash; typically 512px. A thin line in your SVG becomes 1-2 pixels wide in the raster, which creates a tiny bump in the heightmap instead of a clean extrusion. Our SVG parser reads the actual mathematical path data and extrudes it directly, preserving edges at any resolution. A 1mm line in your SVG becomes a 1mm feature in the STL, regardless of canvas size.</dd></div>
+        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">Why does my SVG produce a flat rectangle instead of my design?</dt><dd class="text-sm text-surface-500 leading-relaxed">This means the tool fell back to raster mode. The most common causes: <strong>(a)</strong> Text was not converted to outlines &mdash; use Create Outlines. <strong>(b)</strong> The SVG contains raster images (PNG/JPG embedded inside the SVG) &mdash; remove them or use only vector elements. <strong>(c)</strong> The SVG uses unsupported features like complex gradients, filters, or clip-paths &mdash; simplify to basic paths and solid fills. <strong>(d)</strong> The file is not a valid SVG &mdash; some tools export HTML-wrapped SVGs. Open in a text editor and confirm it starts with <code class="bg-surface-100 dark:bg-surface-800 px-1 rounded text-accent-600 text-2xs">&lt;svg</code>.</dd></div>
+        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">Can I control how thick the extrusion is?</dt><dd class="text-sm text-surface-500 leading-relaxed">Yes, the height slider controls the extrusion depth. This is a uniform thickness applied to all shapes in the SVG. For different thicknesses on different parts, split your SVG into separate files and convert each with different height settings, then combine them in your slicer. Alternatively, create the depth variation in the 3D model itself using the heightmap mode for the overall shape and SVG extrusion for the raised details.</dd></div>
+        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">What happens to very small details in my SVG?</dt><dd class="text-sm text-surface-500 leading-relaxed">Details smaller than your printer's nozzle diameter (typically 0.4mm for FDM) will not print well regardless of the STL quality. Our tool preserves sub-millimeter details in the mesh, but they may be lost during slicing if they are thinner than the extrusion width. For very fine detail work, use a smaller nozzle (0.2mm) or switch to resin/SLA printing which can resolve details down to 0.05mm. Design your SVG with your printer's capabilities in mind.</dd></div>
+      </dl>
+    </section>
+
+    
+
+    <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16 max-w-3xl">
+      <h2 class="text-xl font-semibold mb-6 text-surface-900 dark:text-surface-100">Advanced SVG Optimization for 3D Printing</h2>
+      <div class="space-y-4">
+        <div class="p-4 rounded-tool border border-surface-200 dark:border-surface-800"><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">Path Count and STL File Size</h3><p class="text-xs text-surface-500 leading-relaxed">Every control point in your SVG becomes a vertex in the extruded 3D mesh. A complex logo with 5000 path points produces a larger STL than a simplified version with 500 points. <strong>Before exporting:</strong> use your editor's path simplification tool (Illustrator: Object &rarr; Path &rarr; Simplify; Inkscape: Ctrl+L). Aim for ~95% curve precision &mdash; this removes ~80% of control points while preserving the visual shape. The difference in the printed model is invisible, but the STL file size can drop from 15MB to 3MB. Faster slicing, faster printing, identical visual result.</p></div>
+        <div class="p-4 rounded-tool border border-surface-200 dark:border-surface-800"><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">Fixing Self-Intersecting and Open Paths</h3><p class="text-xs text-surface-500 leading-relaxed">SVGs from some tools contain paths that cross themselves (self-intersect) or are not properly closed (missing the "Z" command at the end). These produce unpredictable extrusion results. <strong>Fix:</strong> In Illustrator, use Object &rarr; Path &rarr; Simplify (check "Straight Lines" to convert curves to line segments if self-intersections persist). In Inkscape, Path &rarr; Break Apart then Path &rarr; Union to reconstruct cleanly. <strong>Test:</strong> select a path in your editor and check if it has a fill. A properly closed path fills with color. An open path does not fill &mdash; these need to be closed before extrusion.</p></div>
+        <div class="p-4 rounded-tool border border-surface-200 dark:border-surface-800"><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">Understanding the SVG ViewBox and Coordinate System</h3><p class="text-xs text-surface-500 leading-relaxed">The viewBox attribute (e.g., viewBox="0 0 100 100") defines the SVG's internal coordinate system. Our parser uses this to determine the proportions of the extruded model. <strong>Important:</strong> the viewBox aspect ratio becomes the aspect ratio of the STL model. A viewBox="0 0 200 100" creates a model that is twice as wide as it is tall. If your exported SVG has a viewBox that does not match your intended 3D proportions, the STL will be distorted. <strong>Fix:</strong> set the artboard/canvas size in your design tool to the exact proportions you want. Avoid SVGs without a viewBox &mdash; they may import at unexpected scales.</p></div>
+        <div class="p-4 rounded-tool border border-surface-200 dark:border-surface-800"><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">Layered SVG Extrusion: Separate STLs for Multi-Color Prints</h3><p class="text-xs text-surface-500 leading-relaxed">Design your SVG in separate layers by color. Export each color layer as its own SVG file. Convert each to STL with the same extrusion depth. In your slicer, assign different filaments to each STL. The result: a multi-color 3D print where each color region is a separate physical piece that fits together. <strong>This technique requires:</strong> all pieces must share a common base height so they align. Use the base plate option on all pieces and set the same base thickness. The pieces will slot together on the print bed like a puzzle.</p></div>
+      </div>
+    </section>
+<section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16 max-w-3xl mb-8">
+      <div class="text-center">
+        <p class="text-sm text-surface-500 mb-4">SVG is for vector art. For photos or raster images, use the appropriate format.</p>
+        <div class="flex flex-wrap gap-2 justify-center">
+          <a href="/jpg-to-stl" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400 hover:text-accent-600 text-sm transition-colors">JPG to STL (photo workflow)</a>
+          <a href="/png-to-stl" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400 hover:text-accent-600 text-sm transition-colors">PNG to STL (transparency control)</a>
+          <a href="/text-to-stl" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400 hover:text-accent-600 text-sm transition-colors">Text to STL</a>
+        </div>
+      </div>
+    </section>
+  </div>
+</BaseLayout>

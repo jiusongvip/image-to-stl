@@ -1,0 +1,136 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import TextTo3D from "../components/TextTo3D";
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: "Text to STL Converter",
+  applicationCategory: "Multimedia",
+  operatingSystem: "Web",
+  offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+  description: "Convert text to 3D printable STL files. Learn font selection for 3D printing, optimal text sizing for different uses, and when to use SVG extrusion for sharper text results.",
+};
+
+const keywords = "text to stl, text to 3d, 3d text generator, stl text, 3d printed text, text extrusion, 3d letters, convert text to 3d";
+---
+
+<BaseLayout
+  title="Text to STL Converter — Words to 3D Printable Objects"
+  description="Type text and convert to 3D printable STL instantly. Learn which fonts work best, how to size text for printing, and SVG extrusion tips. Free tool."
+  canonical="https://image-to-stl.com/text-to-stl"
+  schema={schema}
+  keywords={keywords}
+>
+  <div class="max-w-[1400px] mx-auto px-4 sm:px-6 py-8 sm:py-12">
+
+    <section class="mb-10 max-w-3xl">
+      <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-surface-900 dark:text-surface-100 leading-tight">Text to STL &mdash; Turn Words into Touchable Objects</h1>
+      <p class="mt-3 text-surface-500 text-sm sm:text-base leading-relaxed">Type a word, get a 3D-printable model. Sounds simple &mdash; and it is. But the difference between a text print that looks crisp and professional versus one that looks blobby and fragile comes down to font choice, sizing, and extrusion settings. This guide covers which fonts produce the best 3D prints, how to size text for different applications, and when you should use SVG extrusion instead for truly sharp results.</p>
+    </section>
+
+    <TextTo3D client:only="react" />
+
+    <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16 max-w-3xl">
+      <h2 class="text-xl font-semibold mb-6 text-surface-900 dark:text-surface-100">Font Selection: Which Fonts Print Well</h2>
+
+      <div class="space-y-4">
+        <div class="p-4 rounded-tool border border-accent-200 dark:border-accent-800 bg-accent-50/50 dark:bg-accent-900/10">
+          <h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">Bold Sans-Serif Fonts — The Safest Choice</h3>
+          <p class="text-xs text-surface-500 leading-relaxed">Arial Bold, Helvetica Bold, Impact, and similar heavy sans-serif fonts produce the most reliable 3D prints. Their thick, uniform strokes are sturdy enough to survive printing and handling. Letters like "i" and "l" have enough mass to not snap off. <strong>For keychains, signs, and anything that will be handled, use a bold sans-serif font.</strong> The tool defaults to a bold weight for this reason.</p>
+        </div>
+        <div class="p-4 rounded-tool border border-surface-200 dark:border-surface-800">
+          <h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">Serif Fonts — Beautiful but Delicate</h3>
+          <p class="text-xs text-surface-500 leading-relaxed">Times New Roman, Georgia, and other serif fonts have thin strokes and delicate serifs that may not print well at small sizes. Below 20mm character height, serifs can become too thin for FDM nozzles. <strong>Use serif fonts only for large prints (40mm+ character height)</strong> where the thin strokes are thick enough to print reliably. For resin printers, serif fonts work at much smaller sizes due to higher resolution.</p>
+        </div>
+        <div class="p-4 rounded-tool border border-surface-200 dark:border-surface-800">
+          <h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">Script and Decorative Fonts — High Risk</h3>
+          <p class="text-xs text-surface-500 leading-relaxed">Cursive, handwriting, and decorative fonts often have extreme thin-to-thick stroke variation. The thin connecting strokes between letters are typically too fragile for FDM printing. <strong>For decorative fonts, use SVG extrusion instead</strong> &mdash; create your text in a design tool, convert to outlines, and use our <a href="/svg-to-stl" class="text-accent-500 hover:underline">SVG to STL converter</a> which handles thin strokes better through path extrusion.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16 max-w-3xl">
+      <h2 class="text-xl font-semibold mb-6 text-surface-900 dark:text-surface-100">Sizing Guide: How Big Should Your Text Be?</h2>
+      <div class="overflow-x-auto"><table class="w-full text-sm border-collapse"><thead><tr class="border-b border-surface-200 dark:border-surface-700"><th class="text-left py-3 pr-4 font-medium">Application</th><th class="text-left py-3 pr-4 font-medium">Recommended Height</th><th class="text-left py-3 font-medium">Notes</th></tr></thead><tbody class="divide-y divide-surface-100 dark:divide-surface-800">
+        <tr><td class="py-2.5 pr-4 font-medium">Keychains</td><td class="py-2.5 pr-4">15-25mm</td><td class="py-2.5 text-xs text-surface-500">Keep to 1-3 characters. Bold fonts only. Add a hole in your slicer for the keyring.</td></tr>
+        <tr><td class="py-2.5 pr-4 font-medium">Cake toppers</td><td class="py-2.5 pr-4">40-60mm</td><td class="py-2.5 text-xs text-surface-500">Taller text for visibility. Print with a spike or base for mounting. Food-safe PLA required.</td></tr>
+        <tr><td class="py-2.5 pr-4 font-medium">Desk nameplates</td><td class="py-2.5 pr-4">20-35mm</td><td class="py-2.5 text-xs text-surface-500">Full names work at this size. Add a base plate for stability. Serif fonts acceptable here.</td></tr>
+        <tr><td class="py-2.5 pr-4 font-medium">Wall signs</td><td class="py-2.5 pr-4">50-100mm</td><td class="py-2.5 text-xs text-surface-500">Large text for viewing distance. Multiple pieces may be needed for long words.</td></tr>
+        <tr><td class="py-2.5 pr-4 font-medium">Stamps (reversed)</td><td class="py-2.5 pr-4">10-20mm</td><td class="py-2.5 text-xs text-surface-500">Use the invert toggle to create a negative impression for stamping. Small text needs resin printing.</td></tr>
+      </tbody></table></div>
+    </section>
+
+    <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16 max-w-3xl">
+      <h2 class="text-xl font-semibold mb-6 text-surface-900 dark:text-surface-100">Text-to-STL vs SVG Text: When to Use Each</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="p-4 rounded-tool border border-surface-200 dark:border-surface-800">
+          <h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">Use Text-to-STL When:</h3>
+          <ul class="text-xs text-surface-500 space-y-1.5 list-disc pl-4">
+            <li>You want instant results &mdash; type and download</li>
+            <li>You are making simple signs, keychains, or labels</li>
+            <li>You need short text (1-8 characters)</li>
+            <li>You are using bold sans-serif fonts</li>
+            <li>Precision is less critical than speed</li>
+          </ul>
+        </div>
+        <div class="p-4 rounded-tool border border-surface-200 dark:border-surface-800">
+          <h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">Use SVG to STL When:</h3>
+          <ul class="text-xs text-surface-500 space-y-1.5 list-disc pl-4">
+            <li>You need pixel-perfect letter edges</li>
+            <li>You are using decorative or serif fonts</li>
+            <li>You need multi-line text or paragraphs</li>
+            <li>You want exact control over kerning and spacing</li>
+            <li>Your text is part of a larger design with graphics</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    
+
+    <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16 max-w-3xl">
+      <h2 class="text-xl font-semibold mb-6 text-surface-900 dark:text-surface-100">Font Printability: Real-World Test Results</h2>
+      <p class="text-sm text-surface-500 leading-relaxed mb-6">We tested common fonts at 20mm character height on a standard 0.4mm nozzle FDM printer. Here is what survived printing and handling.</p>
+      <div class="overflow-x-auto"><table class="w-full text-sm border-collapse"><thead><tr class="border-b border-surface-200 dark:border-surface-700"><th class="text-left py-3 pr-4 font-medium">Font</th><th class="text-left py-3 pr-4 font-medium">Printability</th><th class="text-left py-3 font-medium">Notes</th></tr></thead><tbody class="divide-y divide-surface-100 dark:divide-surface-800">
+        <tr><td class="py-2.5 pr-4 font-medium">Arial Bold</td><td class="py-2.5 pr-4"><span class="text-green-600 dark:text-green-400 text-xs font-medium">Excellent</span></td><td class="py-2.5 text-xs text-surface-500">The gold standard. Uniform stroke width, no thin sections. Every character prints reliably.</td></tr>
+        <tr><td class="py-2.5 pr-4 font-medium">Helvetica Bold</td><td class="py-2.5 pr-4"><span class="text-green-600 dark:text-green-400 text-xs font-medium">Excellent</span></td><td class="py-2.5 text-xs text-surface-500">Nearly identical to Arial Bold. Slightly tighter letter spacing may cause merging on small prints.</td></tr>
+        <tr><td class="py-2.5 pr-4 font-medium">Impact</td><td class="py-2.5 pr-4"><span class="text-green-600 dark:text-green-400 text-xs font-medium">Excellent</span></td><td class="py-2.5 text-xs text-surface-500">Very thick strokes. Best for keychains and small items. Letters are chunky and durable.</td></tr>
+        <tr><td class="py-2.5 pr-4 font-medium">Arial Regular</td><td class="py-2.5 pr-4"><span class="text-amber-600 dark:text-amber-400 text-xs font-medium">Good</span></td><td class="py-2.5 text-xs text-surface-500">Works at 20mm+. Below 15mm, thin strokes on "i", "l", "t" may snap. Bold weight is safer.</td></tr>
+        <tr><td class="py-2.5 pr-4 font-medium">Times New Roman Bold</td><td class="py-2.5 pr-4"><span class="text-amber-600 dark:text-amber-400 text-xs font-medium">Good</span></td><td class="py-2.5 text-xs text-surface-500">Serifs print well at 25mm+. Below 20mm, serifs become fragile nubs. Use for large display text.</td></tr>
+        <tr><td class="py-2.5 pr-4 font-medium">Courier New Bold</td><td class="py-2.5 pr-4"><span class="text-green-600 dark:text-green-400 text-xs font-medium">Excellent</span></td><td class="py-2.5 text-xs text-surface-500">Monospaced, uniform width. Every character has the same footprint. Great for technical labels.</td></tr>
+        <tr><td class="py-2.5 pr-4 font-medium">Georgia Bold</td><td class="py-2.5 pr-4"><span class="text-amber-600 dark:text-amber-400 text-xs font-medium">Good</span></td><td class="py-2.5 text-xs text-surface-500">Elegant serifs. Similar to Times New Roman. Slightly thicker serifs print better at smaller sizes.</td></tr>
+        <tr><td class="py-2.5 pr-4 font-medium">Brush Script MT</td><td class="py-2.5 pr-4"><span class="text-red-600 dark:text-red-400 text-xs font-medium">Poor</span></td><td class="py-2.5 text-xs text-surface-500">Extreme thin-to-thick variation. Connecting strokes are hairline thin. Fails FDM printing. Use SVG.</td></tr>
+      </tbody></table></div>
+    </section>
+
+    <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16 max-w-3xl">
+      <h2 class="text-xl font-semibold mb-6 text-surface-900 dark:text-surface-100">Problem Characters: Letters That Break</h2>
+      <p class="text-sm text-surface-500 leading-relaxed mb-6">Some letters are structurally challenging for 3D printing regardless of font. Here is how to handle them.</p>
+      <div class="space-y-4">
+        <div class="p-4 rounded-tool border border-surface-200 dark:border-surface-800"><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">Lowercase "i" and "j" — The Dot Problem</h3><p class="text-xs text-surface-500 leading-relaxed">The dot above these letters is a tiny isolated island that may not adhere to the print bed. At small sizes, it can break off during handling. <strong>Solutions:</strong> (1) Use a bold font where the dot is larger. (2) Add a thin connection bridge from the dot to the stem in your design tool. (3) Print the text on its side so the dot prints as part of the continuous layer. (4) Accept that the dot may fail and glue it back on afterward.</p></div>
+        <div class="p-4 rounded-tool border border-surface-200 dark:border-surface-800"><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">Uppercase "A", "B", "D", "O", "P", "Q", "R" — Internal Holes</h3><p class="text-xs text-surface-500 leading-relaxed">Letters with enclosed spaces (counters) create floating islands above the base plate. The slicer needs to bridge or support these areas. <strong>Solutions:</strong> (1) Print with the text face-down on the bed &mdash; the counters print as holes in the first layer. (2) Add a thin break-away support inside the counter. (3) Design the text as an outline rather than a solid extrusion. (4) For large signs, print face-up and let the slicer handle the bridging.</p></div>
+        <div class="p-4 rounded-tool border border-surface-200 dark:border-surface-800"><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">Lowercase "a", "e", "g" — Tiny Counters</h3><p class="text-xs text-surface-500 leading-relaxed">These have very small internal spaces that may close up during printing. At 10mm character height, the hole in an "a" is about 2-3mm wide &mdash; just a few nozzle widths. <strong>Solutions:</strong> (1) Choose a font with large, open counters (Arial, not Times). (2) Increase character size. (3) Switch to SVG extrusion for better control over stroke and counter size.</p></div>
+      </div>
+    </section>
+
+    <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16 max-w-3xl">
+      <h2 class="text-xl font-semibold mb-6 text-surface-900 dark:text-surface-100">Text Sizing Formula</h2>
+      <p class="text-sm text-surface-500 leading-relaxed mb-6">Use this formula to estimate the minimum character height for reliable printing with a 0.4mm nozzle: <strong>Minimum height (mm) = 2.5 &times; (nozzle size in mm) &times; (stroke scale factor)</strong>. Stroke scale factor: Bold fonts = 1.0, Regular fonts = 1.5, Light fonts = 2.5.</p>
+      <div class="space-y-3">
+        <div class="p-3 rounded-tool border border-surface-200 dark:border-surface-800"><p class="text-xs text-surface-500"><strong>Example 1:</strong> Arial Bold with 0.4mm nozzle: 2.5 &times; 0.4 &times; 1.0 = 1.0mm minimum. But this is theoretical &mdash; in practice, 10mm is a more realistic minimum for readability. The formula gives the absolute smallest printable stroke, not the recommended size.</p></div>
+        <div class="p-3 rounded-tool border border-surface-200 dark:border-surface-800"><p class="text-xs text-surface-500"><strong>Example 2:</strong> Times New Roman Regular with 0.4mm nozzle: 2.5 &times; 0.4 &times; 1.5 = 1.5mm minimum. The serifs need 50% more size to print cleanly. Practical minimum: 20mm character height for good serif definition.</p></div>
+        <div class="p-3 rounded-tool border border-surface-200 dark:border-surface-800"><p class="text-xs text-surface-500"><strong>Resin printer note:</strong> With a 0.05mm pixel size, the minimum drops to ~0.13mm for bold fonts. This means 3mm character height is possible with resin printing &mdash; suitable for jewelry and miniature text the FDM cannot touch.</p></div>
+      </div>
+    </section>
+<section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16 max-w-3xl mb-8">
+      <div class="text-center">
+        <p class="text-sm text-surface-500 mb-4">For sharp text with exact font control, SVG extrusion produces superior results.</p>
+        <div class="flex flex-wrap gap-2 justify-center">
+          <a href="/svg-to-stl" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400 hover:text-accent-600 text-sm transition-colors">SVG to STL (vector-perfect text)</a>
+          <a href="/cookie-cutter" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400 hover:text-accent-600 text-sm transition-colors">Cookie Cutter Maker</a>
+        </div>
+      </div>
+    </section>
+  </div>
+</BaseLayout>

@@ -1,0 +1,138 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import ConverterTool from "../components/ConverterTool";
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: "PNG to STL Converter",
+  applicationCategory: "Multimedia",
+  operatingSystem: "Web",
+  offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+  description: "Convert PNG images to STL with lossless quality. Learn how alpha transparency creates clean cutout shapes, which bit depth to use, and the complete design asset to 3D print workflow.",
+};
+
+const keywords = "png to stl, convert png to stl, png to stl converter, png to 3d model, png transparency stl, lossless stl, free png to stl";
+---
+
+<BaseLayout
+  title="PNG to STL Converter — Lossless Transparency to 3D"
+  description="Convert PNG to STL with zero quality loss. Use transparency for clean cutouts, choose bit depth, and go from design asset to 3D print. Free browser tool."
+  canonical="https://image-to-stl.com/png-to-stl"
+  schema={schema}
+  keywords={keywords}
+>
+  <div class="max-w-[1400px] mx-auto px-4 sm:px-6 py-8 sm:py-12">
+
+    <section class="mb-10 max-w-3xl">
+      <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-surface-900 dark:text-surface-100 leading-tight">PNG to STL &mdash; The Professional&apos;s Format for 3D Conversion</h1>
+      <p class="mt-3 text-surface-500 text-sm sm:text-base leading-relaxed">JPEG throws away data to save space. PNG preserves every single pixel exactly. When image quality directly determines the quality of your 3D print, you want lossless. But PNG offers more than just lossless compression &mdash; its alpha transparency channel enables cutout shapes impossible with JPEG, and its flexible bit depth lets you optimize for detail versus file size. If you are converting logos, icons, UI elements, or any image with sharp edges and transparency, PNG is not just better than JPEG &mdash; it is the only correct choice.</p>
+    </section>
+
+    <ConverterTool client:only="react" />
+
+    <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16 max-w-3xl">
+      <h2 class="text-xl font-semibold mb-6 text-surface-900 dark:text-surface-100">PNG Transparency: The Killer Feature for STL Conversion</h2>
+      <p class="text-sm text-surface-500 leading-relaxed mb-6">JPEG cannot store transparency. Every JPEG is a solid rectangle, background included. PNG&apos;s alpha channel changes everything for 3D conversion.</p>
+
+      <div class="space-y-5">
+        <div class="p-5 rounded-tool border border-accent-200 dark:border-accent-800 bg-accent-50/50 dark:bg-accent-900/10">
+          <h3 class="font-semibold text-surface-900 dark:text-surface-100 text-sm mb-2">How Alpha Maps to 3D Height</h3>
+          <p class="text-xs text-surface-500 leading-relaxed">Our converter reads the alpha channel alongside the RGB channels. Fully transparent pixels (alpha = 0) map to zero height regardless of their RGB values. Fully opaque pixels map normally based on brightness. Partially transparent pixels (like soft edges or drop shadows) produce intermediate heights &mdash; creating a natural bevel effect along the edges of your subject. <strong>This means a PNG logo with a transparent background automatically becomes a standalone raised object with clean edges &mdash; no manual cropping or background removal needed.</strong></p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="p-4 rounded-tool border border-surface-200 dark:border-surface-800">
+            <h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">Soft Transparency = Natural Bevels</h3>
+            <p class="text-xs text-surface-500 leading-relaxed">If your PNG has soft edges (anti-aliased or feathered), the partial transparency creates a smooth ramp from zero height to full height. This produces beautiful beveled edges on your 3D model without any extra work. Use this intentionally: export logos with 2-3px feathering for professional-looking chamfered edges on the 3D print.</p>
+          </div>
+          <div class="p-4 rounded-tool border border-surface-200 dark:border-surface-800">
+            <h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">Hard Transparency = Vertical Walls</h3>
+            <p class="text-xs text-surface-500 leading-relaxed">Binary transparency (completely transparent or completely opaque, no in-between) creates vertical walls at the edge of your subject. This is ideal for cookie cutters, stamps, and any application where you need a clean 90-degree edge. Export your PNG with "hard" or "aliased" edges if this is your goal.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16 max-w-3xl">
+      <h2 class="text-xl font-semibold mb-6 text-surface-900 dark:text-surface-100">Choosing the Right PNG Bit Depth for STL Conversion</h2>
+      <p class="text-sm text-surface-500 leading-relaxed mb-6">Not all PNGs are created equal. The bit depth determines how many brightness levels are available for height mapping.</p>
+
+      <div class="overflow-x-auto"><table class="w-full text-sm border-collapse"><thead><tr class="border-b border-surface-200 dark:border-surface-700"><th class="text-left py-3 pr-4 font-medium">Format</th><th class="text-left py-3 pr-4 font-medium">Brightness Levels</th><th class="text-left py-3 pr-4 font-medium">Best Use Case</th><th class="text-left py-3 font-medium">Notes</th></tr></thead><tbody class="divide-y divide-surface-100 dark:divide-surface-800">
+        <tr><td class="py-2.5 pr-4 font-medium text-surface-900 dark:text-surface-100">8-bit Grayscale</td><td class="py-2.5 pr-4 text-surface-500">256 levels</td><td class="py-2.5 pr-4 text-surface-500">Photos, reliefs, general use</td><td class="py-2.5 text-surface-500">Most common. 256 levels is more than enough for FDM printing (0.2mm layer height). One shade maps to ~0.02mm height at 5mm scale.</td></tr>
+        <tr><td class="py-2.5 pr-4 font-medium text-surface-900 dark:text-surface-100">8-bit RGBA</td><td class="py-2.5 pr-4 text-surface-500">256 levels + alpha</td><td class="py-2.5 pr-4 text-surface-500">Logos, icons, UI with transparency</td><td class="py-2.5 text-surface-500">The standard for transparent design assets. Combine with soft alpha edges for automatic bevel effects.</td></tr>
+        <tr><td class="py-2.5 pr-4 font-medium text-surface-900 dark:text-surface-100">16-bit Grayscale</td><td class="py-2.5 pr-4 text-surface-500">65,536 levels</td><td class="py-2.5 pr-4 text-surface-500">Scientific data, precise heightmaps, terrain</td><td class="py-2.5 text-surface-500">Overkill for most users. The extra precision is not visible on FDM prints. Useful only for resin prints at 0.01mm layer height or for archival data.</td></tr>
+        <tr><td class="py-2.5 pr-4 font-medium text-surface-900 dark:text-surface-100">24-bit RGB</td><td class="py-2.5 pr-4 text-surface-500">~256 perceived levels</td><td class="py-2.5 pr-4 text-surface-500">Color photos, screenshots, web images</td><td class="py-2.5 text-surface-500">Converted to grayscale using luminance formula. Color accuracy is lost but brightness relationships are preserved.</td></tr>
+      </tbody></table></div>
+    </section>
+
+    <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16 max-w-3xl">
+      <h2 class="text-xl font-semibold mb-6 text-surface-900 dark:text-surface-100">The Design Asset to 3D Print Pipeline</h2>
+      <p class="text-sm text-surface-500 leading-relaxed mb-6">Most PNG-to-STL conversions come from design tools &mdash; Illustrator, Figma, Photoshop, Canva. Here is how to export correctly from each.</p>
+
+      <div class="space-y-4">
+        <div class="p-4 rounded-tool border border-surface-200 dark:border-surface-800">
+          <h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">Adobe Illustrator / Photoshop</h3>
+          <p class="text-xs text-surface-500 leading-relaxed"><strong>Export:</strong> File → Export → Export As → PNG. <strong>Critical settings:</strong> Check "Transparency" (this is the whole point of using PNG). Resolution: 300 PPI minimum. Anti-aliasing: Art Optimized for smooth edges (creates natural bevels) or None for hard edges (creates vertical walls). <strong>Do not:</strong> use "Save for Web (Legacy)" &mdash; it may convert to 8-bit with reduced color, introducing banding in the heightmap.</p>
+        </div>
+        <div class="p-4 rounded-tool border border-surface-200 dark:border-surface-800">
+          <h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">Figma</h3>
+          <p class="text-xs text-surface-500 leading-relaxed">Select your frame or object. Export panel: Format = PNG, check "Transparent background" if needed. <strong>Scale:</strong> 2x or 3x to export at higher resolution. Figma exports at screen resolution by default (72 PPI equivalent), which is too low for detailed heightmaps. A 2x export of a 100px icon gives you 200px to work with. <strong>Tip:</strong> Group your design elements and export the group as a single PNG rather than exporting individual pieces.</p>
+        </div>
+        <div class="p-4 rounded-tool border border-surface-200 dark:border-surface-800">
+          <h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">Canva / Other Web Tools</h3>
+          <p class="text-xs text-surface-500 leading-relaxed">Download → PNG, check "Transparent background." <strong>Limitation:</strong> Web-based design tools often export at fixed resolutions. For best results, work at the largest canvas size the tool allows. A 2000x2000px canvas exported as PNG will convert to STL much better than a 500x500px canvas. If transparency export is not available, use a solid contrasting background color and remove it later, or switch to <a href="/svg-to-stl" class="text-accent-500 hover:underline">SVG to STL</a> which supports vector export directly.</p>
+        </div>
+      </div>
+    </section>
+
+    
+
+    <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16 max-w-3xl">
+      <h2 class="text-xl font-semibold mb-6 text-surface-900 dark:text-surface-100">Color Profiles: sRGB vs Adobe RGB vs P3</h2>
+      <p class="text-sm text-surface-500 leading-relaxed mb-6">The color space of your PNG affects how colors convert to grayscale brightness values &mdash; and therefore the heights in your STL.</p>
+      <div class="space-y-4">
+        <div class="p-4 rounded-tool border border-surface-200 dark:border-surface-800"><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">sRGB (Standard) — The Safe Default</h3><p class="text-xs text-surface-500 leading-relaxed">All web browsers and most design tools use sRGB. If you are unsure what color profile your PNG uses, it is almost certainly sRGB. <strong>This is the recommended profile for STL conversion.</strong> Our tool reads the PNG pixel data directly and does not perform color management, so the conversion is profile-agnostic &mdash; but the visual preview on your screen may not match the heightmap if your monitor uses a different profile. Export your PNG with the sRGB profile embedded for the most predictable results.</p></div>
+        <div class="p-4 rounded-tool border border-surface-200 dark:border-surface-800"><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">Adobe RGB and DCI-P3 — Wider Gamut, Potential Confusion</h3><p class="text-xs text-surface-500 leading-relaxed">These profiles cover more colors than sRGB. A bright red in Adobe RGB may be more saturated than the same RGB values in sRGB. <strong>Implication for heightmaps:</strong> the perceived brightness of colors differs between profiles. A green that looks bright in Adobe RGB may convert to a surprisingly dark gray in the heightmap because the underlying RGB values are lower than expected. <strong>Recommendation:</strong> convert wide-gamut PNGs to sRGB before uploading. The conversion is lossless for colors that exist in both spaces.</p></div>
+        <div class="p-4 rounded-tool border border-surface-200 dark:border-surface-800"><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">Grayscale and Gamma</h3><p class="text-xs text-surface-500 leading-relaxed">A grayscale PNG stores only brightness values with no color information. However, gamma encoding (typically 2.2) means the stored values are not linear. Middle gray (50% perceived brightness) is stored as approximately 187 (not 128) in an 8-bit PNG. <strong>Our heightmap algorithm accounts for gamma encoding</strong> and linearizes the values before mapping to height, so the relief accurately reflects perceived brightness. If you create custom grayscale heightmaps in external software, save them as <strong>linear (gamma 1.0)</strong> to bypass this conversion and get direct 1:1 value-to-height mapping.</p></div>
+      </div>
+    </section>
+
+    <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16 max-w-3xl">
+      <h2 class="text-xl font-semibold mb-6 text-surface-900 dark:text-surface-100">Resolution Math: How Many Pixels Do You Need?</h2>
+      <p class="text-sm text-surface-500 leading-relaxed mb-6">The relationship between PNG resolution, print size, and visible detail follows a simple formula.</p>
+      <div class="space-y-4">
+        <div class="p-4 rounded-tool border border-surface-200 dark:border-surface-800"><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">The Key Numbers</h3><p class="text-xs text-surface-500 leading-relaxed">A standard 0.4mm nozzle FDM printer lays down lines ~0.4mm wide. The smallest detail it can reproduce in the XY plane is about 0.4mm. Your image needs at least one pixel per 0.4mm of print width for the heightmap to not be the limiting factor. <strong>Formula:</strong> Pixels needed = (print width in mm) / 0.4. For a 100mm-wide print, you need at least 250 pixels. A 512px source image supports prints up to 200mm wide before the pixel grid becomes visible. For a 50mm keychain, 128px is sufficient. <strong>For resin printers</strong> (0.05mm resolution), you need 20x more pixels: a 100mm print at 0.05mm resolution needs 2000 pixels &mdash; our 512px processing limit becomes the bottleneck. For high-resolution resin prints, use an external tool that supports higher pixel counts.</p></div>
+      </div>
+    </section>
+
+    <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16 max-w-3xl">
+      <h2 class="text-xl font-semibold mb-6 text-surface-900 dark:text-surface-100">Advanced Transparency Techniques</h2>
+      <div class="space-y-4">
+        <div class="p-4 rounded-tool border border-surface-200 dark:border-surface-800"><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">Gradient Transparency for Contoured Bases</h3><p class="text-xs text-surface-500 leading-relaxed">Instead of a binary transparent/opaque edge, create a radial gradient from opaque (center) to transparent (edge). This produces a dome-like base that rises smoothly from the print bed to your subject. <strong>How to create:</strong> In Photoshop or GIMP, add a layer mask to your subject layer. Apply a radial gradient from white (opaque, center) to black (transparent, edge). Export as PNG with transparency. The gradient creates a smooth height ramp in the STL &mdash; no sharp base edge.</p></div>
+        <div class="p-4 rounded-tool border border-surface-200 dark:border-surface-800"><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">Multi-Object Transparency for Independent Heights</h3><p class="text-xs text-surface-500 leading-relaxed">Place multiple objects in one PNG at different opacity levels. A fully opaque object = full height. A 50% opaque object = half height. A 25% opaque object = quarter height. <strong>This gives you independent height control for each element in a single conversion.</strong> Create each object on its own layer, set the layer opacity, and export as a single PNG. The alpha values translate directly to height levels. This technique lets you design multi-level reliefs in any graphics software.</p></div>
+      </div>
+    </section>
+<section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16 max-w-3xl" id="faq">
+      <h2 class="text-xl font-semibold mb-6 text-surface-900 dark:text-surface-100">PNG to STL Questions</h2>
+      <dl class="space-y-5">
+        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">When should I use PNG instead of JPG for STL conversion?</dt><dd class="text-sm text-surface-500 leading-relaxed"><strong>Use PNG when:</strong> your image has transparency, sharp edges (logos, text, icons), you plan to edit and re-save, or you need the absolute best quality. <strong>JPG is acceptable when:</strong> you are converting a photo directly from your camera, the image has no transparency, and quality-90+ JPEG compression is acceptable. <strong>Rule of thumb:</strong> if you created it in a design tool, export as PNG. If you photographed it, the original JPG is fine.</dd></div>
+        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">What happens if my PNG has a white background instead of transparency?</dt><dd class="text-sm text-surface-500 leading-relaxed">A solid white background (RGB 255,255,255) maps to maximum height in the heightmap. This means your subject will be at the same height level as the background &mdash; producing a rectangular block instead of a cutout shape. <strong>Always remove the background and export with transparency</strong> if you want the subject to stand alone. If your PNG must have a background, use pure black (height = 0) to make the subject raised above it.</dd></div>
+        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">Does PNG compression level affect STL quality?</dt><dd class="text-sm text-surface-500 leading-relaxed">No. PNG compression is completely lossless regardless of the compression level. Level 0 (no compression) and level 9 (maximum compression) produce identical pixel data &mdash; they just take different amounts of time to compress and decompress. The STL output will be identical. Choose whatever compression level is convenient; the conversion quality does not change.</dd></div>
+        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">Can I use a PNG with a drop shadow or glow effect?</dt><dd class="text-sm text-surface-500 leading-relaxed">Yes, but be aware that shadows and glows in the PNG image will become physical height variations in the STL. A soft drop shadow will produce a sloping surface around your subject. This can look great (like a natural base) or terrible (like a messy blob) depending on your intent. <strong>For clean extrusions, disable all effects before export.</strong> For artistic reliefs, effects can add interesting depth. The transparency workflow described above applies here too.</dd></div>
+        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">My transparent PNG produces a flat disc instead of a raised shape. Why?</dt><dd class="text-sm text-surface-500 leading-relaxed">This usually happens when the subject in your PNG is very light (near white) and the transparent area maps to zero height while the light subject maps to maximum height &mdash; but the brightness difference is too small to notice. <strong>Fix:</strong> increase the height scale, or convert the subject to a darker color before export. A mid-gray subject on a transparent background will produce a much more visible relief than a white subject on transparency.</dd></div>
+      </dl>
+    </section>
+
+    <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16 max-w-3xl mb-8">
+      <div class="text-center">
+        <p class="text-sm text-surface-500 mb-4">PNG is ideal for design assets. For vector graphics, SVG extrusion produces even sharper results. For photos, JPG is the native format.</p>
+        <div class="flex flex-wrap gap-2 justify-center">
+          <a href="/svg-to-stl" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400 hover:text-accent-600 text-sm transition-colors">SVG to STL (true vector extrusion)</a>
+          <a href="/jpg-to-stl" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400 hover:text-accent-600 text-sm transition-colors">JPG to STL (photo workflow)</a>
+          <a href="/cookie-cutter" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400 hover:text-accent-600 text-sm transition-colors">Cookie Cutter Maker</a>
+        </div>
+      </div>
+    </section>
+  </div>
+</BaseLayout>

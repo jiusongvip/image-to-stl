@@ -1,0 +1,94 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const orgSchema = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "Image to STL Converter",
+  url: "https://image-to-stl.com",
+  description: "Free browser-based tools to convert images to STL 3D models for 3D printing. No uploads, no registration.",
+  email: "hello@image-to-stl.com",
+  foundingDate: "2025",
+};
+---
+
+<BaseLayout
+  title="About Image to STL Converter — Our Story"
+  description="Learn about the team behind the free image to STL converter. Our mission: make 3D printing accessible with browser-based tools that respect your privacy."
+  canonical="https://image-to-stl.com/about"
+  schema={orgSchema}
+  breadcrumbs={[
+    { name: "About", url: "https://image-to-stl.com/about" }
+  ]}
+>
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 py-12">
+    <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-surface-900 dark:text-surface-100 mb-2">About Image to STL Converter</h1>
+    <p class="text-sm text-surface-500 mb-10 leading-relaxed">
+      We build free, privacy-first tools for the 3D printing community. No uploads, no accounts, no fees — just powerful browser-based converters that turn your images into printable 3D models.
+    </p>
+
+    <section class="mb-12">
+      <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-100 mb-3">Our Mission</h2>
+      <p class="text-sm text-surface-500 leading-relaxed mb-4">
+        The 3D printing world has a tool problem. Most image-to-STL converters either require uploading your files to unknown servers, charge subscription fees, or expect you to learn complex CAD software. We think that is wrong.
+      </p>
+      <p class="text-sm text-surface-500 leading-relaxed mb-4">
+        Our mission is simple: make 3D printing accessible to everyone without compromising privacy. Every conversion runs entirely in your browser using JavaScript and WebGL. Your images never leave your device. You do not need an account. You do not need to pay. And you do not need to learn Blender.
+      </p>
+      <p class="text-sm text-surface-500 leading-relaxed">
+        We believe that if you can take a photo, you should be able to turn it into a 3D print. That is what drives every feature we build.
+      </p>
+    </section>
+
+    <section class="mb-12">
+      <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-100 mb-3">Who We Are</h2>
+      <p class="text-sm text-surface-500 leading-relaxed mb-4">
+        We are a small team of 3D printing enthusiasts and software engineers. We have spent years in the maker community — building printers from kits, debugging failed prints, and exploring every corner of 3D printing technology. The tools on this site are built from that experience.
+      </p>
+      <p class="text-sm text-surface-500 leading-relaxed">
+        This site is our answer. A tool built for makers, by makers.
+      </p>
+    </section>
+
+    <section class="mb-12">
+      <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-100 mb-3">Our Approach</h2>
+      <div class="space-y-4">
+        <div class="p-4 rounded-tool border border-surface-200 dark:border-surface-800">
+          <h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-1">100% Browser-Based Processing</h3>
+          <p class="text-xs text-surface-500 leading-relaxed">Our tools run entirely in your browser using JavaScript, Canvas API, and WebGL. No server ever sees your files.</p>
+        </div>
+        <div class="p-4 rounded-tool border border-surface-200 dark:border-surface-800">
+          <h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-1">No Artificial Limits</h3>
+          <p class="text-xs text-surface-500 leading-relaxed">No daily conversion caps, no file size limits, no queues, no pro plans. The only limits are what your hardware can handle.</p>
+        </div>
+        <div class="p-4 rounded-tool border border-surface-200 dark:border-surface-800">
+          <h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-1">Technical Depth Over Marketing Fluff</h3>
+          <p class="text-xs text-surface-500 leading-relaxed">Our guides explain JPEG compression artifacts, give printer-specific settings, and help you understand conversion modes — so you can make informed choices.</p>
+        </div>
+        <div class="p-4 rounded-tool border border-surface-200 dark:border-surface-800">
+          <h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-1">Privacy by Default</h3>
+          <p class="text-xs text-surface-500 leading-relaxed">No analytics, no cookies, no tracking, no CDN logs. We designed the system so we never know who you are or what you convert.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="mb-12">
+      <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-100 mb-3">Contact Us</h2>
+      <p class="text-sm text-surface-500 leading-relaxed mb-4">
+        Have a question, found a bug, or want to suggest a feature? We would love to hear from you.
+      </p>
+      <div class="p-5 rounded-tool border border-surface-200 dark:border-surface-800 space-y-3">
+        <div class="flex items-center gap-3">
+          <svg class="w-5 h-5 text-surface-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          <span class="text-sm text-surface-600 dark:text-surface-400">hello@image-to-stl.com</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="mt-10 flex flex-wrap gap-2">
+      <a href="/" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-accent-600 hover:bg-accent-700 text-white text-sm font-medium transition-colors">Try the Converter</a>
+      <a href="/privacy" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400 hover:text-accent-600 text-sm font-medium transition-colors">Privacy Policy</a>
+      <a href="/terms" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400 hover:text-accent-600 text-sm font-medium transition-colors">Terms of Service</a>
+    </div>
+  </div>
+</BaseLayout>

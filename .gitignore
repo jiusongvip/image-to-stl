@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.astro/
+public/images/
+*-audit/
+*.log
+.DS_Store

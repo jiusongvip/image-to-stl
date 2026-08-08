@@ -1,0 +1,109 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import LithophaneMaker from "../components/LithophaneMaker";
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: "Image to Lithophane Maker",
+  applicationCategory: "Multimedia",
+  operatingSystem: "Web",
+  offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+  description: "Convert your photos into lithophane STL files for 3D printing. Create beautiful backlit light panels. Supports flat, curved, and dome shapes.",
+};
+
+const keywords = "image to lithophane, lithophane maker, photo to lithophane, lithophane stl, lithophane generator, 3d printed lithophane, lithophane converter";
+---
+
+<BaseLayout title="Lithophane Maker — Turn Photos into Backlit 3D Art" description="Convert photos into lithophane STL files. Create backlit 3D panels with flat, curved, or dome shapes. White PLA printing guide. Free browser tool." canonical="https://image-to-stl.com/lithophane-maker" schema={schema} keywords={keywords}>
+  <div class="max-w-[1400px] mx-auto px-4 sm:px-6 py-8 sm:py-12">
+    <section class="mb-10"><div class="max-w-3xl">
+      <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-surface-900 dark:text-surface-100 leading-tight">Image to Lithophane Maker &mdash; Turn Photos into Backlit 3D Art</h1>
+      <p class="mt-3 text-surface-500 text-sm sm:text-base leading-relaxed max-w-[70ch]">A lithophane is a thin 3D-printed object that reveals an image when light shines through it. Thinner sections appear brighter, thicker sections appear darker &mdash; creating stunning, detailed images from your photos. Choose flat, curved, or dome shapes for lamps, night lights, and window displays.</p>
+      <div class="mt-4 flex flex-wrap gap-2">
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-medium"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>Flat, Curved &amp; Dome Shapes</span>
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-accent-100 dark:bg-accent-900/30 text-accent-700 dark:text-accent-400 text-xs font-medium"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2v4"/><path d="M12 18v4"/><path d="M4.93 4.93l2.83 2.83"/><path d="M16.24 16.24l2.83 2.83"/></svg>Real-Time Preview</span>
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-200 dark:bg-surface-800 text-surface-600 dark:text-surface-400 text-xs font-medium"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>Print-Ready STL</span>
+      </div>
+    </div></section>
+
+    <div class="mb-10 max-w-3xl rounded-xl overflow-hidden border border-surface-200 dark:border-surface-800">
+      <img src="/images/lithophane-backlit.webp" alt="3D printed lithophane panel glowing with warm backlight showing a landscape scene" width="1024" height="1024" loading="eager" decoding="async" class="w-full h-auto" />
+    </div>
+
+    <LithophaneMaker client:only="react" />
+
+    <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16">
+      <h2 class="text-xl font-semibold mb-6 text-surface-900 dark:text-surface-100">How Lithophanes Work</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-8">
+        <div class="rounded-tool border border-surface-200 dark:border-surface-800 p-5"><h3 class="font-semibold text-surface-900 dark:text-surface-100 text-sm mb-2">Flat Lithophanes</h3><p class="text-xs text-surface-500 leading-relaxed">Best for hanging on windows, inserting in light boxes, or displaying in picture frames with LED backlighting. Simple and versatile.</p></div>
+        <div class="rounded-tool border border-surface-200 dark:border-surface-800 p-5"><h3 class="font-semibold text-surface-900 dark:text-surface-100 text-sm mb-2">Curved Lithophanes</h3><p class="text-xs text-surface-500 leading-relaxed">Wraps around cylindrical lamps or curved lamp shades for 360-degree viewing. Perfect for table lamps and pendant lights.</p></div>
+        <div class="rounded-tool border border-surface-200 dark:border-surface-800 p-5"><h3 class="font-semibold text-surface-900 dark:text-surface-100 text-sm mb-2">Dome Lithophanes</h3><p class="text-xs text-surface-500 leading-relaxed">Hemispherical dome shape ideal for night lights, ceiling fixtures, or spherical lamps. Creates an immersive viewing experience.</p></div>
+      </div>
+      <p class="text-sm text-surface-500 leading-relaxed max-w-[65ch]">The key principle: light passes through thin areas easily (bright in the final image) and is blocked by thick areas (dark in the image). Our algorithm precisely maps your photo&apos;s brightness values to varying material thickness, creating a perfect inverse of your image that reveals itself when illuminated.</p>
+    </section>
+
+    <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16">
+      <h2 class="text-xl font-semibold mb-6 text-surface-900 dark:text-surface-100">Lithophane Printing Guide</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="flex gap-3 p-4 rounded-tool border border-surface-200 dark:border-surface-800"><span class="w-5 h-5 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center flex-shrink-0 mt-0.5"><svg class="w-3 h-3 text-amber-600 dark:text-amber-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span><div><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-1">Use White or Natural PLA</h3><p class="text-xs text-surface-500 leading-relaxed">White PLA transmits light best for lithophanes. Avoid dark, transparent, or translucent filaments which reduce contrast and image clarity.</p></div></div>
+        <div class="flex gap-3 p-4 rounded-tool border border-surface-200 dark:border-surface-800"><span class="w-5 h-5 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center flex-shrink-0 mt-0.5"><svg class="w-3 h-3 text-amber-600 dark:text-amber-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span><div><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-1">Print at 100% Infill</h3><p class="text-xs text-surface-500 leading-relaxed">Any gaps in infill create visible artifacts when backlit. Solid 100% infill produces the cleanest, most detailed image.</p></div></div>
+        <div class="flex gap-3 p-4 rounded-tool border border-surface-200 dark:border-surface-800"><span class="w-5 h-5 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center flex-shrink-0 mt-0.5"><svg class="w-3 h-3 text-amber-600 dark:text-amber-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span><div><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-1">Print Vertically (On Edge)</h3><p class="text-xs text-surface-500 leading-relaxed">Orienting the lithophane vertically produces the smoothest surface finish and best detail. Add a brim for stability.</p></div></div>
+        <div class="flex gap-3 p-4 rounded-tool border border-surface-200 dark:border-surface-800"><span class="w-5 h-5 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center flex-shrink-0 mt-0.5"><svg class="w-3 h-3 text-amber-600 dark:text-amber-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span><div><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-1">Use Thin Layer Height</h3><p class="text-xs text-surface-500 leading-relaxed">0.12mm or smaller layer height captures more detail. Each additional layer adds image resolution when viewed from the side.</p></div></div>
+        <div class="flex gap-3 p-4 rounded-tool border border-surface-200 dark:border-surface-800"><span class="w-5 h-5 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center flex-shrink-0 mt-0.5"><svg class="w-3 h-3 text-amber-600 dark:text-amber-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span><div><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-1">Choose Photos with Good Contrast</h3><p class="text-xs text-surface-500 leading-relaxed">High-contrast photos with clear detail translate best. Soft gradient images produce subtle lithophanes that need bright backlighting to see clearly.</p></div></div>
+      </div>
+    </section>
+
+    
+
+    <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16 max-w-3xl">
+      <h2 class="text-xl font-semibold mb-6 text-surface-900 dark:text-surface-100">The Complete Lithophane Lighting System Guide</h2>
+      <div class="space-y-4">
+        <div class="p-4 rounded-tool border border-surface-200 dark:border-surface-800"><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">LED Strip vs Single Bulb vs Natural Light</h3><p class="text-xs text-surface-500 leading-relaxed"><strong>LED strip (recommended):</strong> Provides uniform backlighting across the entire lithophane. No hot spots. Place 5-15cm behind the panel. Density: 60 LEDs/meter minimum. A 30cm lithophane needs at least 18 LEDs behind it for even coverage. <strong>Single LED bulb:</strong> Creates a bright hot spot in the center that fades toward the edges. Works for small lithophanes (under 10cm) but larger panels will have visible brightness falloff. <strong>Natural window light:</strong> Works beautifully during the day but is invisible at night. Position the lithophane facing the window. The changing light throughout the day creates a dynamic effect &mdash; the image looks different at dawn, noon, and dusk.</p></div>
+        <div class="p-4 rounded-tool border border-surface-200 dark:border-surface-800"><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">Color Temperature Effects</h3><p class="text-xs text-surface-500 leading-relaxed"><strong>Warm white (2700-3000K):</strong> Soft, natural, flattering. Best for portraits and sentimental photos. Creates a cozy, antique feel. Slightly reduces perceived contrast. <strong>Neutral white (4000-4500K):</strong> Balanced, accurate. Best for landscapes and detailed images. Shows the most detail. <strong>Cool white (6000-6500K):</strong> Clinical, high-contrast. Shows maximum detail but can feel harsh. Best for architectural or technical lithophanes. <strong>RGB LEDs:</strong> Experiment with colors. A blue backlight creates a moonlight effect. Red/orange creates a warm fireplace glow. Green enhances nature photos. Programmable RGB strips let you change the mood on demand.</p></div>
+        <div class="p-4 rounded-tool border border-surface-200 dark:border-surface-800"><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">Light-to-Panel Distance</h3><p class="text-xs text-surface-500 leading-relaxed">The distance between the light source and the lithophane panel is critical. <strong>Too close (&lt;3cm):</strong> The light source is visible as bright spots. Individual LEDs are distinguishable. <strong>Optimal (5-15cm):</strong> Light diffuses evenly. The image is clear and uniform. <strong>Too far (&gt;20cm):</strong> Light is weak and the image appears dim. The panel needs a brighter light source. <strong>Rule of thumb:</strong> distance should be approximately 1x the panel's shortest dimension. A 15cm &times; 20cm panel works best with the light 15cm behind it. Add a diffuser (white acrylic sheet or tracing paper) between the LEDs and the lithophane for the smoothest lighting.</p></div>
+      </div>
+    </section>
+
+    <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16 max-w-3xl">
+      <h2 class="text-xl font-semibold mb-6 text-surface-900 dark:text-surface-100">Lithophane Thickness: The Critical Parameter</h2>
+      <p class="text-sm text-surface-500 leading-relaxed mb-6">The minimum and maximum thickness of a lithophane determine how much light passes through and how detailed the image appears.</p>
+      <div class="space-y-4">
+        <div class="p-4 rounded-tool border border-surface-200 dark:border-surface-800"><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">Minimum Thickness (Brightest Areas)</h3><p class="text-xs text-surface-500 leading-relaxed">The thinnest part of the lithophane corresponds to the brightest parts of your image. <strong>0.6-0.8mm:</strong> Very bright, almost transparent. These areas may be fragile. Good for images with large bright areas (sky, white backgrounds). <strong>0.8-1.2mm:</strong> Standard minimum. Bright enough for good light transmission while maintaining structural integrity. This is the default in our tool. <strong>1.2-1.5mm:</strong> Conservative minimum. The image will appear slightly darker overall. Recommended for lithophanes that will be handled frequently (desk lamps, portable lights).</p></div>
+        <div class="p-4 rounded-tool border border-surface-200 dark:border-surface-800"><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">Maximum Thickness (Darkest Areas)</h3><p class="text-xs text-surface-500 leading-relaxed"><strong>2.5-3.0mm:</strong> Dark but still transmits some light. Good contrast with 0.8mm minimum. <strong>3.0-4.0mm:</strong> Very dark. Creates dramatic contrast. May appear nearly black if the backlight is not bright enough. <strong>4.0mm+:</strong> Essentially opaque with standard LEDs. Only use if you have a very bright light source. <strong>Thickness range = max - min:</strong> A range of 2-3mm produces good contrast. A range under 1.5mm produces a washed-out, low-contrast lithophane. A range over 4mm may have areas that are completely opaque.</p></div>
+        <div class="p-4 rounded-tool border border-surface-200 dark:border-surface-800"><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">Print Time vs Quality Trade-off</h3><p class="text-xs text-surface-500 leading-relaxed">Layer height affects both print time and image quality. <strong>0.20mm:</strong> Fast (2-3 hours for a 10cm panel). Visible layer lines when backlit. <strong>0.12mm:</strong> Balanced (4-6 hours). Layer lines are subtle. This is the recommended default. <strong>0.08mm:</strong> High quality (8-12 hours). Layer lines nearly invisible. Only worth it for large panels viewed up close. <strong>0.04mm:</strong> Maximum quality (16-24 hours). Requires a well-calibrated printer. Overkill for most purposes; the improvement over 0.08mm is barely visible.</p></div>
+      </div>
+    </section>
+
+    <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16 max-w-3xl">
+      <h2 class="text-xl font-semibold mb-6 text-surface-900 dark:text-surface-100">Multi-Panel and Large Lithophanes</h2>
+      <div class="space-y-4">
+        <div class="p-4 rounded-tool border border-surface-200 dark:border-surface-800"><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">Splitting Large Images Across Multiple Panels</h3><p class="text-xs text-surface-500 leading-relaxed">For images larger than your printer bed: <strong>1.</strong> Split your image into grid sections in a photo editor (e.g., 2x2 for a 20cm image on a 10cm printer). <strong>2.</strong> Convert each section as a separate lithophane with identical settings. <strong>3.</strong> Print all panels and assemble them edge-to-edge in a frame. <strong>4.</strong> Use a diffuser behind the entire assembly to hide the seams. <strong>Tip:</strong> overlap panels by 2-3mm at the seams to prevent light leakage. The seam will be visible up close but invisible from normal viewing distance.</p></div>
+        <div class="p-4 rounded-tool border border-surface-200 dark:border-surface-800"><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">Curved Panoramic Lithophanes</h3><p class="text-xs text-surface-500 leading-relaxed">Use the curved lithophane mode to create 360-degree panoramic displays. <strong>For a complete cylinder:</strong> split a panoramic photo into 4 equal sections, convert each as a 90-degree curved panel, print, and assemble. Place a single LED bulb in the center for uniform lighting in all directions. This creates a rotating display where the viewer walks around to see the full image. The curved geometry naturally diffuses the central light.</p></div>
+      </div>
+    </section>
+<section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16" id="faq">
+      <h2 class="text-xl font-semibold mb-6 text-surface-900 dark:text-surface-100">Lithophane FAQ</h2>
+      <dl class="space-y-6 max-w-3xl">
+        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">What is a lithophane and how does it work?</dt><dd class="text-sm text-surface-500 leading-relaxed">A lithophane is a thin etched or molded artwork that reveals an image when backlit. In 3D printing, varying thickness controls light transmission: thin = bright, thick = dark. The result is a detailed monochrome image visible only when illuminated from behind.</dd></div>
+        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">What filament is best for lithophanes?</dt><dd class="text-sm text-surface-500 leading-relaxed">White PLA is the gold standard. It transmits light evenly and produces the clearest images. Natural PLA also works well. Avoid dark colors, transparent, silk, or glitter filaments which scatter or block light.</dd></div>
+        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">Why should I print lithophanes vertically?</dt><dd class="text-sm text-surface-500 leading-relaxed">Vertical orientation (on the narrow edge) aligns layers parallel to the image plane. This creates smoother surfaces and better light transmission since light passes through layers rather than across them.</dd></div>
+        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">What photos work best for lithophanes?</dt><dd class="text-sm text-surface-500 leading-relaxed">Photos with strong contrast and clear subjects. Portraits, landscapes with distinct features, and images with a good tonal range produce the most striking results. Avoid very dark or washed-out photos.</dd></div>
+      
+        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">What lighting works best for displaying lithophanes?</dt><dd class="text-sm text-surface-500 leading-relaxed">LED strips or bulbs placed 5-15cm behind the lithophane produce the best results. Warm white (2700-3000K) gives a soft, natural look. Cool white (5000-6500K) shows more detail but can feel harsh. Avoid point-source lights that create hot spots.</dd></div>
+        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">Can I paint or color a lithophane?</dt><dd class="text-sm text-surface-500 leading-relaxed">Painting blocks light and ruins the lithophane effect. Instead, add color by placing a colored transparent film behind the lithophane, using colored LEDs, or printing with a colored translucent filament. You can also paint the frame while leaving the lithophane panel unpainted.</dd></div>
+</dl>
+    </section>
+
+    <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16 mb-4">
+      <div class="text-center max-w-xl mx-auto">
+        <h2 class="text-xl font-semibold mb-3 text-surface-900 dark:text-surface-100">Create Your Lithophane Now</h2>
+        <p class="text-sm text-surface-500 mb-6 leading-relaxed">Upload a photo above and create a beautiful 3D printed lithophane. Free, instant, no registration.</p>
+        <div class="flex flex-wrap gap-2 justify-center">
+          <a href="/photo-to-3d" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-accent-600 hover:bg-accent-700 text-white text-sm font-medium transition-colors">Photo to 3D</a>
+          <a href="/heightmap-editor" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-accent-600 hover:bg-accent-700 text-white text-sm font-medium transition-colors">Heightmap Editor</a>
+        </div>
+      </div>
+    </section>
+  </div>
+</BaseLayout>

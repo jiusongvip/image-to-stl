@@ -1,0 +1,118 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import CookieCutter from "../components/CookieCutter";
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: "Cookie Cutter Maker",
+  applicationCategory: "Multimedia",
+  operatingSystem: "Web",
+  offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+  description: "Create custom 3D printable cookie cutters from any image. Learn cutter design principles, dough compatibility guide, and food safety best practices for 3D printed kitchen tools.",
+};
+
+const keywords = "cookie cutter maker, cookie cutter stl, custom cookie cutter, 3d print cookie cutter, cookie cutter generator, image to cookie cutter, food safe 3d print";
+---
+
+<BaseLayout
+  title="Cookie Cutter Maker — Custom 3D Printed Cutters from Images"
+  description="Create custom cookie cutter STL files from any image. Cutter design principles, dough compatibility, and food safety for 3D printed kitchen tools."
+  canonical="https://image-to-stl.com/cookie-cutter"
+  schema={schema}
+  keywords={keywords}
+>
+  <div class="max-w-[1400px] mx-auto px-4 sm:px-6 py-8 sm:py-12">
+
+    <section class="mb-10 max-w-3xl">
+      <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-surface-900 dark:text-surface-100 leading-tight">Cookie Cutter Maker &mdash; From Silhouette to Baked Shape</h1>
+      <p class="mt-3 text-surface-500 text-sm sm:text-base leading-relaxed">A cookie cutter looks simple &mdash; just a shaped wall with a cutting edge. But designing one that cuts cleanly through different dough types, holds its shape through repeated use, and is safe for food contact requires understanding a few key principles. This guide covers cutter geometry, dough compatibility, food safety for 3D printed tools, and the complete design-to-baking workflow.</p>
+    </section>
+
+    <div class="mb-10 max-w-3xl rounded-xl overflow-hidden border border-surface-200 dark:border-surface-800">
+      <img src="/images/cookie-cutter-result.webp" alt="Custom 3D printed cookie cutters in bright colors alongside freshly cut cookies" width="1024" height="1024" loading="eager" decoding="async" class="w-full h-auto" />
+    </div>
+
+    <CookieCutter client:only="react" />
+
+    <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16 max-w-3xl">
+      <h2 class="text-xl font-semibold mb-6 text-surface-900 dark:text-surface-100">Cutter Design Principles: What Makes a Good Cutter</h2>
+      <div class="space-y-5">
+        <div class="p-4 rounded-tool border border-surface-200 dark:border-surface-800">
+          <h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">Wall Thickness: The 1.5mm Sweet Spot</h3>
+          <p class="text-xs text-surface-500 leading-relaxed">The default 1.5mm wall thickness balances three competing needs: <strong>(1) Cutting sharpness:</strong> thinner walls cut more cleanly through dough, making crisp edges. <strong>(2) Structural strength:</strong> thicker walls resist bending and cracking during pressing. <strong>(3) Print reliability:</strong> walls thinner than 1.2mm may fail on some printers. For delicate shapes with thin sections, increase to 2mm. For large simple shapes (hearts, circles over 8cm), 1.2mm works and cuts better. Never go below 1mm &mdash; the wall will buckle under pressing force.</p>
+        </div>
+        <div class="p-4 rounded-tool border border-surface-200 dark:border-surface-800">
+          <h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">Wall Height: Match Your Dough Thickness</h3>
+          <p class="text-xs text-surface-500 leading-relaxed"><strong>Standard sugar cookie dough (rolled to 5-6mm):</strong> 15-20mm wall height. <strong>Thick shortbread or gingerbread (8-10mm):</strong> 25-30mm wall height. <strong>Deep-dish or brownie cutters:</strong> 35mm+. The cutter must be taller than the dough is thick, plus extra height for a comfortable grip. If you press a 15mm cutter into 12mm dough, your knuckles hit the dough before the cutter goes all the way through.</p>
+        </div>
+        <div class="p-4 rounded-tool border border-surface-200 dark:border-surface-800">
+          <h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">The Cutting Edge: Bevel Geometry</h3>
+          <p class="text-xs text-surface-500 leading-relaxed">The bottom edge of the cutter is beveled (angled inward at the bottom, outward at the top). This creates a sharp cutting edge that slices through dough rather than crushing it. The bevel angle is critical: too steep (near vertical) and the cutter crushes dough instead of cutting; too shallow and the edge is fragile. Our default bevel is optimized for standard cookie dough consistency. For very soft doughs (choux, cream cheese), a slightly sharper bevel helps. The Cookie Cutter Maker automatically generates the correct bevel geometry.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16 max-w-3xl">
+      <h2 class="text-xl font-semibold mb-6 text-surface-900 dark:text-surface-100">Food Safety for 3D Printed Cookie Cutters</h2>
+      <p class="text-sm text-surface-500 leading-relaxed mb-6">This is the most common concern with 3D printed kitchen tools. Here is the honest assessment.</p>
+
+      <div class="space-y-4">
+        <div class="p-4 rounded-tool border border-surface-200 dark:border-surface-800">
+          <h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">The Layer Line Problem</h3>
+          <p class="text-xs text-surface-500 leading-relaxed">FDM printing creates microscopic grooves between layers. These grooves can trap moisture, dough residue, and bacteria even after washing. <strong>Standard PLA cookie cutters are generally considered safe for occasional home use with dry/rolled doughs</strong> (sugar cookies, gingerbread), especially if washed thoroughly and air-dried. They are NOT recommended for wet doughs, raw meat, or commercial food production where bacterial contamination risks are higher.</p>
+        </div>
+        <div class="p-4 rounded-tool border border-surface-200 dark:border-surface-800">
+          <h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">Food-Safe Filament Options</h3>
+          <p class="text-xs text-surface-500 leading-relaxed"><strong>Standard PLA:</strong> Made from corn starch, generally recognized as safe. The raw material is food-safe, but additives (colorants, plasticizers) vary by brand. Look for "food-safe" or "FDA-compliant" certified PLA. <strong>PETG:</strong> More chemical-resistant and dishwasher-safe. PETG is used in water bottles and food containers. <strong>TPU:</strong> Flexible, not recommended for food contact due to porous surface. <strong>ABS:</strong> NOT food-safe. Contains styrene. Never use for kitchen tools.</p>
+        </div>
+        <div class="p-4 rounded-tool border border-surface-200 dark:border-surface-800">
+          <h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">Best Practices for Safe Use</h3>
+          <p class="text-xs text-surface-500 leading-relaxed"><strong>Print at 100% infill</strong> to minimize internal voids where bacteria could grow. <strong>Use a dedicated food-safe nozzle</strong> (stainless steel, not brass which may contain lead). <strong>Coat with food-grade epoxy resin</strong> to seal layer lines &mdash; this is the gold standard for repeated use. <strong>Wash with hot water and soap immediately after each use.</strong> Do not soak for extended periods. <strong>Replace cutters regularly</strong> &mdash; 3D printed tools are consumable, not heirloom kitchenware. Print a fresh cutter when the old one shows wear.</p>
+        </div>
+      </div>
+    </section>
+
+    
+
+    <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16 max-w-3xl">
+      <h2 class="text-xl font-semibold mb-6 text-surface-900 dark:text-surface-100">Testing Your Cutter: The First-Print Validation</h2>
+      <p class="text-sm text-surface-500 leading-relaxed mb-6">Before committing to a final print, validate your cutter design with these tests.</p>
+      <div class="space-y-4">
+        <div class="p-4 rounded-tool border border-surface-200 dark:border-surface-800"><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">1. The Print Test</h3><p class="text-xs text-surface-500 leading-relaxed">Print the cutter at draft quality (0.28mm layer height, 10% infill) first. This fast print lets you verify: the shape is correct, the cutter stands upright, the cutting edge is sharp and even, and there are no print defects. A draft print takes 15-30 minutes instead of 1-2 hours for a quality print. <strong>Check:</strong> run your finger along the cutting edge. It should feel smooth with a slight taper toward the bottom, not rough or jagged. A rough edge will tear dough instead of cutting it.</p></div>
+        <div class="p-4 rounded-tool border border-surface-200 dark:border-surface-800"><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">2. The Dough Test</h3><p class="text-xs text-surface-500 leading-relaxed">Make a small batch of your intended dough. Roll it to the thickness you plan to use. Press the cutter firmly and rock it slightly side to side. <strong>Check:</strong> Did it cut cleanly through? Does the dough release easily from the cutter? Is the shape recognizable? Does the dough stick inside the cutter? If dough sticks, dust the cutter with flour before each press, or increase the wall taper. If the cutter flexes, increase wall thickness to 2mm. If the shape is distorted, the cutter wall may be too thin at certain points.</p></div>
+        <div class="p-4 rounded-tool border border-surface-200 dark:border-surface-800"><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">3. The Durability Test</h3><p class="text-xs text-surface-500 leading-relaxed">Press the cutter through dough 20 times. Inspect for: cracks along layer lines (increase infill to 100%), deformation of thin sections (increase wall thickness), and wear on the cutting edge (the bevel should remain sharp). A well-designed PLA cutter should survive 50-100 uses before showing noticeable wear. If it fails after 10 uses, reprint with stronger settings (100% infill, 3+ perimeters, PETG instead of PLA).</p></div>
+      </div>
+    </section>
+
+    <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16 max-w-3xl">
+      <h2 class="text-xl font-semibold mb-6 text-surface-900 dark:text-surface-100">Dough Compatibility Reference</h2>
+      <div class="overflow-x-auto"><table class="w-full text-sm border-collapse"><thead><tr class="border-b border-surface-200 dark:border-surface-700"><th class="text-left py-3 pr-4 font-medium">Dough Type</th><th class="text-left py-3 pr-4 font-medium">Cutter Performance</th><th class="text-left py-3 font-medium">Special Considerations</th></tr></thead><tbody class="divide-y divide-surface-100 dark:divide-surface-800">
+        <tr><td class="py-2.5 pr-4 font-medium">Sugar Cookie (rolled)</td><td class="py-2.5 pr-4"><span class="text-green-600 dark:text-green-400 text-xs font-medium">Excellent</span></td><td class="py-2.5 text-xs text-surface-500">The ideal dough for 3D printed cutters. Firm, non-sticky, holds shape after cutting. Lightly flour the cutter.</td></tr>
+        <tr><td class="py-2.5 pr-4 font-medium">Gingerbread</td><td class="py-2.5 pr-4"><span class="text-green-600 dark:text-green-400 text-xs font-medium">Excellent</span></td><td class="py-2.5 text-xs text-surface-500">Similar to sugar cookie dough. Slightly stickier due to molasses. Flour the cutter generously.</td></tr>
+        <tr><td class="py-2.5 pr-4 font-medium">Shortbread</td><td class="py-2.5 pr-4"><span class="text-amber-600 dark:text-amber-400 text-xs font-medium">Good</span></td><td class="py-2.5 text-xs text-surface-500">Crumbly texture may cause edge roughness. Chill dough thoroughly before cutting. Use a taller cutter.</td></tr>
+        <tr><td class="py-2.5 pr-4 font-medium">Chocolate Chip</td><td class="py-2.5 pr-4"><span class="text-red-600 dark:text-red-400 text-xs font-medium">Poor</span></td><td class="py-2.5 text-xs text-surface-500">Chunks interfere with the cutting edge. Not suitable for shaped cutters. Use a round cutter or drop method.</td></tr>
+        <tr><td class="py-2.5 pr-4 font-medium">Fondant / Gum Paste</td><td class="py-2.5 pr-4"><span class="text-green-600 dark:text-green-400 text-xs font-medium">Excellent</span></td><td class="py-2.5 text-xs text-surface-500">Smooth, pliable, cuts cleanly. Dust with cornstarch, not flour. PLA cutters work perfectly for fondant decorations.</td></tr>
+        <tr><td class="py-2.5 pr-4 font-medium">Play-Doh / Clay</td><td class="py-2.5 pr-4"><span class="text-green-600 dark:text-green-400 text-xs font-medium">Excellent</span></td><td class="py-2.5 text-xs text-surface-500">Non-food use. Any cutter design works. Great for testing cutter designs before committing to food-safe printing.</td></tr>
+      </tbody></table></div>
+    </section>
+<section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16 max-w-3xl" id="faq">
+      <h2 class="text-xl font-semibold mb-6 text-surface-900 dark:text-surface-100">Cookie Cutter Questions</h2>
+      <dl class="space-y-5">
+        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">What images work best for cookie cutters?</dt><dd class="text-sm text-surface-500 leading-relaxed"><strong>Best:</strong> Simple silhouettes with one clear outer contour. Black shapes on white backgrounds. Hearts, stars, animals with simple outlines. <strong>Difficult:</strong> Images with internal holes (letters like A, B, D, O need special handling), very thin sections (antlers, tails, thin legs), and images with complex internal detail. The cutter maker extracts the outermost contour &mdash; internal details of the image are ignored because they would create walls inside the cutter that trap dough.</dd></div>
+        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">How do I make a two-part cutter (outline + detail stamp)?</dt><dd class="text-sm text-surface-500 leading-relaxed">Generate the outline cutter with the Cookie Cutter Maker. For the detail stamp, create a separate design of just the internal details (eyes, texture, pattern) and convert it to a flat relief STL using the <a href="/" class="text-accent-500 hover:underline">Image to STL</a> heightmap mode with a thin extrusion. Print both pieces. First press the outline cutter, then while the dough is still in the cutter, press the stamp into the top to emboss details. Remove the cutter and bake.</dd></div>
+        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">Can I put 3D printed cutters in the dishwasher?</dt><dd class="text-sm text-surface-500 leading-relaxed">Standard PLA cannot survive a dishwasher &mdash; the heat (60-70&deg;C) will warp and soften the plastic. PLA softens around 60&deg;C (its glass transition temperature). PETG can handle dishwasher temperatures but may still warp under sustained heat. <strong>Hand wash only with warm (not hot) water and soap.</strong> If you need dishwasher-safe cutters, use PETG and test one piece first, or coat with a heat-resistant food-grade epoxy that can withstand dishwasher temperatures.</dd></div>
+      </dl>
+    </section>
+
+    <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16 max-w-3xl mb-8">
+      <div class="text-center">
+        <p class="text-sm text-surface-500 mb-4">For text-based cutters or vector designs, try these related tools.</p>
+        <div class="flex flex-wrap gap-2 justify-center">
+          <a href="/text-to-stl" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400 hover:text-accent-600 text-sm transition-colors">Text to STL (letter cutters)</a>
+          <a href="/svg-to-stl" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400 hover:text-accent-600 text-sm transition-colors">SVG to STL (vector outlines)</a>
+        </div>
+      </div>
+    </section>
+  </div>
+</BaseLayout>

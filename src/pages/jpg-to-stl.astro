@@ -1,0 +1,193 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import ConverterTool from "../components/ConverterTool";
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: "JPG to STL Converter",
+  applicationCategory: "Multimedia",
+  operatingSystem: "Web",
+  offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+  description: "Convert JPG images to STL 3D printable files. Learn how JPEG compression affects heightmap quality, optimal camera settings, and workflow from phone photo to 3D print.",
+};
+
+const keywords = "jpg to stl, convert jpg to stl, jpg to stl converter, jpeg to stl, jpg to 3d model, photo to stl, free jpg to stl";
+---
+
+<BaseLayout
+  title="JPG to STL Converter — Phone Photo to 3D Print"
+  description="Convert JPG photos to STL for 3D printing. Learn how JPEG compression affects relief quality, camera settings, and the phone-to-print workflow. Free tool."
+  canonical="https://image-to-stl.com/jpg-to-stl"
+  schema={schema}
+  keywords={keywords}
+>
+  <div class="max-w-[1400px] mx-auto px-4 sm:px-6 py-8 sm:py-12">
+
+    <section class="mb-10 max-w-3xl">
+      <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-surface-900 dark:text-surface-100 leading-tight">JPG to STL &mdash; Turn Everyday Photos into 3D Prints</h1>
+      <p class="mt-3 text-surface-500 text-sm sm:text-base leading-relaxed">Every phone, every camera, every screenshot saves as JPG. It is the world&apos;s most common image format. But converting a compressed JPG to a smooth 3D surface is not as simple as pressing a button &mdash; the compression artifacts baked into every JPEG file directly affect your STL quality. This guide covers everything: how JPEG compression works against you, what camera settings produce the best source images, and the exact workflow from phone photo to finished print.</p>
+    </section>
+
+    <div class="mb-10 max-w-3xl rounded-xl overflow-hidden border border-surface-200 dark:border-surface-800">
+      <img src="/images/hero-workspace.webp" alt="JPG to STL workflow — phone photo on screen next to finished 3D printed relief" width="1792" height="1024" loading="eager" decoding="async" class="w-full h-auto" />
+    </div>
+
+    <ConverterTool client:only="react" />
+
+    <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16 max-w-3xl">
+      <h2 class="text-xl font-semibold mb-6 text-surface-900 dark:text-surface-100">How JPEG Compression Affects Your 3D Model</h2>
+      <p class="text-sm text-surface-500 leading-relaxed mb-6">JPEG is a <strong>lossy</strong> format. Every time you save a JPEG, the algorithm discards visual information it considers "less important" to reduce file size. For viewing photos on a screen, this is fine. For converting pixel brightness to physical 3D height, those discarded details become visible as surface noise.</p>
+
+      <div class="space-y-5">
+        <div class="p-5 rounded-tool border border-surface-200 dark:border-surface-800">
+          <h3 class="font-semibold text-surface-900 dark:text-surface-100 text-sm mb-2">8x8 Pixel Blocks: The Hidden Grid</h3>
+          <p class="text-xs text-surface-500 leading-relaxed">JPEG divides every image into 8x8 pixel blocks and compresses each block independently. At high compression levels (low quality settings), the boundaries between these blocks become visible as a grid pattern. When converted to a heightmap, this grid creates a subtle bumpy texture across your STL surface &mdash; like 3D printing on sandpaper. The smoothness slider can reduce this, but it also blurs actual detail. <strong>The fix: use the highest JPEG quality setting your camera offers.</strong></p>
+        </div>
+
+        <div class="p-5 rounded-tool border border-surface-200 dark:border-surface-800">
+          <h3 class="font-semibold text-surface-900 dark:text-surface-100 text-sm mb-2">Color Subsampling (Chroma 4:2:0)</h3>
+          <p class="text-xs text-surface-500 leading-relaxed">Most JPEGs use chroma subsampling: color information is stored at half or quarter resolution of brightness information. This is why JPEG handles sharp edges in black-and-white text poorly &mdash; the color bleed around edges is actually missing color data being interpolated. For STL conversion, this means <strong>colored edges in logos and text will have a soft transition in the heightmap</strong>, producing rounded rather than sharp 3D edges. For text and logos, PNG or SVG is always better. For photos, the effect is usually invisible.</p>
+        </div>
+
+        <div class="p-5 rounded-tool border border-surface-200 dark:border-surface-800">
+          <h3 class="font-semibold text-surface-900 dark:text-surface-100 text-sm mb-2">Generation Loss: The Multi-Save Problem</h3>
+          <p class="text-xs text-surface-500 leading-relaxed">Every time you open a JPEG, edit it, and re-save as JPEG, you lose more quality. After 3-5 re-saves, compression artifacts compound and become clearly visible. <strong>Never re-save JPEGs multiple times before converting to STL.</strong> If you need to edit, convert to PNG first, do all your edits, and export the final version as a high-quality JPEG or (better) PNG for conversion. Or simply use the original JPEG straight from your camera &mdash; it has the least compression damage.</p>
+        </div>
+
+        <div class="p-5 rounded-tool border border-surface-200 dark:border-surface-800">
+          <h3 class="font-semibold text-surface-900 dark:text-surface-100 text-sm mb-2">JPEG Quality Levels and Their STL Impact</h3>
+          <p class="text-xs text-surface-500 leading-relaxed">JPEG quality is typically measured as a percentage (0-100) or a level (Low/Medium/High). A quality-50 JPEG can be 10x smaller than quality-100, but the heightmap will show visible block artifacts and banding in smooth gradients. For 3D conversion: <strong>quality 90+ is strongly recommended.</strong> Quality 100 is ideal but produces large files. Quality 80 is acceptable for photos. Quality below 70 will produce noticeably degraded STL surfaces. Most phone cameras default to quality 85-95, which is good enough for most uses.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16 max-w-3xl">
+      <h2 class="text-xl font-semibold mb-6 text-surface-900 dark:text-surface-100">The Phone Photo to 3D Print Workflow</h2>
+      <p class="text-sm text-surface-500 leading-relaxed mb-6">You took a photo on your phone. Now you want to hold it as a physical 3D object. Here is the complete path, with every decision explained.</p>
+
+      <div class="space-y-6">
+        <div class="flex gap-4">
+          <span class="w-8 h-8 rounded-lg bg-accent-100 dark:bg-accent-900/40 flex items-center justify-center text-sm font-bold text-accent-600 dark:text-accent-400 flex-shrink-0 mt-1">1</span>
+          <div>
+            <h3 class="font-semibold text-surface-900 dark:text-surface-100 text-sm mb-1">Choose and Shoot the Right Photo</h3>
+            <p class="text-xs text-surface-500 leading-relaxed">Not every photo makes a good 3D relief. The heightmap algorithm converts brightness to height: bright pixels rise, dark pixels sink. This means:</p>
+            <ul class="text-xs text-surface-500 list-disc pl-4 mt-2 space-y-1">
+              <li><strong>Good:</strong> Side-lit portraits (light on one side creates natural depth), high-contrast scenes, clear subjects against simple backgrounds</li>
+              <li><strong>Bad:</strong> Front-flash selfies (flat lighting = flat 3D), busy backgrounds (create noisy heightmaps), low-light photos (heavy noise becomes surface texture)</li>
+              <li><strong>Best:</strong> Take photos near a window with soft side light. The natural shadow gradient on a face translates perfectly to smooth 3D contours</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="flex gap-4">
+          <span class="w-8 h-8 rounded-lg bg-accent-100 dark:bg-accent-900/40 flex items-center justify-center text-sm font-bold text-accent-600 dark:text-accent-400 flex-shrink-0 mt-1">2</span>
+          <div>
+            <h3 class="font-semibold text-surface-900 dark:text-surface-100 text-sm mb-1">Quick Pre-Processing (Optional but Recommended)</h3>
+            <p class="text-xs text-surface-500 leading-relaxed">A few minutes in any photo app can dramatically improve the 3D result:</p>
+            <ul class="text-xs text-surface-500 list-disc pl-4 mt-2 space-y-1">
+              <li><strong>Crop tight to your subject.</strong> Less background = less noise in the heightmap</li>
+              <li><strong>Boost contrast slightly.</strong> The default phone photo is often a bit flat. +10-20 contrast helps</li>
+              <li><strong>Convert to black and white.</strong> This removes color-related artifacts and lets you see exactly what the heightmap will look like. If the B&W version looks good, the STL will look good</li>
+              <li><strong>Export at original resolution.</strong> Do not downscale. More pixels = more triangles = more detail in the final print</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="flex gap-4">
+          <span class="w-8 h-8 rounded-lg bg-accent-100 dark:bg-accent-900/40 flex items-center justify-center text-sm font-bold text-accent-600 dark:text-accent-400 flex-shrink-0 mt-1">3</span>
+          <div>
+            <h3 class="font-semibold text-surface-900 dark:text-surface-100 text-sm mb-1">Upload and Tune Parameters</h3>
+            <p class="text-xs text-surface-500 leading-relaxed">Upload your JPG above. The key parameters for JPEG photos:</p>
+            <ul class="text-xs text-surface-500 list-disc pl-4 mt-2 space-y-1">
+              <li><strong>Height scale:</strong> Start at 5mm and adjust. Portraits look good at 2-4mm height. Landscapes can go to 8-10mm for dramatic relief</li>
+              <li><strong>Smoothness:</strong> For photos, medium-high smoothness (60-80%) removes JPEG block artifacts without losing facial features. For text/logos, use low smoothness (20-40%)</li>
+              <li><strong>Base thickness:</strong> 1-2mm provides a stable foundation. Thicker bases (3-5mm) are better for standalone display pieces</li>
+              <li><strong>Resolution:</strong> 512px is the sweet spot. Higher resolution captures more JPEG noise without adding meaningful detail for FDM printing</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="flex gap-4">
+          <span class="w-8 h-8 rounded-lg bg-accent-100 dark:bg-accent-900/40 flex items-center justify-center text-sm font-bold text-accent-600 dark:text-accent-400 flex-shrink-0 mt-1">4</span>
+          <div>
+            <h3 class="font-semibold text-surface-900 dark:text-surface-100 text-sm mb-1">Slice and Print</h3>
+            <p class="text-xs text-surface-500 leading-relaxed">Download the STL and open in your slicer. For photo reliefs:</p>
+            <ul class="text-xs text-surface-500 list-disc pl-4 mt-2 space-y-1">
+              <li><strong>Layer height:</strong> 0.12mm for detailed portraits, 0.2mm for larger reliefs</li>
+              <li><strong>Infill:</strong> 15-20% is sufficient since reliefs are surface-detailed, not structural</li>
+              <li><strong>Orientation:</strong> Print flat on the bed with the relief facing up. The base plate ensures good adhesion</li>
+              <li><strong>Material:</strong> Matte PLA hides layer lines best. White or light gray shows relief detail clearly. Dark filaments lose visible detail</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16 max-w-3xl">
+      <h2 class="text-xl font-semibold mb-6 text-surface-900 dark:text-surface-100">Common JPEG Problems When Converting to STL</h2>
+      <div class="space-y-4">
+        <div class="p-4 rounded-tool border border-surface-200 dark:border-surface-800">
+          <h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">Problem: The STL surface has visible grid lines or blocky patterns</h3>
+          <p class="text-xs text-surface-500 leading-relaxed"><strong>Cause:</strong> Heavy JPEG compression at low quality settings. <strong>Fix:</strong> Re-export the original photo at quality 95-100. If you only have the compressed JPEG, increase the smoothness setting to 80%+ to blur out the grid pattern. Alternatively, use the Heightmap Editor to apply a slight Gaussian blur to the heightmap before conversion.</p>
+        </div>
+        <div class="p-4 rounded-tool border border-surface-200 dark:border-surface-800">
+          <h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">Problem: The relief looks flat and lacks depth</h3>
+          <p class="text-xs text-surface-500 leading-relaxed"><strong>Cause:</strong> Low-contrast source photo. Your JPEG might look fine on screen, but the actual brightness range between the darkest and lightest pixels is narrow. <strong>Fix:</strong> Boost contrast in any photo editor before uploading. Increase the height scale to exaggerate the available brightness range. Use the Heightmap Editor's contrast slider for fine control.</p>
+        </div>
+        <div class="p-4 rounded-tool border border-surface-200 dark:border-surface-800">
+          <h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">Problem: Colored edges bleed into the background in the 3D model</h3>
+          <p class="text-xs text-surface-500 leading-relaxed"><strong>Cause:</strong> Chroma subsampling in the JPEG. The color channels have lower resolution than brightness, creating soft edges. <strong>Fix:</strong> This is JPEG-specific and cannot be fully fixed. Convert your image to PNG format (which uses full-resolution color) or increase the threshold in the Heightmap Editor to create a harder edge. For logos and text, always use PNG or SVG &mdash; never JPEG.</p>
+        </div>
+        <div class="p-4 rounded-tool border border-surface-200 dark:border-surface-800">
+          <h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">Problem: Dark areas of the photo become noisy bumps instead of smooth recessed areas</h3>
+          <p class="text-xs text-surface-500 leading-relaxed"><strong>Cause:</strong> JPEG noise in shadow regions. JPEG compression allocates fewer bits to dark areas, causing noise that reads as surface texture. <strong>Fix:</strong> Apply noise reduction to the dark areas in a photo editor. Increase smoothness. Alternatively, use the invert toggle &mdash; sometimes making the noisy dark areas the raised surfaces produces a better result than recessed.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16 max-w-3xl" id="faq">
+      <h2 class="text-xl font-semibold mb-6 text-surface-900 dark:text-surface-100">JPG to STL Questions</h2>
+      <dl class="space-y-5">
+        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">Should I use my phone&apos;s default camera app or a pro mode?</dt><dd class="text-sm text-surface-500 leading-relaxed">Your phone&apos;s default app is fine. What matters more is <strong>lighting</strong> and <strong>JPEG quality</strong>. If your phone has a "Pro" or "Manual" mode, set JPEG quality to maximum and disable any auto-HDR or heavy processing. Some phones apply aggressive sharpening and noise reduction that can create artifacts in the heightmap. If you notice this, try a third-party camera app that offers raw or lightly-processed JPEG output.</dd></div>
+        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">Does the STL preserve the colors from my JPG?</dt><dd class="text-sm text-surface-500 leading-relaxed">No. The STL format is geometry-only and stores no color information. The tool converts your JPG to grayscale based on perceived brightness, then maps each gray level to a physical height. The 3D print will be a single-color relief. If you want color, export as OBJ (stores vertex colors) and print with a multi-material or full-color printer, or paint the finished print by hand.</dd></div>
+        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">What JPG resolution gives the best STL detail?</dt><dd class="text-sm text-surface-500 leading-relaxed">The tool resizes images to 512px on the longest side. Starting with a higher-resolution original (2000px+) means the downscaling averages more pixels together, which actually reduces JPEG noise. A 12MP phone photo (4000x3000) downscaled to 512px will produce a cleaner heightmap than a 800x600 web image upscaled to 512px. <strong>Always start with the highest resolution JPG you have.</strong></dd></div>
+        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">Can I convert a screenshot or web image to STL?</dt><dd class="text-sm text-surface-500 leading-relaxed">Yes, but screenshots are typically low resolution (72-144 DPI screen resolution) and may have visible pixel grid patterns. Web images are often heavily compressed. The heightmap will reflect these limitations. For best results with screenshots, capture at the highest possible resolution and save as PNG to avoid adding JPEG compression on top of the screen capture.</dd></div>
+        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">How do old scanned photos perform vs digital photos?</dt><dd class="text-sm text-surface-500 leading-relaxed">Scanned photos add an extra layer of quality loss: the original photo, the printing process, the paper texture, and the scanner sensor all introduce artifacts. However, many scanned photos have natural contrast that works well for heightmaps. Scan at 600 DPI or higher, save as PNG (not JPEG) to avoid adding more compression, and use the Heightmap Editor to clean up paper texture and dust spots before conversion.</dd></div>
+        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">What is better: JPG at quality 100 or PNG for STL conversion?</dt><dd class="text-sm text-surface-500 leading-relaxed">PNG is always technically better because it is lossless. A PNG conversion will have zero compression artifacts in the heightmap. However, a quality-100 JPEG is virtually indistinguishable from PNG for photo content (as opposed to text/graphics). <strong>For photos: quality-95+ JPEG is fine. For text, logos, or anything with sharp edges: use PNG.</strong> The file size difference (PNG is larger) only matters for upload speed, not conversion quality.</dd></div>
+      </dl>
+    </section>
+
+    
+
+    <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16 max-w-3xl">
+      <h2 class="text-xl font-semibold mb-6 text-surface-900 dark:text-surface-100">Printer-Specific Optimization</h2>
+      <p class="text-sm text-surface-500 leading-relaxed mb-6">Different printers have different optimal settings for photo reliefs. Here is what works best for the most common models.</p>
+      <div class="space-y-4">
+        <div class="p-4 rounded-tool border border-surface-200 dark:border-surface-800"><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">Bambu Lab (X1C, P1S, A1)</h3><p class="text-xs text-surface-500 leading-relaxed">These printers excel at fine detail. <strong>Settings:</strong> 0.12mm layer height, Matte PLA, "Silent" mode (slower = better surface quality). The Bambu textured PEI plate gives a matte finish that hides layer lines beautifully on reliefs. Enable "Ironing" on the top surface for an ultra-smooth finish on the highest points of your relief. Print time: a 10cm relief at 0.12mm with ironing takes 5-7 hours.</p></div>
+        <div class="p-4 rounded-tool border border-surface-200 dark:border-surface-800"><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">Prusa (MK4, MK3S+, Mini)</h3><p class="text-xs text-surface-500 leading-relaxed">Reliable workhorses. <strong>Settings:</strong> 0.15mm layer height (Quality preset), PLA, smooth PEI sheet. The smooth sheet gives a glossy bottom surface but the relief top will show layer lines. Use "Monotonic top/bottom order" for the cleanest surface. Prusa's default profiles are well-optimized; the main adjustment is slowing down the outer wall speed to 25mm/s for better surface quality.</p></div>
+        <div class="p-4 rounded-tool border border-surface-200 dark:border-surface-800"><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">Creality (Ender 3, CR-10, K1)</h3><p class="text-xs text-surface-500 leading-relaxed">Budget-friendly with some tuning needed. <strong>Settings:</strong> 0.16mm layer height, PLA, glass or PEI bed. These printers benefit most from slower speeds: 40mm/s outer walls. Calibrate E-steps and flow rate before printing detailed reliefs &mdash; over-extrusion fills in fine surface detail. A well-tuned Ender 3 can match the quality of printers costing 3x more for relief prints.</p></div>
+        <div class="p-4 rounded-tool border border-surface-200 dark:border-surface-800"><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">Resin/SLA (Anycubic, Elegoo, Phrozen)</h3><p class="text-xs text-surface-500 leading-relaxed">Resolution is not a limiting factor. <strong>Settings:</strong> 0.05mm layer height, standard gray resin. The main consideration is support placement &mdash; avoid supports on the relief surface. Print at a 30-45 degree angle with supports only on the back and bottom edge. Post-cure for the manufacturer's recommended time. Over-curing makes the resin brittle and can cause fine details to crack. Gray resin shows surface detail better than clear or white.</p></div>
+      </div>
+    </section>
+
+    <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16 max-w-3xl">
+      <h2 class="text-xl font-semibold mb-6 text-surface-900 dark:text-surface-100">Batch Processing Strategy: Converting Many Photos</h2>
+      <p class="text-sm text-surface-500 leading-relaxed mb-6">If you have dozens of photos to convert, efficiency matters. Here is how to batch-process while maintaining quality.</p>
+      <div class="space-y-4">
+        <div class="p-4 rounded-tool border border-surface-200 dark:border-surface-800"><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">Pre-Processing in Batch</h3><p class="text-xs text-surface-500 leading-relaxed"><strong>1. Standardize all photos first.</strong> Use Lightroom, Darktable (free), or any batch editor to apply the same adjustments to all photos: crop to consistent aspect ratio, boost contrast +20, convert to B&W, export as high-quality JPEG or PNG. <strong>2. Organize into folders</strong> by print size or subject type so you can use the same conversion settings for each batch. <strong>3. Process one photo from each batch first</strong> to verify the settings work for that group, then apply the same settings to the rest. A batch of 10 wedding photos all taken in the same lighting can use identical heightmap settings.</p></div>
+        <div class="p-4 rounded-tool border border-surface-200 dark:border-surface-800"><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">Conversion Time Management</h3><p class="text-xs text-surface-500 leading-relaxed">Since the converter processes locally, there is no server queue. But each conversion takes you 1-3 minutes of active time (upload, adjust, preview, download). <strong>For efficiency:</strong> (1) Use the sample images to dial in your preferred settings once. (2) Process photos one by one, reusing the same settings. (3) Download all STLs into a dated folder. (4) Slice them all at once in your slicer. A batch of 20 photos can be fully processed in 30-45 minutes with this workflow.</p></div>
+      </div>
+    </section>
+<section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16 max-w-3xl mb-8">
+      <div class="text-center">
+        <p class="text-sm text-surface-500 mb-4">Need a different format? Each has unique strengths for different types of images.</p>
+        <div class="flex flex-wrap gap-2 justify-center">
+          <a href="/png-to-stl" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400 hover:text-accent-600 text-sm transition-colors">PNG to STL (lossless, transparency)</a>
+          <a href="/svg-to-stl" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400 hover:text-accent-600 text-sm transition-colors">SVG to STL (vector extrusion)</a>
+          <a href="/photo-to-3d" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400 hover:text-accent-600 text-sm transition-colors">Photo to 3D (depth mapping)</a>
+        </div>
+      </div>
+    </section>
+  </div>
+</BaseLayout>

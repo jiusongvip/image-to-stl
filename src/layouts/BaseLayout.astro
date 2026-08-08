@@ -1,0 +1,54 @@
+---
+import "../styles/global.css";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import SeoHead from "../components/SeoHead.astro";
+
+ export interface Props {
+   title: string;
+   description: string;
+   canonical?: string;
+   schema?: object;
+   keywords?: string;
+   ogImage?: string;
+   ogType?: string;
+   breadcrumbs?: { name: string; url: string }[];
+   publishDate?: string;
+   modifyDate?: string;
+ }
+
+ const { title, description, canonical, schema, keywords, ogImage, ogType, breadcrumbs, publishDate, modifyDate } = Astro.props;
+
+ const breadcrumbSchema = breadcrumbs && breadcrumbs.length > 0 ? {
+   "@context": "https://schema.org",
+   "@type": "BreadcrumbList",
+   "itemListElement": breadcrumbs.map((item, i) => ({
+     "@type": "ListItem",
+     "position": i + 1,
+     "name": item.name,
+     "item": item.url
+   }))
+ } : null;
+
+ const combinedSchema = schema
+   ? [schema, breadcrumbSchema].filter(Boolean)
+   : breadcrumbSchema ? [breadcrumbSchema] : undefined;
+---
+
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="alternate icon" href="/favicon.ico" />
+    <SeoHead title={title} description={description} canonical={canonical} schema={combinedSchema} keywords={keywords} ogImage={ogImage} ogType={ogType} publishDate={publishDate} modifyDate={modifyDate} />
+  </head>
+  <body class="flex flex-col min-h-[100dvh]">
+    <Header />
+    <main class="flex-1">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

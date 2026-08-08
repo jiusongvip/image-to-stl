@@ -1,0 +1,444 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import ConverterTool from "../components/ConverterTool";
+
+const softwareSchema = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: "Image to STL Converter",
+  applicationCategory: "Multimedia",
+  operatingSystem: "Web",
+  offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+  description:
+    "Free online tool to convert images (JPG, PNG, SVG) to STL 3D models for 3D printing. Real-time 3D preview, browser-based processing. Supports heightmap, lithophane, and SVG extrusion modes.",
+};
+
+const websiteSchema = { "@context": "https://schema.org", "@type": "WebSite", name: "Image to STL Converter", url: "https://image-to-stl.com", description: "Free online tool to convert images to STL 3D models for 3D printing. Browser-based, no uploads required.", potentialAction: { "@type": "SearchAction", target: "https://image-to-stl.com/search?q={search_term_string}", "query-input": "required name=search_term_string" } }; const combinedSchema = [websiteSchema, softwareSchema];
+
+const keywords = "image to stl, jpg to stl, png to stl, svg to stl, convert image to stl, image to 3d model, photo to stl, free stl converter, 3d printing, image to 3d print, online stl converter, heightmap to stl, lithophane maker, photo to 3d model";
+---
+
+<BaseLayout
+  title="Image to STL Converter — Free Online 3D Model Generator"
+  description="Convert JPG, PNG & SVG images to STL, OBJ, and GLB files for 3D printing. 100% browser-based, no uploads. Real-time 3D preview. Free, no registration."
+  canonical="https://image-to-stl.com/"
+ schema={combinedSchema}
+  breadcrumbs={[
+    { name: "Image to STL Converter", url: "https://image-to-stl.com/" }
+  ]}
+  keywords={keywords}
+>
+  <div class="max-w-[1400px] mx-auto px-4 sm:px-6 py-8 sm:py-12">
+    <section class="mb-10">
+      <div class="max-w-3xl">
+        <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-surface-900 dark:text-surface-100 leading-tight">
+          Convert Image to STL Online - Free 3D Model Generator
+        </h1>
+        <p class="mt-3 text-surface-500 text-sm sm:text-base leading-relaxed max-w-[70ch]">
+          Transform your JPG, PNG, and SVG images into 3D-printable STL files &mdash; entirely in your browser.
+          No uploads, no software downloads, no fees. Get instant real-time 3D preview powered by Three.js
+          and download your model as STL, OBJ, or GLB in seconds.
+        </p>
+        <div class="mt-4 flex flex-wrap gap-2">
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-medium">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            100% Browser-Based &mdash; No Uploads
+          </span>
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-accent-100 dark:bg-accent-900/30 text-accent-700 dark:text-accent-400 text-xs font-medium">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            Export: STL + OBJ + GLB
+          </span>
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-200 dark:bg-surface-800 text-surface-600 dark:text-surface-400 text-xs font-medium">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
+            No Registration Required
+          </span>
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-xs font-medium">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            Real-Time 3D Preview
+          </span>
+        </div>
+      </div>
+      <div class="mt-6 rounded-xl overflow-hidden border border-surface-200 dark:border-surface-800">
+        <img src="/images/hero-workspace.webp" alt="Image to STL converter workspace — a laptop showing 3D model preview next to a finished 3D printed photo relief" width="1792" height="1024" loading="eager" decoding="async" class="w-full h-auto" />
+      </div>
+    </section>
+
+    <ConverterTool client:only="react" />
+
+    <section class="mt-10">
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="rounded-tool border border-surface-200 dark:border-surface-800 p-4 text-center">
+          <div class="text-xs text-surface-400 dark:text-surface-500 uppercase tracking-wide mb-1">Processing</div>
+          <div class="text-sm font-semibold text-surface-900 dark:text-surface-100">100% Browser-Based</div>
+          <div class="text-2xs text-surface-500 mt-0.5">No server uploads ever</div>
+        </div>
+        <div class="rounded-tool border border-surface-200 dark:border-surface-800 p-4 text-center">
+          <div class="text-xs text-surface-400 dark:text-surface-500 uppercase tracking-wide mb-1">File Size Limit</div>
+          <div class="text-sm font-semibold text-surface-900 dark:text-surface-100">No Limits</div>
+          <div class="text-2xs text-surface-500 mt-0.5">Constrained only by your device</div>
+        </div>
+        <div class="rounded-tool border border-surface-200 dark:border-surface-800 p-4 text-center">
+          <div class="text-xs text-surface-400 dark:text-surface-500 uppercase tracking-wide mb-1">Export Formats</div>
+          <div class="text-sm font-semibold text-surface-900 dark:text-surface-100">STL + OBJ + GLB</div>
+          <div class="text-2xs text-surface-500 mt-0.5">Universal 3D printing + more</div>
+        </div>
+        <div class="rounded-tool border border-surface-200 dark:border-surface-800 p-4 text-center">
+          <div class="text-xs text-surface-400 dark:text-surface-500 uppercase tracking-wide mb-1">Cost</div>
+          <div class="text-sm font-semibold text-surface-900 dark:text-surface-100">Free Forever</div>
+          <div class="text-2xs text-surface-500 mt-0.5">No hidden fees, no watermarks</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16">
+      <h2 class="text-xl font-semibold mb-6 text-surface-900 dark:text-surface-100">How to Convert an Image to STL</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="flex flex-col gap-2">
+          <span class="w-8 h-8 rounded-lg bg-accent-100 dark:bg-accent-900/40 flex items-center justify-center text-sm font-semibold text-accent-600 dark:text-accent-400 flex-shrink-0">1</span>
+          <h3 class="font-medium text-surface-900 dark:text-surface-100">Upload Your Image</h3>
+          <p class="text-sm text-surface-500 leading-relaxed">Drag and drop a JPG, PNG, or SVG file &mdash; or try one of our built-in samples. All major image formats are supported. Your file stays on your device.</p>
+        </div>
+        <div class="flex flex-col gap-2">
+          <span class="w-8 h-8 rounded-lg bg-accent-100 dark:bg-accent-900/40 flex items-center justify-center text-sm font-semibold text-accent-600 dark:text-accent-400 flex-shrink-0">2</span>
+          <h3 class="font-medium text-surface-900 dark:text-surface-100">Choose Mode &amp; Adjust</h3>
+          <p class="text-sm text-surface-500 leading-relaxed">Select Heightmap for photo reliefs, SVG Extrude for logos, or Lithophane for backlit panels. Fine-tune height, smoothness, base thickness, and resolution with live sliders.</p>
+        </div>
+        <div class="flex flex-col gap-2">
+          <span class="w-8 h-8 rounded-lg bg-accent-100 dark:bg-accent-900/40 flex items-center justify-center text-sm font-semibold text-accent-600 dark:text-accent-400 flex-shrink-0">3</span>
+          <h3 class="font-medium text-surface-900 dark:text-surface-100">Preview in Real-Time 3D</h3>
+          <p class="text-sm text-surface-500 leading-relaxed">Rotate, zoom, and inspect your model interactively with Three.js. Toggle between solid and wireframe views. Every parameter change updates the preview instantly.</p>
+        </div>
+        <div class="flex flex-col gap-2">
+          <span class="w-8 h-8 rounded-lg bg-accent-100 dark:bg-accent-900/40 flex items-center justify-center text-sm font-semibold text-accent-600 dark:text-accent-400 flex-shrink-0">4</span>
+          <h3 class="font-medium text-surface-900 dark:text-surface-100">Download &amp; Print</h3>
+          <p class="text-sm text-surface-500 leading-relaxed">Export as STL for direct slicing in Cura, PrusaSlicer, or Bambu Studio. Also available in OBJ (with color) and GLB (for web/AR). Start printing immediately.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16">
+      <h2 class="text-xl font-semibold mb-2 text-surface-900 dark:text-surface-100">Why This Image to STL Converter</h2>
+      <p class="text-sm text-surface-500 mb-8 max-w-[65ch]">Every feature is designed around one principle: your data stays on your device, and the result is print-ready in seconds.</p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div class="rounded-tool border border-surface-200 dark:border-surface-800 p-5">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-9 h-9 rounded-lg bg-accent-100 dark:bg-accent-900/40 flex items-center justify-center flex-shrink-0">
+              <svg class="w-5 h-5 text-accent-600 dark:text-accent-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <h3 class="font-semibold text-surface-900 dark:text-surface-100 text-sm">Private by Design</h3>
+          </div>
+          <p class="text-xs text-surface-500 leading-relaxed">Every conversion runs in your browser using JavaScript and Canvas APIs. No file ever leaves your device. No server-side processing. No data collection.</p>
+        </div>
+        <div class="rounded-tool border border-surface-200 dark:border-surface-800 p-5">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-9 h-9 rounded-lg bg-accent-100 dark:bg-accent-900/40 flex items-center justify-center flex-shrink-0">
+              <svg class="w-5 h-5 text-accent-600 dark:text-accent-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"/><line x1="12" y1="22" x2="12" y2="15.5"/><polyline points="22 8.5 12 15.5 2 8.5"/></svg>
+            </div>
+            <h3 class="font-semibold text-surface-900 dark:text-surface-100 text-sm">Real-Time 3D Preview</h3>
+          </div>
+          <p class="text-xs text-surface-500 leading-relaxed">Powered by Three.js with WebGL hardware acceleration. Rotate, pan, and zoom your model before downloading. Switch between solid and wireframe views to inspect mesh quality.</p>
+        </div>
+        <div class="rounded-tool border border-surface-200 dark:border-surface-800 p-5">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-9 h-9 rounded-lg bg-accent-100 dark:bg-accent-900/40 flex items-center justify-center flex-shrink-0">
+              <svg class="w-5 h-5 text-accent-600 dark:text-accent-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+            </div>
+            <h3 class="font-semibold text-surface-900 dark:text-surface-100 text-sm">Three Conversion Modes</h3>
+          </div>
+          <p class="text-xs text-surface-500 leading-relaxed">Heightmap converts pixel brightness to physical height &mdash; ideal for portraits and reliefs. SVG Extrusion extracts vector paths into crisp 3D solids. Lithophane mode creates translucent backlit panels.</p>
+        </div>
+        <div class="rounded-tool border border-surface-200 dark:border-surface-800 p-5">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-9 h-9 rounded-lg bg-accent-100 dark:bg-accent-900/40 flex items-center justify-center flex-shrink-0">
+              <svg class="w-5 h-5 text-accent-600 dark:text-accent-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            </div>
+            <h3 class="font-semibold text-surface-900 dark:text-surface-100 text-sm">Three Export Formats</h3>
+          </div>
+          <p class="text-xs text-surface-500 leading-relaxed">Download as binary STL &mdash; the universal 3D printing format. Or choose OBJ for color support in Blender. GLB (glTF binary) for modern web, AR, and VR applications.</p>
+        </div>
+        <div class="rounded-tool border border-surface-200 dark:border-surface-800 p-5">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-9 h-9 rounded-lg bg-accent-100 dark:bg-accent-900/40 flex items-center justify-center flex-shrink-0">
+              <svg class="w-5 h-5 text-accent-600 dark:text-accent-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <h3 class="font-semibold text-surface-900 dark:text-surface-100 text-sm">No Limits, No Waiting</h3>
+          </div>
+          <p class="text-xs text-surface-500 leading-relaxed">Everything runs locally &mdash; no queue, no cooldown, no daily cap. Convert as many images as you want. File size limited only by your device memory. No account needed.</p>
+        </div>
+        <div class="rounded-tool border border-surface-200 dark:border-surface-800 p-5">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-9 h-9 rounded-lg bg-accent-100 dark:bg-accent-900/40 flex items-center justify-center flex-shrink-0">
+              <svg class="w-5 h-5 text-accent-600 dark:text-accent-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            </div>
+            <h3 class="font-semibold text-surface-900 dark:text-surface-100 text-sm">SVG &amp; Vector Support</h3>
+          </div>
+          <p class="text-xs text-surface-500 leading-relaxed">A unique feature competitors do not offer. Upload SVG logos, icons, and vector art &mdash; our parser extracts real bezier paths and extrudes them into solid, watertight 3D meshes. Perfect for signage and badges.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16">
+      <h2 class="text-xl font-semibold mb-2 text-surface-900 dark:text-surface-100">Supported File Formats</h2>
+      <p class="text-sm text-surface-500 mb-8 max-w-[65ch]">Upload images in any common format and export your 3D model in the format that fits your workflow.</p>
+      <div class="grid sm:grid-cols-2 gap-8">
+        <div>
+          <h3 class="text-sm font-semibold text-surface-700 dark:text-surface-300 mb-4 uppercase tracking-wide">Input &mdash; Image Formats</h3>
+          <div class="flex flex-wrap gap-2">
+            <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-surface-100 dark:bg-surface-800/50 border border-surface-200 dark:border-surface-700"><span class="text-xs font-mono font-medium text-surface-900 dark:text-surface-100">JPG / JPEG</span><span class="text-2xs text-surface-400 hidden sm:inline">Photographs</span></div>
+            <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-surface-100 dark:bg-surface-800/50 border border-surface-200 dark:border-surface-700"><span class="text-xs font-mono font-medium text-surface-900 dark:text-surface-100">PNG</span><span class="text-2xs text-surface-400 hidden sm:inline">Transparency-aware</span></div>
+            <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-surface-100 dark:bg-surface-800/50 border border-surface-200 dark:border-surface-700"><span class="text-xs font-mono font-medium text-surface-900 dark:text-surface-100">SVG</span><span class="text-2xs text-surface-400 hidden sm:inline">Vector extrusion</span></div>
+            <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-surface-100 dark:bg-surface-800/50 border border-surface-200 dark:border-surface-700"><span class="text-xs font-mono font-medium text-surface-900 dark:text-surface-100">WebP</span><span class="text-2xs text-surface-400 hidden sm:inline">Modern web images</span></div>
+            <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-surface-100 dark:bg-surface-800/50 border border-surface-200 dark:border-surface-700"><span class="text-xs font-mono font-medium text-surface-900 dark:text-surface-100">BMP</span><span class="text-2xs text-surface-400 hidden sm:inline">Uncompressed</span></div>
+            <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-surface-100 dark:bg-surface-800/50 border border-surface-200 dark:border-surface-700"><span class="text-xs font-mono font-medium text-surface-900 dark:text-surface-100">GIF</span><span class="text-2xs text-surface-400 hidden sm:inline">Single-frame</span></div>
+          </div>
+        </div>
+        <div>
+          <h3 class="text-sm font-semibold text-surface-700 dark:text-surface-300 mb-4 uppercase tracking-wide">Output &mdash; 3D Formats</h3>
+          <div class="flex flex-wrap gap-2">
+            <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-accent-50 dark:bg-accent-900/20 border border-accent-200 dark:border-accent-800"><span class="text-xs font-mono font-semibold text-accent-700 dark:text-accent-400">STL</span><span class="text-2xs text-accent-500 dark:text-accent-500 hidden sm:inline">Universal 3D printing</span></div>
+            <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-accent-50 dark:bg-accent-900/20 border border-accent-200 dark:border-accent-800"><span class="text-xs font-mono font-semibold text-accent-700 dark:text-accent-400">OBJ</span><span class="text-2xs text-accent-500 dark:text-accent-500 hidden sm:inline">Color support (Blender)</span></div>
+            <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-accent-50 dark:bg-accent-900/20 border border-accent-200 dark:border-accent-800"><span class="text-xs font-mono font-semibold text-accent-700 dark:text-accent-400">GLB</span><span class="text-2xs text-accent-500 dark:text-accent-500 hidden sm:inline">Web, AR &amp; VR ready</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16">
+      <h2 class="text-xl font-semibold mb-2 text-surface-900 dark:text-surface-100">What You Can Create</h2>
+      <p class="text-sm text-surface-500 mb-8 max-w-[65ch]">From wall art to custom tools, here is what makers create with this image to STL converter.</p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div class="rounded-tool border border-surface-200 dark:border-surface-800 overflow-hidden"><img src="/images/photo-relief-print.webp" alt="3D printed photo relief — white PLA bas-relief portrait on display stand" width="1024" height="1024" loading="lazy" decoding="async" class="w-full aspect-square object-cover" /><div class="p-5"><h3 class="font-semibold text-surface-900 dark:text-surface-100 text-sm mb-2">3D Photo Reliefs</h3><p class="text-xs text-surface-500 leading-relaxed">Turn any portrait, landscape, or artwork into an embossed 3D panel. The heightmap mode maps pixel brightness to physical depth, creating detailed reliefs perfect for wall art, coasters, and decorative tiles.</p></div></div>
+        <div class="rounded-tool border border-surface-200 dark:border-surface-800 overflow-hidden"><img src="/images/lithophane-backlit.webp" alt="3D printed lithophane panel glowing with warm backlight showing a landscape scene" width="1024" height="1024" loading="lazy" decoding="async" class="w-full aspect-square object-cover" /><div class="p-5"><h3 class="font-semibold text-surface-900 dark:text-surface-100 text-sm mb-2">Lithophanes</h3><p class="text-xs text-surface-500 leading-relaxed">Convert your photos into thin translucent panels. When backlit, the varying thickness reveals your image in stunning detail. Makes incredible personalized lamps, night lights, and window displays.</p></div></div>
+        <div class="rounded-tool border border-surface-200 dark:border-surface-800 overflow-hidden"><img src="/images/cookie-cutter-result.webp" alt="Custom 3D printed cookie cutters in bright colors alongside freshly cut cookies" width="1024" height="1024" loading="lazy" decoding="async" class="w-full aspect-square object-cover" /><div class="p-5"><h3 class="font-semibold text-surface-900 dark:text-surface-100 text-sm mb-2">Cookie Cutters</h3><p class="text-xs text-surface-500 leading-relaxed">Upload a silhouette or simple shape and get a custom cookie cutter STL. Perfect for themed parties, holidays, and personalized gifts.</p></div></div>
+        <div class="rounded-tool border border-surface-200 dark:border-surface-800 overflow-hidden"><img src="/images/logo-3d-extrusion.webp" alt="3D printed logo sign with crisp extruded edges on a display stand" width="1024" height="1024" loading="lazy" decoding="async" class="w-full aspect-square object-cover" /><div class="p-5"><h3 class="font-semibold text-surface-900 dark:text-surface-100 text-sm mb-2">Logo &amp; Icon Extrusions</h3><p class="text-xs text-surface-500 leading-relaxed">Upload your SVG logo and extrude it into a solid 3D object. Ideal for custom signage, desk ornaments, keychains, and brand merchandise.</p></div></div>
+        <div class="rounded-tool border border-surface-200 dark:border-surface-800 overflow-hidden"><img src="/images/custom-badges-signs.webp" alt="3D printed custom badges and signs with raised lettering" width="1024" height="1024" loading="lazy" decoding="async" class="w-full aspect-square object-cover" /><div class="p-5"><h3 class="font-semibold text-surface-900 dark:text-surface-100 text-sm mb-2">Custom Badges &amp; Signs</h3><p class="text-xs text-surface-500 leading-relaxed">Create raised lettering, embossed text, and dimensional signage. Use the text-to-3D tool for quick typography or upload complex SVG designs.</p></div></div>
+        <div class="rounded-tool border border-surface-200 dark:border-surface-800 overflow-hidden"><img src="/images/topographic-terrain-map.webp" alt="3D printed topographic terrain map showing mountain ranges with elevation detail" width="1024" height="1024" loading="lazy" decoding="async" class="w-full aspect-square object-cover" /><div class="p-5"><h3 class="font-semibold text-surface-900 dark:text-surface-100 text-sm mb-2">Topographic &amp; Terrain Maps</h3><p class="text-xs text-surface-500 leading-relaxed">Convert grayscale height maps, elevation data, or satellite imagery into 3D terrain models. Adjust the height scale for dramatic mountain ranges or subtle landscape contours.</p></div></div>
+        <div class="rounded-tool border border-surface-200 dark:border-surface-800 overflow-hidden">
+          <img src="/images/3d-printed-jewelry.webp" alt="3D printed jewelry pendants and medallions with raised relief detail" width="1024" height="1024" loading="lazy" decoding="async" class="w-full aspect-square object-cover" />
+          <div class="p-5">
+          <h3 class="font-semibold text-surface-900 dark:text-surface-100 text-sm mb-2">Custom Jewelry &amp; Pendants</h3>
+          <p class="text-xs text-surface-500 leading-relaxed">Create personalized pendants, charms, and medallions from photos and designs. Convert a meaningful symbol, initials, or a small photo into wearable 3D printed jewelry. Use resin printing for finer detail on small pieces.</p>
+        </div></div>
+        <div class="rounded-tool border border-surface-200 dark:border-surface-800 overflow-hidden">
+          <img src="/images/custom-stamps-embossing.webp" alt="3D printed custom stamps and embossing tools with clay impressions" width="1024" height="1024" loading="lazy" decoding="async" class="w-full aspect-square object-cover" />
+          <div class="p-5">
+          <h3 class="font-semibold text-surface-900 dark:text-surface-100 text-sm mb-2">Stamps &amp; Embossing Tools</h3>
+          <p class="text-xs text-surface-500 leading-relaxed">Design custom stamps for clay, fondant, soap, leather, and paper crafts. Use the invert toggle to create the negative impression, then print with flexible filament or hard PLA depending on your material.</p>
+        </div></div>
+        <div class="rounded-tool border border-surface-200 dark:border-surface-800 overflow-hidden">
+          <img src="/images/chocolate-mold-casting.webp" alt="3D printed mold tray next to chocolate castings in heart and star shapes" width="1024" height="1024" loading="lazy" decoding="async" class="w-full aspect-square object-cover" />
+          <div class="p-5">
+          <h3 class="font-semibold text-surface-900 dark:text-surface-100 text-sm mb-2">Molds for Casting &amp; Chocolates</h3>
+          <p class="text-xs text-surface-500 leading-relaxed">Create food-safe molds for chocolates, candies, ice cubes, and resin casting. Convert your design to a negative relief, print the mold, and cast your creations. Use food-safe filament if making edible items.</p>
+        </div></div>
+
+      </div>
+    </section>
+
+    <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16">
+      <h2 class="text-xl font-semibold mb-2 text-surface-900 dark:text-surface-100">How We Compare</h2>
+      <p class="text-sm text-surface-500 mb-8 max-w-[65ch]">Not all image-to-STL converters work the same way. Here is how our browser-based approach compares.</p>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm border-collapse">
+          <thead>
+            <tr class="border-b border-surface-200 dark:border-surface-700">
+              <th class="text-left py-3 pr-4 font-medium text-surface-900 dark:text-surface-100">Feature</th>
+              <th class="text-center py-3 px-3 font-semibold text-accent-600 dark:text-accent-400 bg-accent-50 dark:bg-accent-900/10 rounded-t-lg">This Tool</th>
+              <th class="text-center py-3 px-3 font-medium text-surface-500">Server-Based</th>
+              <th class="text-center py-3 pl-3 font-medium text-surface-500">Desktop Software</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-surface-100 dark:divide-surface-800">
+            <tr><td class="py-2.5 pr-4 font-medium text-surface-700 dark:text-surface-300">Privacy</td><td class="py-2.5 px-3 text-center text-accent-700 dark:text-accent-400 font-medium bg-accent-50/50 dark:bg-accent-900/5">100% local &mdash; no uploads</td><td class="py-2.5 px-3 text-center text-surface-500">Files sent to servers</td><td class="py-2.5 pl-3 text-center text-surface-500">Files stay local</td></tr>
+            <tr><td class="py-2.5 pr-4 font-medium text-surface-700 dark:text-surface-300">Speed</td><td class="py-2.5 px-3 text-center text-accent-700 dark:text-accent-400 font-medium bg-accent-50/50 dark:bg-accent-900/5">Instant preview</td><td class="py-2.5 px-3 text-center text-surface-500">Queue (1-5 min)</td><td class="py-2.5 pl-3 text-center text-surface-500">Hardware dependent</td></tr>
+            <tr><td class="py-2.5 pr-4 font-medium text-surface-700 dark:text-surface-300">3D Preview</td><td class="py-2.5 px-3 text-center text-accent-700 dark:text-accent-400 font-medium bg-accent-50/50 dark:bg-accent-900/5">Real-time rotate</td><td class="py-2.5 px-3 text-center text-surface-500">Rarely available</td><td class="py-2.5 pl-3 text-center text-surface-500">Native support</td></tr>
+            <tr><td class="py-2.5 pr-4 font-medium text-surface-700 dark:text-surface-300">Cost</td><td class="py-2.5 px-3 text-center text-accent-700 dark:text-accent-400 font-medium bg-accent-50/50 dark:bg-accent-900/5">Free forever</td><td class="py-2.5 px-3 text-center text-surface-500">Limited free tier</td><td class="py-2.5 pl-3 text-center text-surface-500">Free options exist</td></tr>
+            <tr><td class="py-2.5 pr-4 font-medium text-surface-700 dark:text-surface-300">File Limits</td><td class="py-2.5 px-3 text-center text-accent-700 dark:text-accent-400 font-medium bg-accent-50/50 dark:bg-accent-900/5">No limits</td><td class="py-2.5 px-3 text-center text-surface-500">Daily caps</td><td class="py-2.5 pl-3 text-center text-surface-500">No limits</td></tr>
+            <tr><td class="py-2.5 pr-4 font-medium text-surface-700 dark:text-surface-300">Registration</td><td class="py-2.5 px-3 text-center text-accent-700 dark:text-accent-400 font-medium bg-accent-50/50 dark:bg-accent-900/5">Not required</td><td class="py-2.5 px-3 text-center text-surface-500">Often required</td><td class="py-2.5 pl-3 text-center text-surface-500">Not required</td></tr>
+            <tr><td class="py-2.5 pr-4 font-medium text-surface-700 dark:text-surface-300">SVG Support</td><td class="py-2.5 px-3 text-center text-accent-700 dark:text-accent-400 font-medium bg-accent-50/50 dark:bg-accent-900/5">Native extrusion</td><td class="py-2.5 px-3 text-center text-surface-500">Raster only</td><td class="py-2.5 pl-3 text-center text-surface-500">Plugins needed</td></tr>
+            <tr><td class="py-2.5 pr-4 font-medium text-surface-700 dark:text-surface-300">Modes</td><td class="py-2.5 px-3 text-center text-accent-700 dark:text-accent-400 font-medium bg-accent-50/50 dark:bg-accent-900/5">3 modes</td><td class="py-2.5 px-3 text-center text-surface-500">Usually 1 mode</td><td class="py-2.5 pl-3 text-center text-surface-500">Complex setup</td></tr>
+            <tr><td class="py-2.5 pr-4 font-medium text-surface-700 dark:text-surface-300">Setup</td><td class="py-2.5 px-3 text-center text-accent-700 dark:text-accent-400 font-medium bg-accent-50/50 dark:bg-accent-900/5">Zero &mdash; open browser</td><td class="py-2.5 px-3 text-center text-surface-500">Open browser</td><td class="py-2.5 pl-3 text-center text-surface-500">Install + learn</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16">
+      <h2 class="text-xl font-semibold mb-6 text-surface-900 dark:text-surface-100">More Free 3D Tools</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <a href="/jpg-to-stl" class="block p-4 rounded-tool border border-surface-200 dark:border-surface-800 hover:border-accent-300 dark:hover:border-accent-700 transition-colors group">
+          <div class="flex items-center gap-3 mb-2"><span class="w-8 h-8 rounded-lg bg-accent-100 dark:bg-accent-900/40 flex items-center justify-center flex-shrink-0"><svg class="w-4 h-4 text-accent-600 dark:text-accent-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg></span><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm group-hover:text-accent-600 dark:group-hover:text-accent-400 transition-colors">JPG to STL</h3></div>
+          <p class="text-xs text-surface-500 leading-relaxed">Convert JPG photos to 3D printable models with heightmap mode.</p>
+        </a>
+        <a href="/png-to-stl" class="block p-4 rounded-tool border border-surface-200 dark:border-surface-800 hover:border-accent-300 dark:hover:border-accent-700 transition-colors group">
+          <div class="flex items-center gap-3 mb-2"><span class="w-8 h-8 rounded-lg bg-accent-100 dark:bg-accent-900/40 flex items-center justify-center flex-shrink-0"><svg class="w-4 h-4 text-accent-600 dark:text-accent-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="9" x2="15" y2="15"/><line x1="15" y1="9" x2="9" y2="15"/></svg></span><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm group-hover:text-accent-600 dark:group-hover:text-accent-400 transition-colors">PNG to STL</h3></div>
+          <p class="text-xs text-surface-500 leading-relaxed">PNG images with transparency for clean reliefs and extrusions.</p>
+        </a>
+        <a href="/svg-to-stl" class="block p-4 rounded-tool border border-surface-200 dark:border-surface-800 hover:border-accent-300 dark:hover:border-accent-700 transition-colors group">
+          <div class="flex items-center gap-3 mb-2"><span class="w-8 h-8 rounded-lg bg-accent-100 dark:bg-accent-900/40 flex items-center justify-center flex-shrink-0"><svg class="w-4 h-4 text-accent-600 dark:text-accent-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></span><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm group-hover:text-accent-600 dark:group-hover:text-accent-400 transition-colors">SVG to STL</h3></div>
+          <p class="text-xs text-surface-500 leading-relaxed">Extrude vector paths into watertight 3D solids for printing.</p>
+        </a>
+        <a href="/photo-to-3d" class="block p-4 rounded-tool border border-surface-200 dark:border-surface-800 hover:border-accent-300 dark:hover:border-accent-700 transition-colors group">
+          <div class="flex items-center gap-3 mb-2"><span class="w-8 h-8 rounded-lg bg-accent-100 dark:bg-accent-900/40 flex items-center justify-center flex-shrink-0"><svg class="w-4 h-4 text-accent-600 dark:text-accent-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="2.5"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m22 16-5-5-3.5 3.5-3-3L2 18"/></svg></span><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm group-hover:text-accent-600 dark:group-hover:text-accent-400 transition-colors">Photo to 3D</h3></div>
+          <p class="text-xs text-surface-500 leading-relaxed">Turn any photo into a 3D model with advanced depth mapping.</p>
+        </a>
+        <a href="/text-to-stl" class="block p-4 rounded-tool border border-surface-200 dark:border-surface-800 hover:border-accent-300 dark:hover:border-accent-700 transition-colors group">
+          <div class="flex items-center gap-3 mb-2"><span class="w-8 h-8 rounded-lg bg-accent-100 dark:bg-accent-900/40 flex items-center justify-center flex-shrink-0"><svg class="w-4 h-4 text-accent-600 dark:text-accent-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg></span><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm group-hover:text-accent-600 dark:group-hover:text-accent-400 transition-colors">Text to STL</h3></div>
+          <p class="text-xs text-surface-500 leading-relaxed">Type any text and extrude it into a 3D printable model instantly.</p>
+        </a>
+        <a href="/cookie-cutter" class="block p-4 rounded-tool border border-surface-200 dark:border-surface-800 hover:border-accent-300 dark:hover:border-accent-700 transition-colors group">
+          <div class="flex items-center gap-3 mb-2"><span class="w-8 h-8 rounded-lg bg-accent-100 dark:bg-accent-900/40 flex items-center justify-center flex-shrink-0"><svg class="w-4 h-4 text-accent-600 dark:text-accent-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm group-hover:text-accent-600 dark:group-hover:text-accent-400 transition-colors">Cookie Cutter Maker</h3></div>
+          <p class="text-xs text-surface-500 leading-relaxed">Turn silhouettes into custom cookie cutter STL files in seconds.</p>
+        </a>
+        <a href="/lithophane-maker" class="block p-4 rounded-tool border border-surface-200 dark:border-surface-800 hover:border-accent-300 dark:hover:border-accent-700 transition-colors group">
+          <div class="flex items-center gap-3 mb-2"><span class="w-8 h-8 rounded-lg bg-accent-100 dark:bg-accent-900/40 flex items-center justify-center flex-shrink-0"><svg class="w-4 h-4 text-accent-600 dark:text-accent-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2 2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></span><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm group-hover:text-accent-600 dark:group-hover:text-accent-400 transition-colors">Lithophane Maker</h3></div>
+          <p class="text-xs text-surface-500 leading-relaxed">Create stunning backlit 3D prints from your photos.</p>
+        </a>
+        <a href="/heightmap-editor" class="block p-4 rounded-tool border border-surface-200 dark:border-surface-800 hover:border-accent-300 dark:hover:border-accent-700 transition-colors group">
+          <div class="flex items-center gap-3 mb-2"><span class="w-8 h-8 rounded-lg bg-accent-100 dark:bg-accent-900/40 flex items-center justify-center flex-shrink-0"><svg class="w-4 h-4 text-accent-600 dark:text-accent-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm group-hover:text-accent-600 dark:group-hover:text-accent-400 transition-colors">Heightmap Editor</h3></div>
+          <p class="text-xs text-surface-500 leading-relaxed">Fine-tune contrast, brightness, and threshold for precise reliefs.</p>
+        </a>
+      </div>
+    </section>
+
+    <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16">
+      <h2 class="text-xl font-semibold mb-6 text-surface-900 dark:text-surface-100">Tips for the Best STL Conversion</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="flex gap-3 p-4 rounded-tool border border-surface-200 dark:border-surface-800"><span class="w-5 h-5 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center flex-shrink-0 mt-0.5"><svg class="w-3 h-3 text-amber-600 dark:text-amber-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span><div><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-1">Use High-Contrast Images</h3><p class="text-xs text-surface-500 leading-relaxed">Images with clear light/dark separation produce the best reliefs. Avoid flat, low-contrast photos &mdash; they result in shallow, indistinct 3D surfaces.</p></div></div>
+        <div class="flex gap-3 p-4 rounded-tool border border-surface-200 dark:border-surface-800"><span class="w-5 h-5 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center flex-shrink-0 mt-0.5"><svg class="w-3 h-3 text-amber-600 dark:text-amber-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span><div><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-1">Choose the Right Mode</h3><p class="text-xs text-surface-500 leading-relaxed">Use Heightmap for photographs and realistic reliefs. Use SVG Extrusion for logos, icons, and vector art. Use Lithophane only when you plan to backlight the print.</p></div></div>
+        <div class="flex gap-3 p-4 rounded-tool border border-surface-200 dark:border-surface-800"><span class="w-5 h-5 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center flex-shrink-0 mt-0.5"><svg class="w-3 h-3 text-amber-600 dark:text-amber-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span><div><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-1">Adjust Smoothness Carefully</h3><p class="text-xs text-surface-500 leading-relaxed">Too much smoothing loses detail; too little creates a noisy mesh. Preview the wireframe to check mesh quality before downloading.</p></div></div>
+        <div class="flex gap-3 p-4 rounded-tool border border-surface-200 dark:border-surface-800"><span class="w-5 h-5 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center flex-shrink-0 mt-0.5"><svg class="w-3 h-3 text-amber-600 dark:text-amber-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span><div><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-1">Scale for Your Printer</h3><p class="text-xs text-surface-500 leading-relaxed">Set base dimensions to match your printer bed size. Larger models show more detail but take longer to slice and print.</p></div></div>
+        <div class="flex gap-3 p-4 rounded-tool border border-surface-200 dark:border-surface-800"><span class="w-5 h-5 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center flex-shrink-0 mt-0.5"><svg class="w-3 h-3 text-amber-600 dark:text-amber-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span><div><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-1">Check Mesh in Wireframe View</h3><p class="text-xs text-surface-500 leading-relaxed">Toggle wireframe mode in the 3D preview to inspect triangle density and detect any artifacts before exporting.</p></div></div>
+        <div class="flex gap-3 p-4 rounded-tool border border-surface-200 dark:border-surface-800"><span class="w-5 h-5 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center flex-shrink-0 mt-0.5"><svg class="w-3 h-3 text-amber-600 dark:text-amber-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span><div><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-1">Export the Right Format</h3><p class="text-xs text-surface-500 leading-relaxed">Use STL for direct 3D printing. Use OBJ for editing in Blender. Use GLB for sharing online or embedding in web-based viewers.</p></div></div>
+        <div class="flex gap-3 p-4 rounded-tool border border-surface-200 dark:border-surface-800">
+          <span class="w-5 h-5 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center flex-shrink-0 mt-0.5"><svg class="w-3 h-3 text-amber-600 dark:text-amber-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span>
+          <div><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-1">Use Grayscale Images for Precise Control</h3><p class="text-xs text-surface-500 leading-relaxed">For maximum control over the height map, convert your image to grayscale first. Each shade of gray maps to a specific height, giving you predictable results. Dark gray = low areas, light gray = high areas.</p></div>
+        </div>
+        <div class="flex gap-3 p-4 rounded-tool border border-surface-200 dark:border-surface-800">
+          <span class="w-5 h-5 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center flex-shrink-0 mt-0.5"><svg class="w-3 h-3 text-amber-600 dark:text-amber-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span>
+          <div><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-1">Remove Backgrounds Before Uploading</h3><p class="text-xs text-surface-500 leading-relaxed">A clean subject isolated from the background produces the best 3D relief. Remove backgrounds in any image editor, or use a PNG with transparency. The transparent areas automatically map to zero height.</p></div>
+        </div>
+        <div class="flex gap-3 p-4 rounded-tool border border-surface-200 dark:border-surface-800">
+          <span class="w-5 h-5 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center flex-shrink-0 mt-0.5"><svg class="w-3 h-3 text-amber-600 dark:text-amber-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span>
+          <div><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-1">Test with Sample Images First</h3><p class="text-xs text-surface-500 leading-relaxed">The tool includes built-in sample images. Use them to understand how each parameter affects the output before uploading your own photos. This saves time and helps you dial in the right settings.</p></div>
+        </div>
+        <div class="flex gap-3 p-4 rounded-tool border border-surface-200 dark:border-surface-800">
+          <span class="w-5 h-5 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center flex-shrink-0 mt-0.5"><svg class="w-3 h-3 text-amber-600 dark:text-amber-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span>
+          <div><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-1">Use the Invert Toggle for Different Effects</h3><p class="text-xs text-surface-500 leading-relaxed">The invert button swaps embossed (raised) and engraved (recessed) modes. Try both on every image. Portraits often look better engraved; text and logos usually work better embossed. Preview both before downloading.</p></div>
+        </div>
+        <div class="flex gap-3 p-4 rounded-tool border border-surface-200 dark:border-surface-800">
+          <span class="w-5 h-5 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center flex-shrink-0 mt-0.5"><svg class="w-3 h-3 text-amber-600 dark:text-amber-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span>
+          <div><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-1">Add a Base Plate for Stability</h3><p class="text-xs text-surface-500 leading-relaxed">Enable the base plate option to add a flat bottom surface. This makes relief models stand upright for display, improves bed adhesion during printing, and gives the print a professional finished look.</p></div>
+        </div>
+        <div class="flex gap-3 p-4 rounded-tool border border-surface-200 dark:border-surface-800">
+          <span class="w-5 h-5 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center flex-shrink-0 mt-0.5"><svg class="w-3 h-3 text-amber-600 dark:text-amber-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span>
+          <div><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-1">Resize in Your Slicer, Not the Tool</h3><p class="text-xs text-surface-500 leading-relaxed">The tool generates a model at a default scale. Resize it in your slicer (Cura, PrusaSlicer) to fit your printer bed and desired output size. This gives you millimeter-precise control over the final print dimensions.</p></div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 
+    <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16">
+      <h2 class="text-xl font-semibold mb-2 text-surface-900 dark:text-surface-100">Technical Specifications</h2>
+      <p class="text-sm text-surface-500 mb-8 max-w-[65ch]">Understand the technical capabilities and limitations of the browser-based image to STL converter.</p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="rounded-tool border border-surface-200 dark:border-surface-800 p-4">
+          <h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">Processing Resolution</h3>
+          <p class="text-xs text-surface-500 leading-relaxed">Images are processed at 512px on the longest side for performance. This generates STL meshes with up to 250K+ triangles, which provides excellent detail for FDM and resin 3D printing. The limiting factor is typically your slicer's mesh handling, not the conversion quality.</p>
+        </div>
+        <div class="rounded-tool border border-surface-200 dark:border-surface-800 p-4">
+          <h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">STL Output Quality</h3>
+          <p class="text-xs text-surface-500 leading-relaxed">All modes produce watertight, manifold binary STL files. No mesh repair is needed before slicing. The output is compatible with Cura, PrusaSlicer, Bambu Studio, OrcaSlicer, Simplify3D, and all standard slicers.</p>
+        </div>
+        <div class="rounded-tool border border-surface-200 dark:border-surface-800 p-4">
+          <h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">Browser Requirements</h3>
+          <p class="text-xs text-surface-500 leading-relaxed">Works on Chrome, Firefox, Edge, and Safari (desktop and mobile). Requires WebGL support for the 3D preview. The converter itself uses Canvas API and works on any modern browser. No extensions or plugins needed.</p>
+        </div>
+        <div class="rounded-tool border border-surface-200 dark:border-surface-800 p-4">
+          <h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">Performance</h3>
+          <p class="text-xs text-surface-500 leading-relaxed">Conversion is near-instant on modern hardware. The heightmap algorithm processes in milliseconds. SVG path parsing and triangulation may take 1-2 seconds for complex designs. Mesh generation and STL export complete within 1-2 seconds for typical resolutions.</p>
+        </div>
+        <div class="rounded-tool border border-surface-200 dark:border-surface-800 p-4">
+          <h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">Privacy &amp; Data Handling</h3>
+          <p class="text-xs text-surface-500 leading-relaxed">Zero data leaves your device. No cookies track your usage. No analytics scripts monitor your conversions. No CDN, no third-party services, no server logs. The entire tool is a static web page served once and runs entirely client-side.</p>
+        </div>
+        <div class="rounded-tool border border-surface-200 dark:border-surface-800 p-4">
+          <h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">Supported 3D Printers</h3>
+          <p class="text-xs text-surface-500 leading-relaxed">Compatible with all FDM printers (Creality, Prusa, Bambu Lab, Anycubic, Elegoo) and resin/SLA printers. The STL format is universal. Print size is determined by your printer bed &mdash; scale in your slicer to fit any build volume.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16">
+      <h2 class="text-xl font-semibold mb-2 text-surface-900 dark:text-surface-100">Who Should Use This Image to STL Converter</h2>
+      <p class="text-sm text-surface-500 mb-8 max-w-[65ch]">This tool is built for anyone who wants to turn 2D images into 3D prints &mdash; from complete beginners to experienced makers.</p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div class="rounded-tool border border-surface-200 dark:border-surface-800 p-5">
+          <h3 class="font-semibold text-surface-900 dark:text-surface-100 text-sm mb-2">3D Printing Hobbyists</h3>
+          <p class="text-xs text-surface-500 leading-relaxed">Got a new 3D printer and want to make something personal? Upload a family photo, a drawing your kid made, or a favorite meme &mdash; turn it into a unique 3D print in minutes. No modeling skills required.</p>
+        </div>
+        <div class="rounded-tool border border-surface-200 dark:border-surface-800 p-5">
+          <h3 class="font-semibold text-surface-900 dark:text-surface-100 text-sm mb-2">Makers &amp; DIY Creators</h3>
+          <p class="text-xs text-surface-500 leading-relaxed">Create custom cookie cutters from any silhouette. Make personalized signs, stamps, embossing tools, keychains, and decorative items. If you can draw it or photograph it, you can print it.</p>
+        </div>
+        <div class="rounded-tool border border-surface-200 dark:border-surface-800 p-5">
+          <h3 class="font-semibold text-surface-900 dark:text-surface-100 text-sm mb-2">Designers &amp; Artists</h3>
+          <p class="text-xs text-surface-500 leading-relaxed">Rapidly prototype relief designs from your digital artwork. Convert logo concepts to physical mockups. Create lithophane art pieces from photography. Test ideas in hours instead of days.</p>
+        </div>
+        <div class="rounded-tool border border-surface-200 dark:border-surface-800 p-5">
+          <h3 class="font-semibold text-surface-900 dark:text-surface-100 text-sm mb-2">Educators &amp; Students</h3>
+          <p class="text-xs text-surface-500 leading-relaxed">Create tactile teaching aids from maps, diagrams, and illustrations. Make learning accessible for visually impaired students. Bring geography, biology, and history to life with 3D printed models.</p>
+        </div>
+        <div class="rounded-tool border border-surface-200 dark:border-surface-800 p-5">
+          <h3 class="font-semibold text-surface-900 dark:text-surface-100 text-sm mb-2">Small Business Owners</h3>
+          <p class="text-xs text-surface-500 leading-relaxed">Create custom merchandise from your logo. Design unique product packaging molds. Make branded cookie cutters, stamps, and signage. All with zero software cost and no 3D modeling expertise needed.</p>
+        </div>
+        <div class="rounded-tool border border-surface-200 dark:border-surface-800 p-5">
+          <h3 class="font-semibold text-surface-900 dark:text-surface-100 text-sm mb-2">Cosplay &amp; Prop Makers</h3>
+          <p class="text-xs text-surface-500 leading-relaxed">Convert reference images and texture maps into 3D models for armor pieces, prop details, and costume accessories. Use the heightmap editor to extract depth from concept art and game textures.</p>
+        </div>
+      </div>
+    </section>
+pt-14 sm:pt-16" id="faq">
+      <h2 class="text-xl font-semibold mb-6 text-surface-900 dark:text-surface-100">Frequently Asked Questions</h2>
+      <dl class="space-y-6 max-w-3xl">
+        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">What is an STL file and why do I need one?</dt><dd class="text-sm text-surface-500 leading-relaxed">STL (STereoLithography) is the universal file format for 3D printing. It represents a 3D surface as a mesh of triangles and is accepted by every 3D printer slicer, including Cura, PrusaSlicer, and Bambu Studio.</dd></div>
+        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">Is this image to STL converter really free?</dt><dd class="text-sm text-surface-500 leading-relaxed">Yes, completely free. No registration, no hidden fees, no file count limits, no watermarks. All processing happens in your browser &mdash; there is no server to bill, so we keep it free forever.</dd></div>
+        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">What image formats can I convert to STL?</dt><dd class="text-sm text-surface-500 leading-relaxed">JPG, PNG, and SVG are fully supported with dedicated conversion modes. BMP, WebP, and other common raster formats also work through heightmap mode. SVG extrusion produces the best results for logos and icons.</dd></div>
+        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">Where does my image go? Is it uploaded anywhere?</dt><dd class="text-sm text-surface-500 leading-relaxed">Nowhere. All processing happens entirely in your browser using JavaScript, Canvas, and WebGL APIs. Your images never leave your device. No data is ever uploaded to any server.</dd></div>
+        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">What 3D file formats can I export to?</dt><dd class="text-sm text-surface-500 leading-relaxed">You can export to STL (universal 3D printing), OBJ (Wavefront with color support for Blender), and GLB (modern glTF binary, ideal for web, AR, and VR). All formats generated in your browser.</dd></div>
+        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">Can I use the generated STL for actual 3D printing?</dt><dd class="text-sm text-surface-500 leading-relaxed">Absolutely. The output is standard binary STL, ready for direct slicing in Cura, PrusaSlicer, Bambu Studio, or any other 3D printing software. No post-processing needed for most models.</dd></div>
+        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">How is this different from server-based online converters?</dt><dd class="text-sm text-surface-500 leading-relaxed">Server-based converters upload your files to remote servers &mdash; privacy risk, size limits, wait times, daily caps. Our tool runs 100% in your browser &mdash; instant 3D preview, real-time adjustments, unlimited conversions, complete privacy.</dd></div>
+        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">What conversion modes are available?</dt><dd class="text-sm text-surface-500 leading-relaxed">Three modes: Heightmap converts pixel brightness to 3D height for photo reliefs. SVG Extrusion extracts vector paths into solid 3D shapes for logos and text. Lithophane creates translucent panels that reveal an image when backlit.</dd></div>
+        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">Does this work on mobile devices?</dt><dd class="text-sm text-surface-500 leading-relaxed">Yes, fully responsive. Upload photos from your phone, preview the 3D model with touch controls, and download STL files. Performance depends on device GPU.</dd></div>
+        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">Do I need 3D modeling experience?</dt><dd class="text-sm text-surface-500 leading-relaxed">Not at all. This tool is designed for beginners. Upload an image, adjust a few sliders, download your STL. If you can take a photo, you can make a 3D model.</dd></div>
+      
+        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">Is the STL output watertight and printable?</dt><dd class="text-sm text-surface-500 leading-relaxed">Yes. All three modes (heightmap, SVG extrusion, lithophane) produce manifold (watertight) meshes. The output passes standard mesh validation checks. You can slice and print immediately without mesh repair.</dd></div>
+        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">What happens if I upload a very large image?</dt><dd class="text-sm text-surface-500 leading-relaxed">Images are automatically resized to 512px on the longest side before processing. This keeps conversion fast while maintaining more than enough detail for 3D printing. Original files up to 50MB are handled without issues since processing is local.</dd></div>
+        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">Can I use the generated STL files for commercial purposes?</dt><dd class="text-sm text-surface-500 leading-relaxed">Yes. You own all STL files you generate. Use them for personal projects, sell them on Etsy or 3D model marketplaces, include them in commercial products, or share them freely. We claim no rights over your output.</dd></div>
+        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">Why do some images produce better 3D results than others?</dt><dd class="text-sm text-surface-500 leading-relaxed">The quality of the 3D relief depends heavily on the image's contrast and detail. Images with dramatic lighting, clear edges, and good tonal range produce the best results. Flat, low-contrast, or blurry images result in shallow, indistinct 3D surfaces. For best results, adjust your image's contrast in a photo editor before uploading.</dd></div>
+        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">How does SVG extrusion handle complex designs?</dt><dd class="text-sm text-surface-500 leading-relaxed">The SVG parser handles paths, polygons, rectangles, circles, ellipses, and compound shapes. Nested shapes create holes automatically. Complex designs with many elements may take slightly longer to triangulate but produce accurate results. If a design is too complex for extrusion, the tool auto-falls back to raster heightmap mode.</dd></div>
+        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">What is the difference between Heightmap and Lithophane modes?</dt><dd class="text-sm text-surface-500 leading-relaxed">Heightmap mode creates a one-sided relief where brightness maps to height &mdash; ideal for viewing from the front. Lithophane mode creates a thin panel where thickness controls light transmission &mdash; designed to be backlit for viewing. Use heightmap for wall art and reliefs; use lithophane for lamps and light boxes.</dd></div>
+        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">Does the tool work offline?</dt><dd class="text-sm text-surface-500 leading-relaxed">Once the page loads, the core conversion functionality works without an internet connection. The initial page load requires internet, but all image processing, 3D preview, and STL generation run entirely client-side with no network requests. You can convert images even if your connection drops after page load.</dd></div>
+        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">How does the smoothness slider affect the STL output?</dt><dd class="text-sm text-surface-500 leading-relaxed">Smoothness controls how much the mesh is simplified. Low smoothness preserves every pixel detail but creates larger STL files with more triangles. High smoothness produces simpler, smaller files but may lose fine texture. For detailed portraits, use low smoothness. For geometric shapes and logos, use higher smoothness for cleaner edges.</dd></div>
+        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">Can I batch convert multiple images at once?</dt><dd class="text-sm text-surface-500 leading-relaxed">The tool processes one image at a time. However, since all processing is local, you can convert images back-to-back with zero waiting. Many users keep the tool open and process a batch of photos sequentially. There is no queue, no daily limit, and no throttling.</dd></div>
+        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">Which 3D printing filament works best for photo reliefs?</dt><dd class="text-sm text-surface-500 leading-relaxed">For photo reliefs and decorative prints: PLA in any color works well. Matte PLA hides layer lines better. Silk/shiny PLA can make details harder to see. For lithophanes: white PLA or natural PLA is essential for proper light transmission. Avoid dark, transparent, or glitter filaments for lithophanes as they block or scatter light.</dd></div>
+</dl>
+      <p class="mt-6"><a href="/faq" class="text-sm text-accent-600 dark:text-accent-400 hover:underline font-medium">View all FAQs &rarr;</a></p>
+    </section>
+
+    <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16 mb-4">
+      <div class="text-center max-w-xl mx-auto">
+        <h2 class="text-xl font-semibold mb-3 text-surface-900 dark:text-surface-100">Ready to Turn Your Images into 3D Models?</h2>
+        <p class="text-sm text-surface-500 mb-6 leading-relaxed">Upload any image above and start converting. No registration, no software, no waiting. Get a print-ready STL file in under a minute &mdash; all from your browser.</p>
+        <div class="flex flex-wrap gap-2 justify-center">
+          <a href="/jpg-to-stl" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-accent-600 hover:bg-accent-700 text-white text-sm font-medium transition-colors">Convert JPG to STL</a>
+          <a href="/png-to-stl" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-accent-600 hover:bg-accent-700 text-white text-sm font-medium transition-colors">Convert PNG to STL</a>
+          <a href="/svg-to-stl" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-accent-600 hover:bg-accent-700 text-white text-sm font-medium transition-colors">Convert SVG to STL</a>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</BaseLayout>

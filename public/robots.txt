@@ -1,0 +1,15 @@
+User-agent: *
+Allow: /
+Sitemap: https://image-to-stl.com/sitemap-index.xml
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
