@@ -6,6 +6,6 @@ import sitemap from "@astrojs/sitemap";
 export default defineConfig({
   integrations: [tailwind(), react(), sitemap()],
   output: "static",
-  site: "https://image-to-stl.com",
+  site: "https://image-2-stl.com",
   trailingSlash: "never",
 });
