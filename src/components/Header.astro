@@ -2,12 +2,12 @@
 const currentPath = Astro.url.pathname;
 
 const navItems = [
-  { label: "JPG to STL", href: "/jpg-to-stl" },
-  { label: "PNG to STL", href: "/png-to-stl" },
-  { label: "SVG to STL", href: "/svg-to-stl" },
-  { label: "Lithophane", href: "/lithophane-maker" },
-  { label: "Text to STL", href: "/text-to-stl" },
-  { label: "Cookie Cutter", href: "/cookie-cutter" },
+  { label: "JPG to STL", href: "/jpg-to-stl/" },
+  { label: "PNG to STL", href: "/png-to-stl/" },
+  { label: "SVG to STL", href: "/svg-to-stl/" },
+  { label: "Lithophane", href: "/lithophane-maker/" },
+  { label: "Text to STL", href: "/text-to-stl/" },
+  { label: "Cookie Cutter", href: "/cookie-cutter/" },
 ];
 ---
 
@@ -42,10 +42,10 @@ const navItems = [
 
     <div class="flex items-center gap-3">
       <div class="hidden md:flex items-center gap-2">
-        <a href="/heightmap-editor" class="text-sm text-surface-500 hover:text-surface-700 dark:hover:text-surface-300 transition-colors">Editor</a>
-        <a href="/how-to-convert-image-to-stl" class="text-sm text-surface-500 hover:text-surface-700 dark:hover:text-surface-300 transition-colors">Guide</a>
-        <a href="/faq" class="text-sm text-surface-500 hover:text-surface-700 dark:hover:text-surface-300 transition-colors">FAQ</a>
-        <a href="/blog" class="text-sm text-surface-500 hover:text-surface-700 dark:hover:text-surface-300 transition-colors">Blog</a>
+        <a href="/heightmap-editor/" class="text-sm text-surface-500 hover:text-surface-700 dark:hover:text-surface-300 transition-colors">Editor</a>
+        <a href="/how-to-convert-image-to-stl/" class="text-sm text-surface-500 hover:text-surface-700 dark:hover:text-surface-300 transition-colors">Guide</a>
+        <a href="/faq/" class="text-sm text-surface-500 hover:text-surface-700 dark:hover:text-surface-300 transition-colors">FAQ</a>
+        <a href="/blog/" class="text-sm text-surface-500 hover:text-surface-700 dark:hover:text-surface-300 transition-colors">Blog</a>
       </div>
       <button
         type="button"
@@ -62,17 +62,17 @@ const navItems = [
   <div id="mobile-nav" class="md:hidden hidden border-t border-surface-200 dark:border-surface-800 py-2 px-4 bg-surface-50/95 dark:bg-surface-950/95 backdrop-blur-md">
     <nav class="flex flex-col gap-1" aria-label="Mobile">
       <a href="/" class="px-3 py-2 rounded-lg text-sm text-surface-600 dark:text-surface-400 hover:bg-surface-200 dark:hover:bg-surface-800 hover:text-surface-900 dark:hover:text-surface-100">Image to STL</a>
-      <a href="/jpg-to-stl" class="px-3 py-2 rounded-lg text-sm text-surface-600 dark:text-surface-400 hover:bg-surface-200 dark:hover:bg-surface-800 hover:text-surface-900 dark:hover:text-surface-100">JPG to STL</a>
-      <a href="/png-to-stl" class="px-3 py-2 rounded-lg text-sm text-surface-600 dark:text-surface-400 hover:bg-surface-200 dark:hover:bg-surface-800 hover:text-surface-900 dark:hover:text-surface-100">PNG to STL</a>
-      <a href="/svg-to-stl" class="px-3 py-2 rounded-lg text-sm text-surface-600 dark:text-surface-400 hover:bg-surface-200 dark:hover:bg-surface-800 hover:text-surface-900 dark:hover:text-surface-100">SVG to STL</a>
-      <a href="/lithophane-maker" class="px-3 py-2 rounded-lg text-sm text-surface-600 dark:text-surface-400 hover:bg-surface-200 dark:hover:bg-surface-800 hover:text-surface-900 dark:hover:text-surface-100">Lithophane Maker</a>
-      <a href="/text-to-stl" class="px-3 py-2 rounded-lg text-sm text-surface-600 dark:text-surface-400 hover:bg-surface-200 dark:hover:bg-surface-800 hover:text-surface-900 dark:hover:text-surface-100">Text to STL</a>
-      <a href="/cookie-cutter" class="px-3 py-2 rounded-lg text-sm text-surface-600 dark:text-surface-400 hover:bg-surface-200 dark:hover:bg-surface-800 hover:text-surface-900 dark:hover:text-surface-100">Cookie Cutter</a>
-      <a href="/photo-to-3d" class="px-3 py-2 rounded-lg text-sm text-surface-600 dark:text-surface-400 hover:bg-surface-200 dark:hover:bg-surface-800 hover:text-surface-900 dark:hover:text-surface-100">Photo to 3D</a>
-      <a href="/heightmap-editor" class="px-3 py-2 rounded-lg text-sm text-surface-600 dark:text-surface-400 hover:bg-surface-200 dark:hover:bg-surface-800 hover:text-surface-900 dark:hover:text-surface-100">Heightmap Editor</a>
-      <a href="/how-to-convert-image-to-stl" class="px-3 py-2 rounded-lg text-sm text-surface-600 dark:text-surface-400 hover:bg-surface-200 dark:hover:bg-surface-800 hover:text-surface-900 dark:hover:text-surface-100">Guide</a>
-      <a href="/faq" class="px-3 py-2 rounded-lg text-sm text-surface-600 dark:text-surface-400 hover:bg-surface-200 dark:hover:bg-surface-800 hover:text-surface-900 dark:hover:text-surface-100">FAQ</a>
-      <a href="/blog" class="px-3 py-2 rounded-lg text-sm text-surface-600 dark:text-surface-400 hover:bg-surface-200 dark:hover:bg-surface-800 hover:text-surface-900 dark:hover:text-surface-100">Blog</a>
+      <a href="/jpg-to-stl/" class="px-3 py-2 rounded-lg text-sm text-surface-600 dark:text-surface-400 hover:bg-surface-200 dark:hover:bg-surface-800 hover:text-surface-900 dark:hover:text-surface-100">JPG to STL</a>
+      <a href="/png-to-stl/" class="px-3 py-2 rounded-lg text-sm text-surface-600 dark:text-surface-400 hover:bg-surface-200 dark:hover:bg-surface-800 hover:text-surface-900 dark:hover:text-surface-100">PNG to STL</a>
+      <a href="/svg-to-stl/" class="px-3 py-2 rounded-lg text-sm text-surface-600 dark:text-surface-400 hover:bg-surface-200 dark:hover:bg-surface-800 hover:text-surface-900 dark:hover:text-surface-100">SVG to STL</a>
+      <a href="/lithophane-maker/" class="px-3 py-2 rounded-lg text-sm text-surface-600 dark:text-surface-400 hover:bg-surface-200 dark:hover:bg-surface-800 hover:text-surface-900 dark:hover:text-surface-100">Lithophane Maker</a>
+      <a href="/text-to-stl/" class="px-3 py-2 rounded-lg text-sm text-surface-600 dark:text-surface-400 hover:bg-surface-200 dark:hover:bg-surface-800 hover:text-surface-900 dark:hover:text-surface-100">Text to STL</a>
+      <a href="/cookie-cutter/" class="px-3 py-2 rounded-lg text-sm text-surface-600 dark:text-surface-400 hover:bg-surface-200 dark:hover:bg-surface-800 hover:text-surface-900 dark:hover:text-surface-100">Cookie Cutter</a>
+      <a href="/photo-to-3d/" class="px-3 py-2 rounded-lg text-sm text-surface-600 dark:text-surface-400 hover:bg-surface-200 dark:hover:bg-surface-800 hover:text-surface-900 dark:hover:text-surface-100">Photo to 3D</a>
+      <a href="/heightmap-editor/" class="px-3 py-2 rounded-lg text-sm text-surface-600 dark:text-surface-400 hover:bg-surface-200 dark:hover:bg-surface-800 hover:text-surface-900 dark:hover:text-surface-100">Heightmap Editor</a>
+      <a href="/how-to-convert-image-to-stl/" class="px-3 py-2 rounded-lg text-sm text-surface-600 dark:text-surface-400 hover:bg-surface-200 dark:hover:bg-surface-800 hover:text-surface-900 dark:hover:text-surface-100">Guide</a>
+      <a href="/faq/" class="px-3 py-2 rounded-lg text-sm text-surface-600 dark:text-surface-400 hover:bg-surface-200 dark:hover:bg-surface-800 hover:text-surface-900 dark:hover:text-surface-100">FAQ</a>
+      <a href="/blog/" class="px-3 py-2 rounded-lg text-sm text-surface-600 dark:text-surface-400 hover:bg-surface-200 dark:hover:bg-surface-800 hover:text-surface-900 dark:hover:text-surface-100">Blog</a>
     </nav>
   </div>
 </header>

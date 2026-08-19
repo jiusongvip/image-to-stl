@@ -1,6 +1,6 @@
 User-agent: *
 Allow: /
-Sitemap: https://image-to-stl.com/sitemap-index.xml
+Sitemap: https://www.image-2-stl.com/sitemap-index.xml
 
 User-agent: GPTBot
 Allow: /

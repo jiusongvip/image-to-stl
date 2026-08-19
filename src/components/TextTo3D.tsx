@@ -252,7 +252,7 @@ export default function TextTo3D() {
             Text is rendered to a canvas, then converted to a heightmap. White areas become raised,
             black areas stay at base level. Use bold fonts and short text for best 3D results.
             For cleaner vector edges, try the{" "}
-            <a href="/svg-to-stl" className="text-accent-600 dark:text-accent-400 hover:underline">SVG to STL converter</a>{" "}
+            <a href="/svg-to-stl/" className="text-accent-600 dark:text-accent-400 hover:underline">SVG to STL converter</a>{" "}
             with text converted to paths.
           </p>
         </div>

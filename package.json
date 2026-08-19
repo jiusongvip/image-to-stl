@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "build": "npx astro build",
+    "build": "npx astro build && node scripts/fix-sitemap-home.mjs",
     "preview": "astro preview"
   },
   "dependencies": {

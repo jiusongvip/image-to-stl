@@ -13,7 +13,7 @@ const softwareSchema = {
     "Free online tool to convert images (JPG, PNG, SVG) to STL 3D models for 3D printing. Real-time 3D preview, browser-based processing. Supports heightmap, lithophane, and SVG extrusion modes.",
 };
 
-const websiteSchema = { "@context": "https://schema.org", "@type": "WebSite", name: "Image to STL Converter", url: "https://image-2-stl.com", description: "Free online tool to convert images to STL 3D models for 3D printing. Browser-based, no uploads required.", potentialAction: { "@type": "SearchAction", target: "https://image-2-stl.com/search?q={search_term_string}", "query-input": "required name=search_term_string" } }; const combinedSchema = [websiteSchema, softwareSchema];
+const websiteSchema = { "@context": "https://schema.org", "@type": "WebSite", name: "Image to STL Converter", url: "https://www.image-2-stl.com", description: "Free online tool to convert images to STL 3D models for 3D printing. Browser-based, no uploads required.", potentialAction: { "@type": "SearchAction", target: "https://www.image-2-stl.com/search?q={search_term_string}", "query-input": "required name=search_term_string" } }; const combinedSchema = [websiteSchema, softwareSchema];
 
 const keywords = "image to stl, jpg to stl, png to stl, svg to stl, convert image to stl, image to 3d model, photo to stl, free stl converter, 3d printing, image to 3d print, online stl converter, heightmap to stl, lithophane maker, photo to 3d model";
 ---
@@ -21,10 +21,10 @@ const keywords = "image to stl, jpg to stl, png to stl, svg to stl, convert imag
 <BaseLayout
   title="Image to STL Converter — Free Online 3D Model Generator"
   description="Convert JPG, PNG & SVG images to STL, OBJ, and GLB files for 3D printing. 100% browser-based, no uploads. Real-time 3D preview. Free, no registration."
-  canonical="https://image-2-stl.com"
+  canonical="https://www.image-2-stl.com"
  schema={combinedSchema}
   breadcrumbs={[
-    { name: "Image to STL Converter", url: "https://image-2-stl.com" }
+    { name: "Image to STL Converter", url: "https://www.image-2-stl.com" }
   ]}
   keywords={keywords}
 >
@@ -308,35 +308,35 @@ const keywords = "image to stl, jpg to stl, png to stl, svg to stl, convert imag
       <p class="section-tag">08 &mdash; More tools</p>
       <h2 class="editorial-title mt-2 mb-8">More Free 3D Tools</h2>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <a href="/jpg-to-stl" class="block p-4 rounded-tool border border-surface-200 dark:border-surface-800 hover:border-accent-300 dark:hover:border-accent-700 transition-colors group">
+        <a href="/jpg-to-stl/" class="block p-4 rounded-tool border border-surface-200 dark:border-surface-800 hover:border-accent-300 dark:hover:border-accent-700 transition-colors group">
           <div class="flex items-center gap-3 mb-2"><span class="w-8 h-8 rounded-lg bg-accent-100 dark:bg-accent-900/40 flex items-center justify-center flex-shrink-0"><svg class="w-4 h-4 text-accent-600 dark:text-accent-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg></span><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm group-hover:text-accent-600 dark:group-hover:text-accent-400 transition-colors">JPG to STL</h3></div>
           <p class="text-xs text-surface-500 leading-relaxed">Convert JPG photos to 3D printable models with heightmap mode.</p>
         </a>
-        <a href="/png-to-stl" class="block p-4 rounded-tool border border-surface-200 dark:border-surface-800 hover:border-accent-300 dark:hover:border-accent-700 transition-colors group">
+        <a href="/png-to-stl/" class="block p-4 rounded-tool border border-surface-200 dark:border-surface-800 hover:border-accent-300 dark:hover:border-accent-700 transition-colors group">
           <div class="flex items-center gap-3 mb-2"><span class="w-8 h-8 rounded-lg bg-accent-100 dark:bg-accent-900/40 flex items-center justify-center flex-shrink-0"><svg class="w-4 h-4 text-accent-600 dark:text-accent-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="9" x2="15" y2="15"/><line x1="15" y1="9" x2="9" y2="15"/></svg></span><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm group-hover:text-accent-600 dark:group-hover:text-accent-400 transition-colors">PNG to STL</h3></div>
           <p class="text-xs text-surface-500 leading-relaxed">PNG images with transparency for clean reliefs and extrusions.</p>
         </a>
-        <a href="/svg-to-stl" class="block p-4 rounded-tool border border-surface-200 dark:border-surface-800 hover:border-accent-300 dark:hover:border-accent-700 transition-colors group">
+        <a href="/svg-to-stl/" class="block p-4 rounded-tool border border-surface-200 dark:border-surface-800 hover:border-accent-300 dark:hover:border-accent-700 transition-colors group">
           <div class="flex items-center gap-3 mb-2"><span class="w-8 h-8 rounded-lg bg-accent-100 dark:bg-accent-900/40 flex items-center justify-center flex-shrink-0"><svg class="w-4 h-4 text-accent-600 dark:text-accent-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></span><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm group-hover:text-accent-600 dark:group-hover:text-accent-400 transition-colors">SVG to STL</h3></div>
           <p class="text-xs text-surface-500 leading-relaxed">Extrude vector paths into watertight 3D solids for printing.</p>
         </a>
-        <a href="/photo-to-3d" class="block p-4 rounded-tool border border-surface-200 dark:border-surface-800 hover:border-accent-300 dark:hover:border-accent-700 transition-colors group">
+        <a href="/photo-to-3d/" class="block p-4 rounded-tool border border-surface-200 dark:border-surface-800 hover:border-accent-300 dark:hover:border-accent-700 transition-colors group">
           <div class="flex items-center gap-3 mb-2"><span class="w-8 h-8 rounded-lg bg-accent-100 dark:bg-accent-900/40 flex items-center justify-center flex-shrink-0"><svg class="w-4 h-4 text-accent-600 dark:text-accent-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="2.5"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m22 16-5-5-3.5 3.5-3-3L2 18"/></svg></span><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm group-hover:text-accent-600 dark:group-hover:text-accent-400 transition-colors">Photo to 3D</h3></div>
           <p class="text-xs text-surface-500 leading-relaxed">Turn any photo into a 3D model with advanced depth mapping.</p>
         </a>
-        <a href="/text-to-stl" class="block p-4 rounded-tool border border-surface-200 dark:border-surface-800 hover:border-accent-300 dark:hover:border-accent-700 transition-colors group">
+        <a href="/text-to-stl/" class="block p-4 rounded-tool border border-surface-200 dark:border-surface-800 hover:border-accent-300 dark:hover:border-accent-700 transition-colors group">
           <div class="flex items-center gap-3 mb-2"><span class="w-8 h-8 rounded-lg bg-accent-100 dark:bg-accent-900/40 flex items-center justify-center flex-shrink-0"><svg class="w-4 h-4 text-accent-600 dark:text-accent-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg></span><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm group-hover:text-accent-600 dark:group-hover:text-accent-400 transition-colors">Text to STL</h3></div>
           <p class="text-xs text-surface-500 leading-relaxed">Type any text and extrude it into a 3D printable model instantly.</p>
         </a>
-        <a href="/cookie-cutter" class="block p-4 rounded-tool border border-surface-200 dark:border-surface-800 hover:border-accent-300 dark:hover:border-accent-700 transition-colors group">
+        <a href="/cookie-cutter/" class="block p-4 rounded-tool border border-surface-200 dark:border-surface-800 hover:border-accent-300 dark:hover:border-accent-700 transition-colors group">
           <div class="flex items-center gap-3 mb-2"><span class="w-8 h-8 rounded-lg bg-accent-100 dark:bg-accent-900/40 flex items-center justify-center flex-shrink-0"><svg class="w-4 h-4 text-accent-600 dark:text-accent-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm group-hover:text-accent-600 dark:group-hover:text-accent-400 transition-colors">Cookie Cutter Maker</h3></div>
           <p class="text-xs text-surface-500 leading-relaxed">Turn silhouettes into custom cookie cutter STL files in seconds.</p>
         </a>
-        <a href="/lithophane-maker" class="block p-4 rounded-tool border border-surface-200 dark:border-surface-800 hover:border-accent-300 dark:hover:border-accent-700 transition-colors group">
+        <a href="/lithophane-maker/" class="block p-4 rounded-tool border border-surface-200 dark:border-surface-800 hover:border-accent-300 dark:hover:border-accent-700 transition-colors group">
           <div class="flex items-center gap-3 mb-2"><span class="w-8 h-8 rounded-lg bg-accent-100 dark:bg-accent-900/40 flex items-center justify-center flex-shrink-0"><svg class="w-4 h-4 text-accent-600 dark:text-accent-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2 2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></span><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm group-hover:text-accent-600 dark:group-hover:text-accent-400 transition-colors">Lithophane Maker</h3></div>
           <p class="text-xs text-surface-500 leading-relaxed">Create stunning backlit 3D prints from your photos.</p>
         </a>
-        <a href="/heightmap-editor" class="block p-4 rounded-tool border border-surface-200 dark:border-surface-800 hover:border-accent-300 dark:hover:border-accent-700 transition-colors group">
+        <a href="/heightmap-editor/" class="block p-4 rounded-tool border border-surface-200 dark:border-surface-800 hover:border-accent-300 dark:hover:border-accent-700 transition-colors group">
           <div class="flex items-center gap-3 mb-2"><span class="w-8 h-8 rounded-lg bg-accent-100 dark:bg-accent-900/40 flex items-center justify-center flex-shrink-0"><svg class="w-4 h-4 text-accent-600 dark:text-accent-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm group-hover:text-accent-600 dark:group-hover:text-accent-400 transition-colors">Heightmap Editor</h3></div>
           <p class="text-xs text-surface-500 leading-relaxed">Fine-tune contrast, brightness, and threshold for precise reliefs.</p>
         </a>
@@ -470,7 +470,7 @@ const keywords = "image to stl, jpg to stl, png to stl, svg to stl, convert imag
         <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">Can I batch convert multiple images at once?</dt><dd class="text-sm text-surface-500 leading-relaxed">The tool processes one image at a time. However, since all processing is local, you can convert images back-to-back with zero waiting. Many users keep the tool open and process a batch of photos sequentially. There is no queue, no daily limit, and no throttling.</dd></div>
         <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">Which 3D printing filament works best for photo reliefs?</dt><dd class="text-sm text-surface-500 leading-relaxed">For photo reliefs and decorative prints: PLA in any color works well. Matte PLA hides layer lines better. Silk/shiny PLA can make details harder to see. For lithophanes: white PLA or natural PLA is essential for proper light transmission. Avoid dark, transparent, or glitter filaments for lithophanes as they block or scatter light.</dd></div>
 </dl>
-      <p class="mt-6"><a href="/faq" class="text-sm text-accent-600 dark:text-accent-400 hover:underline font-medium">View all FAQs &rarr;</a></p>
+      <p class="mt-6"><a href="/faq/" class="text-sm text-accent-600 dark:text-accent-400 hover:underline font-medium">View all FAQs &rarr;</a></p>
     </section>
 
     <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16 mb-4 reveal">
@@ -483,9 +483,9 @@ const keywords = "image to stl, jpg to stl, png to stl, svg to stl, convert imag
             Start Converting Now
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg>
           </a>
-          <a href="/jpg-to-stl" class="inline-flex items-center gap-1.5 px-5 py-3.5 rounded-xl border border-surface-300 dark:border-surface-700 bg-surface-50/80 dark:bg-surface-900/60 text-surface-700 dark:text-surface-300 text-sm font-medium transition-colors hover:border-accent-400 hover:text-accent-600 dark:hover:text-accent-400">Convert JPG to STL</a>
-          <a href="/png-to-stl" class="inline-flex items-center gap-1.5 px-5 py-3.5 rounded-xl border border-surface-300 dark:border-surface-700 bg-surface-50/80 dark:bg-surface-900/60 text-surface-700 dark:text-surface-300 text-sm font-medium transition-colors hover:border-accent-400 hover:text-accent-600 dark:hover:text-accent-400">Convert PNG to STL</a>
-          <a href="/svg-to-stl" class="inline-flex items-center gap-1.5 px-5 py-3.5 rounded-xl border border-surface-300 dark:border-surface-700 bg-surface-50/80 dark:bg-surface-900/60 text-surface-700 dark:text-surface-300 text-sm font-medium transition-colors hover:border-accent-400 hover:text-accent-600 dark:hover:text-accent-400">Convert SVG to STL</a>
+          <a href="/jpg-to-stl/" class="inline-flex items-center gap-1.5 px-5 py-3.5 rounded-xl border border-surface-300 dark:border-surface-700 bg-surface-50/80 dark:bg-surface-900/60 text-surface-700 dark:text-surface-300 text-sm font-medium transition-colors hover:border-accent-400 hover:text-accent-600 dark:hover:text-accent-400">Convert JPG to STL</a>
+          <a href="/png-to-stl/" class="inline-flex items-center gap-1.5 px-5 py-3.5 rounded-xl border border-surface-300 dark:border-surface-700 bg-surface-50/80 dark:bg-surface-900/60 text-surface-700 dark:text-surface-300 text-sm font-medium transition-colors hover:border-accent-400 hover:text-accent-600 dark:hover:text-accent-400">Convert PNG to STL</a>
+          <a href="/svg-to-stl/" class="inline-flex items-center gap-1.5 px-5 py-3.5 rounded-xl border border-surface-300 dark:border-surface-700 bg-surface-50/80 dark:bg-surface-900/60 text-surface-700 dark:text-surface-300 text-sm font-medium transition-colors hover:border-accent-400 hover:text-accent-600 dark:hover:text-accent-400">Convert SVG to STL</a>
         </div>
       </div>
     </section>

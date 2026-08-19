@@ -1,4 +1,4 @@
-# image-to-stl.com
+# www.image-2-stl.com
 # Free online image to STL converter for 3D printing.
 # Convert JPG, PNG, SVG images to STL, OBJ, GLB 3D models.
 # All processing happens in your browser.
