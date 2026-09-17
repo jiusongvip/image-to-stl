@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useRef, useEffect, lazy, Suspense } from "react";
+import { useState, useCallback, useRef, useId, useEffect, lazy, Suspense } from "react";
 import { computeNormal, writeBinaryStl, downloadBlob, type Triangle } from "../lib/stl-utils";
 import PreviewPlaceholder from "./PreviewPlaceholder";
 
@@ -395,13 +395,15 @@ function ParamSlider({
   step: number;
   onChange: (v: number) => void;
 }) {
+  const sliderId = useId();
   return (
     <div className="space-y-1.5">
       <div className="flex items-center justify-between">
-        <label className="text-xs font-medium text-surface-500">{label}</label>
+        <label htmlFor={sliderId} className="text-xs font-medium text-surface-500">{label}</label>
         <span className="text-xs font-mono text-surface-400">{typeof value === "number" && (label.includes("Contrast") || label.includes("Brightness") || label.includes("Level")) ? value : value.toFixed(1)}</span>
       </div>
       <input
+        id={sliderId}
         type="range"
         min={min}
         max={max}

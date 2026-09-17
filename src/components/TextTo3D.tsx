@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useRef, useEffect, lazy, Suspense } from "react";
+import { useState, useCallback, useRef, useId, useEffect, lazy, Suspense } from "react";
 import PreviewPlaceholder from "./PreviewPlaceholder";
 import { computeNormal, writeBinaryStl, downloadBlob, type Triangle } from "../lib/stl-utils";
 import { exportToObj } from "../lib/export-utils";
@@ -111,8 +111,9 @@ export default function TextTo3D() {
         <div className="rounded-tool border border-surface-200 dark:border-surface-800 p-5 space-y-4">
           <h3 className="text-sm font-semibold text-surface-900 dark:text-surface-100">Text Input</h3>
           <div>
-            <label className="text-xs font-medium text-surface-500 mb-1 block">Your Text</label>
+            <label htmlFor="t3d-text" className="text-xs font-medium text-surface-500 mb-1 block">Your Text</label>
             <input
+              id="t3d-text"
               type="text"
               value={params.text}
               onChange={(e) => setParams((p) => ({ ...p, text: e.target.value }))}
@@ -122,8 +123,9 @@ export default function TextTo3D() {
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-xs font-medium text-surface-500 mb-1 block">Font Size</label>
+              <label htmlFor="t3d-fontsize" className="text-xs font-medium text-surface-500 mb-1 block">Font Size</label>
               <input
+                id="t3d-fontsize"
                 type="range"
                 min={24}
                 max={200}
@@ -381,13 +383,15 @@ function ParamSlider({
   step: number;
   onChange: (v: number) => void;
 }) {
+  const sliderId = useId();
   return (
     <div className="space-y-1.5">
       <div className="flex items-center justify-between">
-        <label className="text-xs font-medium text-surface-500">{label}</label>
+        <label htmlFor={sliderId} className="text-xs font-medium text-surface-500">{label}</label>
         <span className="text-xs font-mono text-surface-400">{value.toFixed(1)}</span>
       </div>
       <input
+        id={sliderId}
         type="range"
         min={min}
         max={max}

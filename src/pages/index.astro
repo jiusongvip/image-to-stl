@@ -28,6 +28,7 @@ const keywords = "image to stl, jpg to stl, png to stl, svg to stl, convert imag
   ]}
   keywords={keywords}
 >
+  <link slot="head" rel="preload" as="image" href="/images/hero-workspace.webp" fetchpriority="high" />
   <div class="max-w-[1400px] mx-auto px-4 sm:px-6 py-8 sm:py-12">
     <section class="relative overflow-hidden rounded-3xl border border-surface-200/70 dark:border-surface-800/70 mb-10">
       <!-- 电影感背景大图 -->
@@ -39,6 +40,7 @@ const keywords = "image to stl, jpg to stl, png to stl, svg to stl, convert imag
         height="1024"
         loading="eager"
         decoding="async"
+        fetchpriority="high"
         class="absolute inset-0 w-full h-full object-cover opacity-30 dark:opacity-25"
       />
       <div class="absolute inset-0 bg-gradient-to-b from-surface-50/85 dark:from-surface-950/85 via-surface-50/70 dark:via-surface-950/70 to-surface-50 dark:to-surface-950 pointer-events-none"></div>

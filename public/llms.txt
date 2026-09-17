@@ -1,7 +1,32 @@
-# www.image-2-stl.com
-# Free online image to STL converter for 3D printing.
-# Convert JPG, PNG, SVG images to STL, OBJ, GLB 3D models.
-# All processing happens in your browser.
+# Image to STL Converter
 
-Allow: /
-Description: Free online image to STL converter. Convert images to 3D printable STL files in your browser. Supports heightmap, SVG extrusion, and lithophane modes. No uploads, no registration, free forever.
+> Free online image to STL converter for 3D printing. Convert JPG, PNG, and SVG images to STL, OBJ, and GLB 3D models. All processing happens in your browser — no uploads, no registration, free forever.
+
+Image to STL Converter is a browser-based toolchain that turns 2D images into 3D-printable models. It supports heightmap conversion (brightness to 3D height), SVG vector extrusion, lithophane generation, text-to-3D, and cookie cutter generation. Output is watertight binary STL compatible with Cura, PrusaSlicer, and Bambu Studio, plus OBJ and GLB exports.
+
+## Tools
+
+- [Image to STL Converter](https://www.image-2-stl.com/): Main converter with heightmap, SVG extrusion, and lithophane modes plus real-time 3D preview.
+- [JPG to STL](https://www.image-2-stl.com/jpg-to-stl/): Convert JPG photos to 3D-printable STL models.
+- [PNG to STL](https://www.image-2-stl.com/png-to-stl/): Convert PNG images with transparency to 3D models.
+- [SVG to STL](https://www.image-2-stl.com/svg-to-stl/): Extrude SVG vector paths into solid 3D geometry with crisp edges.
+- [Text to STL](https://www.image-2-stl.com/text-to-stl/): Turn text into 3D-printable embossed or extruded models.
+- [Cookie Cutter](https://www.image-2-stl.com/cookie-cutter/): Generate cookie cutter and fondant cutter molds from images.
+- [Lithophane Maker](https://www.image-2-stl.com/lithophane-maker/): Turn photos into backlit lithophane panels for 3D printing.
+- [Photo to 3D](https://www.image-2-stl.com/photo-to-3d/): Convert photos into 3D relief models.
+- [Heightmap Editor](https://www.image-2-stl.com/heightmap-editor/): Adjust brightness, contrast, and levels before converting to 3D.
+
+## Guides
+
+- [How to Convert Image to STL](https://www.image-2-stl.com/how-to-convert-image-to-stl/): Step-by-step workflow from image to 3D print.
+- [FAQ](https://www.image-2-stl.com/faq/): Frequently asked questions about formats, privacy, and printing.
+- [Blog](https://www.image-2-stl.com/blog/): Guides, tips, and tutorials on image-to-STL conversion and 3D printing.
+- [What Is an STL File?](https://www.image-2-stl.com/blog/what-is-stl-file/): Complete guide to the STL 3D printing format.
+- [3D Printing Basics](https://www.image-2-stl.com/blog/3d-printing-basics/): FDM vs resin printing, materials, and slicer settings.
+- [Best Image to STL Converters](https://www.image-2-stl.com/blog/best-image-to-stl-converters/): Comparison of browser-based and server-based converters.
+
+## About
+
+- [About](https://www.image-2-stl.com/about/): About the tool and its privacy-first, browser-only approach.
+- [Privacy Policy](https://www.image-2-stl.com/privacy/): Privacy policy — all processing is local, no uploads.
+- [Terms of Service](https://www.image-2-stl.com/terms/): Terms of service.

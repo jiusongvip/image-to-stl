@@ -51,6 +51,7 @@ import SeoHead from "../components/SeoHead.astro";
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="alternate icon" href="/favicon.ico" />
     <SeoHead title={title} description={description} canonical={canonical} schema={combinedSchema} keywords={keywords} ogImage={ogImage} ogType={ogType} publishDate={publishDate} modifyDate={modifyDate} />
+    <slot name="head" />
   </head>
   <body class="flex flex-col min-h-[100dvh]">
     <Header />

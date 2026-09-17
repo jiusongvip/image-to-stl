@@ -11,17 +11,17 @@
    modifyDate?: string;
  }
 
- const {
-   title,
-   description,
-   canonical = "https://www.image-2-stl.com",
-   schema,
-   keywords,
-   ogImage = "/og-default.png",
-   ogType = "website",
-   publishDate,
-   modifyDate,
- } = Astro.props;
+  const {
+    title,
+    description,
+    canonical = "https://www.image-2-stl.com",
+    schema,
+    keywords,
+    ogImage = "https://www.image-2-stl.com/og-default.png",
+    ogType = "website",
+    publishDate,
+    modifyDate,
+  } = Astro.props;
 
  const fullTitle = title;
 ---
