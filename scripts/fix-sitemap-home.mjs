@@ -24,3 +24,14 @@ for (const file of readdirSync(distDir)) {
 if (!changed) {
   console.log("⚠ 未找到需要处理的 sitemap 首页 URL");
 }
+
+// 同步生成根路径 sitemap.xml（指向 sitemap-0.xml），确保 /sitemap.xml 与 /sitemap-index.xml 均可访问
+const rootSitemap = `<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <sitemap>
+    <loc>${homeUrl}/sitemap-0.xml</loc>
+  </sitemap>
+</sitemapindex>
+`;
+writeFileSync(join(distDir, "sitemap.xml"), rootSitemap);
+console.log("✓ sitemap.xml: 根路径索引已生成");
