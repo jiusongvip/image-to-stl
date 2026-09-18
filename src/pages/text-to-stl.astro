@@ -32,7 +32,12 @@ const keywords = "text to stl, text to 3d, 3d text generator, stl text, 3d print
       <p class="mt-3 text-surface-500 text-sm sm:text-base leading-relaxed">Type a word, get a 3D-printable model. Sounds simple &mdash; and it is. But the difference between a text print that looks crisp and professional versus one that looks blobby and fragile comes down to font choice, sizing, and extrusion settings. This guide covers which fonts produce the best 3D prints, how to size text for different applications, and when you should use SVG extrusion instead for truly sharp results.</p>
     </section>
 
-    <TextTo3D client:only="react" />
+      {/* client:visible, not client:only — the React runtime (44 KB) used to
+        hydrate during initial load and competed with the hero image for
+        bandwidth and main thread, and client-rendering the island shifted
+        the sections below it (measured CLS 0.158 on /jpg-to-stl/). Nothing
+        above the fold depends on this island, so deferring it is free. */}
+    <TextTo3D client:visible />
 
     <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16 max-w-3xl">
       <h2 class="text-xl font-semibold mb-6 text-surface-900 dark:text-surface-100">Font Selection: Which Fonts Print Well</h2>

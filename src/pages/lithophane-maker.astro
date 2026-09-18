@@ -34,7 +34,12 @@ const keywords = "image to lithophane, lithophane maker, photo to lithophane, li
       <img src="/images/lithophane-backlit.webp" alt="3D printed lithophane panel glowing with warm backlight showing a landscape scene" width="1024" height="1024" loading="eager" decoding="async" class="w-full h-auto" />
     </div>
 
-    <LithophaneMaker client:only="react" />
+      {/* client:visible, not client:only — the React runtime (44 KB) used to
+        hydrate during initial load and competed with the hero image for
+        bandwidth and main thread, and client-rendering the island shifted
+        the sections below it (measured CLS 0.158 on /jpg-to-stl/). Nothing
+        above the fold depends on this island, so deferring it is free. */}
+    <LithophaneMaker client:visible />
 
     <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16">
       <h2 class="text-xl font-semibold mb-6 text-surface-900 dark:text-surface-100">How Lithophanes Work</h2>

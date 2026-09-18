@@ -36,7 +36,12 @@ const keywords = "svg to stl, convert svg to stl, svg to 3d, svg extrusion, vect
       <img src="/images/logo-3d-extrusion.webp" alt="3D printed logo sign with crisp extruded edges on a display stand" width="1024" height="1024" loading="eager" decoding="async" class="w-full h-auto" />
     </div>
 
-    <ConverterTool client:only="react" />
+      {/* client:visible, not client:only — the React runtime (44 KB) used to
+        hydrate during initial load and competed with the hero image for
+        bandwidth and main thread, and client-rendering the island shifted
+        the sections below it (measured CLS 0.158 on /jpg-to-stl/). Nothing
+        above the fold depends on this island, so deferring it is free. */}
+    <ConverterTool client:visible />
 
     <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16 max-w-3xl">
       <h2 class="text-xl font-semibold mb-6 text-surface-900 dark:text-surface-100">From Bezier Curve to Solid 3D: How SVG Path Extrusion Works</h2>
