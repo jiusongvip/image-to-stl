@@ -1,7 +1,7 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import ConverterTool from "../components/ConverterTool";
-import { ORGANIZATION, WEBSITE_ID, SITE_URL, SITE_MODIFIED, SITE_PUBLISHED, AUTHOR } from "../lib/site";
+import { ORGANIZATION, WEBSITE_ID, SITE_URL, SITE_MODIFIED, SITE_PUBLISHED, AUTHOR, TOPIC_ENTITIES } from "../lib/site";
 
 const softwareSchema = {
   "@context": "https://schema.org",
@@ -31,6 +31,7 @@ const websiteSchema = {
   inLanguage: "en",
   datePublished: SITE_PUBLISHED,
   dateModified: SITE_MODIFIED,
+  about: TOPIC_ENTITIES,
   potentialAction: {
     "@type": "SearchAction",
     target: `${SITE_URL}/search?q={search_term_string}`,
@@ -52,24 +53,28 @@ const citationSchema = {
   dateModified: SITE_MODIFIED,
   publisher: ORGANIZATION,
   author: AUTHOR,
+  mentions: TOPIC_ENTITIES,
   citation: [
     {
       "@type": "CreativeWork",
       name: "STL (STereoLithography) File Format, Binary",
       url: "https://www.loc.gov/preservation/digital/formats/fdd/fdd000505.shtml",
       publisher: { "@type": "Organization", name: "Library of Congress" },
+      text: "Since its introduction in the late 1980s, STL has become a de facto standard for rapid prototyping and 3D printing.",
     },
     {
       "@type": "CreativeWork",
       name: "Wohlers Report 2025: 9.1% AM Industry Growth",
       url: "https://wohlersassociates.com/news/wohlers-report-2025-shows-9-1-am-industry-growth/",
       publisher: { "@type": "Organization", name: "Wohlers Associates, powered by ASTM International" },
+      text: "The global AM industry grew by 9.1% overall to USD 21.9 billion, with most of this growth being attributable to the development of the AM industry in Asia and China in particular.",
     },
     {
       "@type": "CreativeWork",
       name: "Lithophane — porcelain artwork viewed by transmitted light",
       url: "https://www.britannica.com/art/lithophane",
       publisher: { "@type": "Organization", name: "Encyclopædia Britannica" },
+      text: "Lithophane, biscuit, or unglazed, white porcelain decorated with a molded or impressed design, usually reproducing a painting, that was meant to be seen by transmitted light.",
     },
   ],
 };
@@ -415,32 +420,54 @@ const keywords = "image to stl, jpg to stl, png to stl, svg to stl, convert imag
     <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16 reveal">
       <p class="section-tag">Sources</p>
       <h2 class="editorial-title mt-2 mb-2">Sources &amp; References</h2>
-      <p class="text-sm text-surface-500 mb-8 max-w-[65ch]">Facts and background on this page are drawn from the following external references. We cite primary and institutional sources so you can verify every claim independently.</p>
-      <ol class="space-y-4 max-w-3xl list-decimal list-inside">
-        <li class="text-sm text-surface-600 dark:text-surface-400 leading-relaxed">
-          Library of Congress. <em>STL (STereoLithography) File Format, Binary</em> — Sustainability of Digital Formats.
-          Documents that STL was openly documented by Charles Hull of 3D Systems in the late 1980s, and describes the
-          binary layout: an 80-byte header, a 32-bit triangle count, and 50 bytes per triangle.
-          <a href="https://www.loc.gov/preservation/digital/formats/fdd/fdd000505.shtml" target="_blank" rel="noopener noreferrer" class="text-accent-600 dark:text-accent-400 hover:underline font-medium">loc.gov <span aria-hidden="true">&#8599;</span></a>
-        </li>
-        <li class="text-sm text-surface-600 dark:text-surface-400 leading-relaxed">
-          Wohlers Associates (powered by ASTM International). <em>Wohlers Report 2025</em> — the global additive
-          manufacturing industry grew 9.1% to USD 21.9 billion, with materials, software, and service providers
-          expanding while system manufacturers declined.
-          <a href="https://wohlersassociates.com/news/wohlers-report-2025-shows-9-1-am-industry-growth/" target="_blank" rel="noopener noreferrer" class="text-accent-600 dark:text-accent-400 hover:underline font-medium">wohlersassociates.com <span aria-hidden="true">&#8599;</span></a>
-        </li>
-        <li class="text-sm text-surface-600 dark:text-surface-400 leading-relaxed">
-          Encyclop&aelig;dia Britannica. <em>Lithophane</em> — defines a lithophane as a thin plaque of translucent
-          porcelain moulded to varying thickness so an image appears when viewed by transmitted light. Produced in
-          Germany and Britain from roughly 1830 to 1900, and the direct ancestor of the modern 3D-printed lithophane.
-          <a href="https://www.britannica.com/art/lithophane" target="_blank" rel="noopener noreferrer" class="text-accent-600 dark:text-accent-400 hover:underline font-medium">britannica.com <span aria-hidden="true">&#8599;</span></a>
-        </li>
-        <li class="text-sm text-surface-600 dark:text-surface-400 leading-relaxed">
-          ISO/ASTM 52915:2020. <em>Specification for additive manufacturing file format (AMF)</em> — the standards-track
-          successor format addressing STL's lack of colour, material, and unit metadata.
-          <a href="https://www.iso.org/standard/74640.html" target="_blank" rel="noopener noreferrer" class="text-accent-600 dark:text-accent-400 hover:underline font-medium">iso.org <span aria-hidden="true">&#8599;</span></a>
-        </li>
-      </ol>
+      <p class="text-sm text-surface-500 mb-8 max-w-[65ch]">Facts and background on this page are drawn from the following external references. We cite primary and institutional sources, and quote them verbatim with attribution, so you can verify every claim independently.</p>
+
+      <div class="space-y-6 max-w-3xl">
+        <div class="p-5 rounded-tool border border-surface-200 dark:border-surface-800">
+          <p class="text-xs font-semibold uppercase tracking-wide text-surface-400 mb-3">On the STL format</p>
+          <blockquote class="border-l-2 border-accent-400 pl-4 text-sm text-surface-700 dark:text-surface-300 leading-relaxed italic">
+            &ldquo;Since its introduction in the late 1980s, STL has become a de facto standard for rapid prototyping and 3D printing.&rdquo;
+          </blockquote>
+          <p class="mt-3 text-xs text-surface-500 leading-relaxed">
+            &mdash; <cite class="not-italic font-medium">Library of Congress</cite>, <em>STL (STereoLithography) File Format, Binary</em>, Sustainability of Digital Formats.
+            The same entry notes that &ldquo;the STL file format was openly documented by its originator, Charles Hull of 3D Systems, Inc.&rdquo;
+            <a href="https://www.loc.gov/preservation/digital/formats/fdd/fdd000505.shtml" target="_blank" rel="noopener noreferrer" class="text-accent-600 dark:text-accent-400 hover:underline font-medium">loc.gov <span aria-hidden="true">&#8599;</span></a>
+          </p>
+        </div>
+
+        <div class="p-5 rounded-tool border border-surface-200 dark:border-surface-800">
+          <p class="text-xs font-semibold uppercase tracking-wide text-surface-400 mb-3">On the additive manufacturing market</p>
+          <blockquote class="border-l-2 border-accent-400 pl-4 text-sm text-surface-700 dark:text-surface-300 leading-relaxed italic">
+            &ldquo;The global AM industry grew by 9.1% overall to USD 21.9 billion, with most of this growth being attributable to the development of the AM industry in Asia and China in particular.&rdquo;
+          </blockquote>
+          <p class="mt-3 text-xs text-surface-500 leading-relaxed">
+            &mdash; <cite class="not-italic font-medium">Wohlers Associates, powered by ASTM International</cite>, <em>Wohlers Report 2025</em>, published 31 March 2025.
+            <a href="https://wohlersassociates.com/news/wohlers-report-2025-shows-9-1-am-industry-growth/" target="_blank" rel="noopener noreferrer" class="text-accent-600 dark:text-accent-400 hover:underline font-medium">wohlersassociates.com <span aria-hidden="true">&#8599;</span></a>
+          </p>
+        </div>
+
+        <div class="p-5 rounded-tool border border-surface-200 dark:border-surface-800">
+          <p class="text-xs font-semibold uppercase tracking-wide text-surface-400 mb-3">On lithophanes</p>
+          <blockquote class="border-l-2 border-accent-400 pl-4 text-sm text-surface-700 dark:text-surface-300 leading-relaxed italic">
+            &ldquo;Lithophane, biscuit, or unglazed, white porcelain decorated with a molded or impressed design, usually reproducing a painting, that was meant to be seen by transmitted light.&rdquo;
+          </blockquote>
+          <p class="mt-3 text-xs text-surface-500 leading-relaxed">
+            &mdash; <cite class="not-italic font-medium">Encyclop&aelig;dia Britannica</cite>, <em>Lithophane</em>.
+            Britannica dates production to &ldquo;about 1830 to about 1900, mostly in Germany, by the Royal Factory at Berlin and by Meissen.&rdquo;
+            The 3D-printed lithophane is the direct descendant of this porcelain craft.
+            <a href="https://www.britannica.com/art/lithophane" target="_blank" rel="noopener noreferrer" class="text-accent-600 dark:text-accent-400 hover:underline font-medium">britannica.com <span aria-hidden="true">&#8599;</span></a>
+          </p>
+        </div>
+
+        <div class="p-5 rounded-tool border border-surface-200 dark:border-surface-800">
+          <p class="text-xs font-semibold uppercase tracking-wide text-surface-400 mb-3">On the file-format successor</p>
+          <p class="text-xs text-surface-500 leading-relaxed">
+            <cite class="not-italic font-medium">ISO/ASTM 52915:2020</cite>, <em>Specification for additive manufacturing file format (AMF)</em> &mdash;
+            the standards-track successor format that addresses STL&rsquo;s lack of colour, material, and unit metadata.
+            <a href="https://www.iso.org/standard/74640.html" target="_blank" rel="noopener noreferrer" class="text-accent-600 dark:text-accent-400 hover:underline font-medium">iso.org <span aria-hidden="true">&#8599;</span></a>
+          </p>
+        </div>
+      </div>
     </section>
 
     <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16 reveal">
@@ -545,32 +572,35 @@ const keywords = "image to stl, jpg to stl, png to stl, svg to stl, convert imag
       </div>
     </section>
     <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16 scroll-mt-28 reveal" id="faq">
-      <p class="section-tag">12 &mdash; FAQ</p>
-      <h2 class="editorial-title mt-2 mb-8">Frequently Asked Questions</h2>
-      <dl class="space-y-6 max-w-3xl">
-        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">What is an STL file and why do I need one?</dt><dd class="text-sm text-surface-500 leading-relaxed">STL (STereoLithography) is the universal file format for 3D printing. It represents a 3D surface as a mesh of triangles and is accepted by every 3D printer slicer, including Cura, PrusaSlicer, and Bambu Studio.</dd></div>
-        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">Is this image to STL converter really free?</dt><dd class="text-sm text-surface-500 leading-relaxed">Yes, completely free. No registration, no hidden fees, no file count limits, no watermarks. All processing happens in your browser &mdash; there is no server to bill, so we keep it free forever.</dd></div>
-        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">What image formats can I convert to STL?</dt><dd class="text-sm text-surface-500 leading-relaxed">JPG, PNG, and SVG are fully supported with dedicated conversion modes. BMP, WebP, and other common raster formats also work through heightmap mode. SVG extrusion produces the best results for logos and icons.</dd></div>
-        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">Where does my image go? Is it uploaded anywhere?</dt><dd class="text-sm text-surface-500 leading-relaxed">Nowhere. All processing happens entirely in your browser using JavaScript, Canvas, and WebGL APIs. Your images never leave your device. No data is ever uploaded to any server.</dd></div>
-        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">What 3D file formats can I export to?</dt><dd class="text-sm text-surface-500 leading-relaxed">You can export to STL (universal 3D printing), OBJ (Wavefront with color support for Blender), and GLB (modern glTF binary, ideal for web, AR, and VR). All formats generated in your browser.</dd></div>
-        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">Can I use the generated STL for actual 3D printing?</dt><dd class="text-sm text-surface-500 leading-relaxed">Absolutely. The output is standard binary STL, ready for direct slicing in Cura, PrusaSlicer, Bambu Studio, or any other 3D printing software. No post-processing needed for most models.</dd></div>
-        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">How is this different from server-based online converters?</dt><dd class="text-sm text-surface-500 leading-relaxed">Server-based converters upload your files to remote servers &mdash; privacy risk, size limits, wait times, daily caps. Our tool runs 100% in your browser &mdash; instant 3D preview, real-time adjustments, unlimited conversions, complete privacy.</dd></div>
-        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">What conversion modes are available?</dt><dd class="text-sm text-surface-500 leading-relaxed">Three modes: Heightmap converts pixel brightness to 3D height for photo reliefs. SVG Extrusion extracts vector paths into solid 3D shapes for logos and text. Lithophane creates translucent panels that reveal an image when backlit.</dd></div>
-        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">Does this work on mobile devices?</dt><dd class="text-sm text-surface-500 leading-relaxed">Yes, fully responsive. Upload photos from your phone, preview the 3D model with touch controls, and download STL files. Performance depends on device GPU.</dd></div>
-        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">Do I need 3D modeling experience?</dt><dd class="text-sm text-surface-500 leading-relaxed">Not at all. This tool is designed for beginners. Upload an image, adjust a few sliders, download your STL. If you can take a photo, you can make a 3D model.</dd></div>
-      
-        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">Is the STL output watertight and printable?</dt><dd class="text-sm text-surface-500 leading-relaxed">Yes. All three modes (heightmap, SVG extrusion, lithophane) produce manifold (watertight) meshes. The output passes standard mesh validation checks. You can slice and print immediately without mesh repair.</dd></div>
-        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">What happens if I upload a very large image?</dt><dd class="text-sm text-surface-500 leading-relaxed">Images are automatically resized to 512px on the longest side before processing. This keeps conversion fast while maintaining more than enough detail for 3D printing. Original files up to 50MB are handled without issues since processing is local.</dd></div>
-        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">Can I use the generated STL files for commercial purposes?</dt><dd class="text-sm text-surface-500 leading-relaxed">Yes. You own all STL files you generate. Use them for personal projects, sell them on Etsy or 3D model marketplaces, include them in commercial products, or share them freely. We claim no rights over your output.</dd></div>
-        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">Why do some images produce better 3D results than others?</dt><dd class="text-sm text-surface-500 leading-relaxed">The quality of the 3D relief depends heavily on the image's contrast and detail. Images with dramatic lighting, clear edges, and good tonal range produce the best results. Flat, low-contrast, or blurry images result in shallow, indistinct 3D surfaces. For best results, adjust your image's contrast in a photo editor before uploading.</dd></div>
-        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">How does SVG extrusion handle complex designs?</dt><dd class="text-sm text-surface-500 leading-relaxed">The SVG parser handles paths, polygons, rectangles, circles, ellipses, and compound shapes. Nested shapes create holes automatically. Complex designs with many elements may take slightly longer to triangulate but produce accurate results. If a design is too complex for extrusion, the tool auto-falls back to raster heightmap mode.</dd></div>
-        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">What is the difference between Heightmap and Lithophane modes?</dt><dd class="text-sm text-surface-500 leading-relaxed">Heightmap mode creates a one-sided relief where brightness maps to height &mdash; ideal for viewing from the front. Lithophane mode creates a thin panel where thickness controls light transmission &mdash; designed to be backlit for viewing. Use heightmap for wall art and reliefs; use lithophane for lamps and light boxes.</dd></div>
-        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">Does the tool work offline?</dt><dd class="text-sm text-surface-500 leading-relaxed">Once the page loads, the core conversion functionality works without an internet connection. The initial page load requires internet, but all image processing, 3D preview, and STL generation run entirely client-side with no network requests. You can convert images even if your connection drops after page load.</dd></div>
-        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">How does the smoothness slider affect the STL output?</dt><dd class="text-sm text-surface-500 leading-relaxed">Smoothness controls how much the mesh is simplified. Low smoothness preserves every pixel detail but creates larger STL files with more triangles. High smoothness produces simpler, smaller files but may lose fine texture. For detailed portraits, use low smoothness. For geometric shapes and logos, use higher smoothness for cleaner edges.</dd></div>
-        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">Can I batch convert multiple images at once?</dt><dd class="text-sm text-surface-500 leading-relaxed">The tool processes one image at a time. However, since all processing is local, you can convert images back-to-back with zero waiting. Many users keep the tool open and process a batch of photos sequentially. There is no queue, no daily limit, and no throttling.</dd></div>
-        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">Which 3D printing filament works best for photo reliefs?</dt><dd class="text-sm text-surface-500 leading-relaxed">For photo reliefs and decorative prints: PLA in any color works well. Matte PLA hides layer lines better. Silk/shiny PLA can make details harder to see. For lithophanes: white PLA or natural PLA is essential for proper light transmission. Avoid dark, transparent, or glitter filaments for lithophanes as they block or scatter light.</dd></div>
-</dl>
-      <p class="mt-6"><a href="/faq/" class="text-sm text-accent-600 dark:text-accent-400 hover:underline font-medium">View all FAQs &rarr;</a></p>
+      <p class="section-tag">12 &mdash; Choosing a mode</p>
+      <h2 class="editorial-title mt-2 mb-2">Which conversion mode should I pick?</h2>
+      <p class="text-sm text-surface-500 leading-relaxed max-w-3xl mb-8">The fastest way to a good result is picking the right mode before you touch a slider. Here is how the three modes differ in practice, and how to tell within seconds which one your image needs.</p>
+      <div class="grid gap-4 sm:grid-cols-3 max-w-4xl mb-8">
+        <div class="rounded-tool border border-surface-200 dark:border-surface-800 p-5">
+          <h3 class="font-semibold text-surface-900 dark:text-surface-100 text-sm mb-2">Heightmap</h3>
+          <p class="text-xs text-surface-500 leading-relaxed mb-3">Pixel brightness becomes physical height. One-sided relief, viewed from the front.</p>
+          <p class="text-xs text-surface-600 dark:text-surface-400 leading-relaxed"><strong>Pick it when</strong> your source is a photograph, portrait, or landscape with strong tonal range.</p>
+        </div>
+        <div class="rounded-tool border border-surface-200 dark:border-surface-800 p-5">
+          <h3 class="font-semibold text-surface-900 dark:text-surface-100 text-sm mb-2">SVG Extrusion</h3>
+          <p class="text-xs text-surface-500 leading-relaxed mb-3">Vector paths are extruded into solid geometry. Perfectly crisp edges, no pixelation.</p>
+          <p class="text-xs text-surface-600 dark:text-surface-400 leading-relaxed"><strong>Pick it when</strong> your source is a logo, icon, or typeface &mdash; anything with flat fills and closed paths.</p>
+        </div>
+        <div class="rounded-tool border border-surface-200 dark:border-surface-800 p-5">
+          <h3 class="font-semibold text-surface-900 dark:text-surface-100 text-sm mb-2">Lithophane</h3>
+          <p class="text-xs text-surface-500 leading-relaxed mb-3">Panel thickness varies to control light transmission. The image appears when backlit.</p>
+          <p class="text-xs text-surface-600 dark:text-surface-400 leading-relaxed"><strong>Pick it when</strong> the finished piece will sit in front of a light source &mdash; lamps, night lights, window panels.</p>
+        </div>
+      </div>
+      <dl class="space-y-5 max-w-3xl">
+        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">How do I know if my image is high-contrast enough for a good relief?</dt><dd class="text-sm text-surface-500 leading-relaxed">Squint at it. If the main subject still reads clearly when half-closed, it will convert well. Relief depth is driven purely by tonal separation, so a portrait lit from one side produces far more depth than a flat, evenly lit snapshot. If the result looks shallow, raise contrast in a photo editor before uploading rather than pushing the height slider to its limit &mdash; extreme height on a low-contrast source just amplifies noise.</dd></div>
+        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">My SVG has gradients and text effects. Will extrusion handle it?</dt><dd class="text-sm text-surface-500 leading-relaxed">Extrusion works on geometry, not paint, so gradients, drop shadows, and raster filters are ignored entirely &mdash; only the underlying filled shapes are extruded. Convert text to outlines first, and flatten any effects before export. If the file still fails to extrude, the tool falls back to heightmap mode automatically, which rasterises the design and produces a usable model at the cost of crisp edges.</dd></div>
+        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">What determines the physical size of the printed part?</dt><dd class="text-sm text-surface-500 leading-relaxed">Only your slicer. The STL stores geometry with no unit system attached, so a model exported here has no inherent millimetres. Scale it in Cura, PrusaSlicer, or Bambu Studio to match your build plate. That also means the 512px processing resolution is not a size limit &mdash; a 512px relief scaled to 200&nbsp;mm is simply coarser per millimetre than the same relief printed at 80&nbsp;mm.</dd></div>
+        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">Which is better for a lithophane: thicker or thinner?</dt><dd class="text-sm text-surface-500 leading-relaxed">Thicker prints hold more contrast but block more light and take longer. Start around 3&nbsp;mm maximum thickness with roughly a 0.8&nbsp;mm floor, then print a small test tile before committing to a full-size panel. The floor thickness matters more than the maximum &mdash; drop it too low and the panel becomes fragile and prone to light bleed between adjacent areas.</dd></div>
+        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">Why is my STL file unexpectedly huge?</dt><dd class="text-sm text-surface-500 leading-relaxed">Triangle count is the cause, and triangle count is set by your smoothness setting. A 512px heightmap at maximum detail generates a dense mesh where a simplified one would look nearly identical once printed. Raise smoothness for geometric subjects and logos; keep it low only for fine photographic texture. Reducing triangle count also shortens slicing time noticeably.</dd></div>
+        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">Can I edit the model after converting, without CAD software?</dt><dd class="text-sm text-surface-500 leading-relaxed">Yes, within limits. The heightmap editor lets you crop, invert, and reshape the depth profile before export, which covers most corrective work. For anything structural &mdash; adding a base, hollowing, drilling a mounting hole &mdash; bring the STL into a free slicer or mesh tool. Because the output is a standard watertight mesh, it imports cleanly into Blender, MeshLab, or Tinkercad without repair.</dd></div>
+      </dl>
+      <p class="mt-8 text-sm text-surface-500 leading-relaxed max-w-3xl">Looking for something more specific &mdash; privacy, file limits, licensing, printer compatibility, or troubleshooting a preview that looks wrong? Those are answered in full on the <a href="/faq/" class="text-accent-600 dark:text-accent-400 hover:underline font-medium">FAQ page</a>, and the <a href="/how-to-convert-image-to-stl/" class="text-accent-600 dark:text-accent-400 hover:underline font-medium">step-by-step guide</a> walks through a full conversion start to finish.</p>
     </section>
 
     <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16 mb-4 reveal">

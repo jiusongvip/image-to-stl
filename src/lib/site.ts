@@ -17,6 +17,38 @@ export const SAME_AS: string[] = [
   "https://github.com/jiusongvip/image-to-stl",
 ];
 
+// 站点主题实体（about / mentions）。
+// 这些是「本站在讲什么」的外部权威实体，指向 Wikidata / Wikipedia，
+// 用于帮助 AI 引擎将内容归入正确的知识图谱节点。
+// 注意：与 SAME_AS 语义不同 —— SAME_AS 声明「我是谁」，
+// 下列实体声明「我在讲什么」，因此放在 about / mentions 而非 sameAs。
+export const TOPIC_ENTITIES = [
+  {
+    "@type": "DefinedTerm",
+    name: "STL (STereoLithography) file format",
+    sameAs: [
+      "https://www.wikidata.org/wiki/Q1238229",
+      "https://en.wikipedia.org/wiki/STL_(file_format)",
+    ],
+  },
+  {
+    "@type": "DefinedTerm",
+    name: "3D printing",
+    sameAs: [
+      "https://www.wikidata.org/wiki/Q229367",
+      "https://en.wikipedia.org/wiki/3D_printing",
+    ],
+  },
+  {
+    "@type": "DefinedTerm",
+    name: "Lithophane",
+    sameAs: [
+      "https://www.wikidata.org/wiki/Q623020",
+      "https://en.wikipedia.org/wiki/Lithophane",
+    ],
+  },
+];
+
 // 品牌 / 出版商实体，供 WebSite、SoftwareApplication、BlogPosting 等引用
 export const ORGANIZATION = {
   "@type": "Organization",
