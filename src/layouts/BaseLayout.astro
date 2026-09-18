@@ -1,4 +1,33 @@
 ---
+/*
+  HEAD ORDERING RULES — read before editing the head element.
+
+  Everything in the head is ordered by byte position, because the browser cannot
+  discover (let alone fetch) a subresource until it has parsed the bytes that
+  precede it. On the throttled mobile profile this document is ~21 KB over a
+  ~95 KB/s link, so every hundred bytes spent before the stylesheet link is a
+  hundred bytes of added render-blocking time.
+
+  Concretely:
+    - charset first (must land within the first 1024 bytes, or the browser has
+      to re-parse the document).
+    - preloads before anything deferrable.
+    - Astro hoists the compiled stylesheet link, the module script and the
+      JSON-LD schema to the FRONT of the head, ahead of everything written here.
+      scripts/inject-css-preload.mjs therefore runs post-build to inject a
+      stylesheet preload and to move the schema back to the end of the head.
+
+  DO NOT PUT COMMENTS INSIDE THE HEAD ELEMENT. Astro strips these comment blocks
+  in component bodies but NOT as direct children of a head in a .astro layout —
+  they are emitted verbatim into the HTML. A 1067-byte explanatory comment used
+  to be served to every visitor on every request, and any comment containing a
+  closing-head token silently ended the head early, pushing the metas and
+  preloads outside it. scripts/inject-css-preload.mjs fails the build if the
+  charset offset ever exceeds 1024, which is how this was caught.
+
+  Also do not write brace-star comment syntax in this frontmatter: it is parsed
+  as JavaScript, where that construct is a syntax error, not a comment.
+*/
 import "../styles/global.css";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
@@ -38,12 +67,8 @@ import SeoHead from "../components/SeoHead.astro";
 <!doctype html>
 <html lang="en" class="dark">
   <head>
-    <!-- charset must appear within the first 1024 bytes, so it stays ahead of
-         everything else — including the preloads below. -->
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- Emitted next so the LCP image and the above-the-fold fonts are
-         discovered as early as possible. -->
     <slot name="head-preload" />
     <link
       rel="preload"
@@ -64,33 +89,6 @@ import SeoHead from "../components/SeoHead.astro";
       // risking content being stuck invisible when JS never runs.
       document.documentElement.classList.add('js');
     </script>
-    <!-- Google tag (gtag.js) — deferred so it never competes with the LCP resource.
-
-         Two separate concerns, deliberately handled differently:
-
-         1. The `dataLayer` stub is installed immediately (at the TOP of <head>),
-            so any event fired by page code before the library arrives is still
-            queued and replayed. This is just an array push — effectively free,
-            and it must exist before any other script can call gtag().
-         2. The 168 KB library is NOT fetched at a fixed early moment. Measurement
-            showed a plain `requestIdleCallback({timeout: 3000})` firing at ~728 ms
-            on a fast desktop — exactly during the LCP window — and then blocking
-            the main thread for 207 ms + 129 ms.
-
-         So it is gated on the page actually being *finished and quiet*:
-         load + idle, or first user interaction, whichever comes first. Losing a
-         few seconds of the very first session's analytics is the right trade for
-         removing ~336 ms of blocking time from the critical path. -->
-    <script is:inline>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-    </script>
-    <!-- Below-the-fold font weights (Geist Mono 500/600), loaded without
-         blocking first paint. `media="print"` makes the browser treat it as
-         non-render-blocking; the onload handler then flips it to `all` so the
-         faces register. Until it arrives those badges fall back to the
-         system monospace font for a moment, which is invisible in practice
-         because they all sit well below the fold. -->
     <link
       rel="stylesheet"
       href="/fonts/deferred.css"
@@ -109,9 +107,30 @@ import SeoHead from "../components/SeoHead.astro";
       <slot />
     </main>
     <Footer />
-    <!-- gtag config + library load, at the very end of <body> so it sits behind
-         all real content in the parse queue. See the stub in <head> above. -->
+    {/*
+      Google tag (gtag.js) — deferred so it never competes with the LCP resource.
+
+      Two separate concerns, deliberately handled differently:
+
+      1. The `dataLayer` stub below is a plain array push — effectively free. It
+         only has to run before the first gtag() CALL, and every call site lives
+         in this same script, so it belongs here at the end of <body> rather than
+         inline in <head>, where it used to occupy ~1.3 KB of the critical byte
+         range ahead of the stylesheet. Any page-level event fired earlier still
+         queues correctly as long as it uses dataLayer.push().
+      2. The 168 KB library is NOT fetched at a fixed early moment. Measurement
+         showed a plain `requestIdleCallback({timeout: 3000})` firing at ~728 ms
+         on a fast desktop — exactly during the LCP window — and then blocking
+         the main thread for 207 ms + 129 ms.
+
+      So it is gated on the page actually being *finished and quiet*:
+      load + idle, or first user interaction, whichever comes first. Losing a few
+      seconds of the very first session's analytics is the right trade for
+      removing ~336 ms of blocking time from the critical path.
+    */}
     <script is:inline>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
       gtag('config', 'G-855ZSKSVHZ');
       (function () {
