@@ -187,14 +187,69 @@ export default function ThreePreview({ imageData, params, svgTriangles, mode = "
       scene.add(backPlane);
     }
 
-    // Animate
-    const animate = () => {
-      if (disposed) return;
-      activeAnimId = requestAnimationFrame(animate);
+    // Animate — but only while the preview is actually on screen and the tab is
+    // visible.
+    //
+    // This used to be an unconditional requestAnimationFrame loop that rendered
+    // every frame forever. On the throttled mobile profile that cost 20 long
+    // tasks and 24.8 s of total blocking time on /text-to-stl/ (Perf 49), and
+    // for real users it burns CPU and battery rendering a canvas nobody is
+    // looking at. Gating on IntersectionObserver + visibilitychange keeps the
+    // interaction identical: OrbitControls redraws because the loop runs
+    // whenever the canvas is visible, and it restarts on the way back.
+    let running = false;
+    let onScreen = false;
+
+    const frame = () => {
+      if (disposed || !running) return;
+      activeAnimId = requestAnimationFrame(frame);
       controls.update();
       renderer.render(scene, camera);
     };
-    animate();
+
+    const start = () => {
+      if (disposed || running || !onScreen || document.hidden) return;
+      running = true;
+      activeAnimId = requestAnimationFrame(frame);
+    };
+
+    const stop = () => {
+      if (!running) return;
+      running = false;
+      cancelAnimationFrame(activeAnimId);
+      activeAnimId = 0;
+    };
+
+    const onVisibility = () => {
+      if (document.hidden) stop();
+      else start();
+    };
+
+    const io =
+      typeof IntersectionObserver !== "undefined"
+        ? new IntersectionObserver(
+            (entries) => {
+              onScreen = entries.some((e) => e.isIntersecting);
+              if (onScreen) start();
+              else stop();
+            },
+            { rootMargin: "200px" },
+          )
+        : null;
+    if (io && container) io.observe(container);
+    document.addEventListener("visibilitychange", onVisibility);
+
+    // Start paused unless the canvas is already in the viewport. If there is no
+    // IntersectionObserver support, fall back to running continuously so the
+    // preview still works everywhere.
+    if (!io) {
+      onScreen = true;
+      start();
+    } else if (container) {
+      const r = container.getBoundingClientRect();
+      onScreen = r.top < window.innerHeight + 200 && r.bottom > -200;
+      if (onScreen) start();
+    }
 
     const onResize = () => {
       if (!container || disposed) return;
@@ -208,7 +263,10 @@ export default function ThreePreview({ imageData, params, svgTriangles, mode = "
 
     return () => {
       disposed = true;
+      running = false;
       window.removeEventListener("resize", onResize);
+      document.removeEventListener("visibilitychange", onVisibility);
+      if (io) io.disconnect();
       disposeActive();
     };
   }, [imageData, params, svgTriangles, mode]);
