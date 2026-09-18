@@ -38,8 +38,23 @@ import SeoHead from "../components/SeoHead.astro";
 <!doctype html>
 <html lang="en" class="dark">
   <head>
-    <!-- Emitted first so the LCP image is discovered as early as possible. -->
+    <!-- Emitted first so the LCP image and the above-the-fold fonts are
+         discovered as early as possible. -->
     <slot name="head-preload" />
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href="/fonts/Geist-Regular.woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href="/fonts/Geist-SemiBold.woff2"
+      crossorigin
+    />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script is:inline>
