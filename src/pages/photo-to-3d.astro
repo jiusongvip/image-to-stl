@@ -1,8 +1,9 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { withProvenance, SITE_PUBLISHED, SITE_MODIFIED } from "../lib/site";
 import ConverterTool from "../components/ConverterTool";
 
-const schema = {
+const schema = withProvenance({
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
   name: "Photo to 3D Model Converter",
@@ -10,7 +11,7 @@ const schema = {
   operatingSystem: "Web",
   offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
   description: "Convert photos to 3D printable STL models. Learn photo composition for optimal reliefs, lighting techniques, and how to choose the right photo subjects for 3D conversion.",
-};
+});
 
 const keywords = "photo to 3d, photo to 3d model, convert photo to 3d, picture to stl, photo to stl, turn photo into 3d, photo to 3d print";
 ---
@@ -20,6 +21,8 @@ const keywords = "photo to 3d, photo to 3d model, convert photo to 3d, picture t
   description="Convert photos to 3D printable STL reliefs. Photography guide: lighting, subject selection, and post-processing for optimal heightmap results. Free tool."
   canonical="https://www.image-2-stl.com/photo-to-3d/"
   schema={schema}
+  publishDate={SITE_PUBLISHED}
+  modifyDate={SITE_MODIFIED}
   keywords={keywords}
 >
   <div class="max-w-[1400px] mx-auto px-4 sm:px-6 py-8 sm:py-12">

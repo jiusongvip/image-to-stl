@@ -1,8 +1,9 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { withProvenance, SITE_PUBLISHED, SITE_MODIFIED } from "../lib/site";
 import HeightmapEditor from "../components/HeightmapEditor";
 
-const schema = {
+const schema = withProvenance({
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
   name: "Heightmap to STL Editor",
@@ -10,7 +11,7 @@ const schema = {
   operatingSystem: "Web",
   offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
   description: "Advanced heightmap editor with contrast, brightness, threshold, and invert controls. Learn how to fix common image problems for optimal 3D relief generation.",
-};
+});
 
 const keywords = "heightmap editor, heightmap to stl, heightmap generator, 3d relief editor, stl heightmap, depth map to stl, contrast for stl";
 ---
@@ -20,6 +21,8 @@ const keywords = "heightmap editor, heightmap to stl, heightmap generator, 3d re
   description="Fine-tune heightmaps before STL conversion. Adjust contrast, brightness, and threshold for precise 3D reliefs. Free browser tool with live preview."
   canonical="https://www.image-2-stl.com/heightmap-editor/"
   schema={schema}
+  publishDate={SITE_PUBLISHED}
+  modifyDate={SITE_MODIFIED}
   keywords={keywords}
 >
   <div class="max-w-[1400px] mx-auto px-4 sm:px-6 py-8 sm:py-12">

@@ -1,0 +1,60 @@
+// 站点身份常量与共享 schema
+// 集中维护品牌实体信息，供各页面 schema 复用，保证 sameAs / author / publisher 一致性。
+
+export const SITE_URL = "https://www.image-2-stl.com";
+export const SITE_NAME = "Image to STL Converter";
+export const SITE_EMAIL = "hello@image-2-stl.com";
+export const ORG_ID = `${SITE_URL}/#organization`;
+export const WEBSITE_ID = `${SITE_URL}/#website`;
+
+// 站点内容的发布日期与最后更新时间（全站统一维护）
+export const SITE_PUBLISHED = "2025-06-01";
+export const SITE_MODIFIED = "2026-09-18";
+
+// 品牌官方档案地址（sameAs）。
+// 说明：仅列出真实存在、可公开验证的档案页，不虚构社交账号。
+export const SAME_AS: string[] = [
+  "https://github.com/jiusongvip/image-to-stl",
+];
+
+// 品牌 / 出版商实体，供 WebSite、SoftwareApplication、BlogPosting 等引用
+export const ORGANIZATION = {
+  "@type": "Organization",
+  "@id": ORG_ID,
+  name: SITE_NAME,
+  url: SITE_URL,
+  email: SITE_EMAIL,
+  description:
+    "Free browser-based tools that convert images into 3D-printable STL models. All processing runs locally — no uploads, no registration.",
+  foundingDate: "2025",
+  ...(SAME_AS.length > 0 ? { sameAs: SAME_AS } : {}),
+};
+
+// 内容团队署名（作者身份），供页面级 author 字段引用。
+// 与 ORGANIZATION 指向同一实体的 @id，避免出现「两个品牌」的实体歧义。
+export const AUTHOR = {
+  "@type": "Organization",
+  "@id": ORG_ID,
+  name: `${SITE_NAME} Team`,
+  url: `${SITE_URL}/about/`,
+  ...(SAME_AS.length > 0 ? { sameAs: SAME_AS } : {}),
+};
+
+// 便捷函数：为页面 schema 附加 publisher / author / 日期字段
+export function withProvenance<T extends Record<string, unknown>>(
+  schema: T,
+  options: {
+    published?: string;
+    modified?: string;
+    withAuthor?: boolean;
+  } = {}
+): T & Record<string, unknown> {
+  const { published = SITE_PUBLISHED, modified = SITE_MODIFIED, withAuthor = true } = options;
+  return {
+    ...schema,
+    publisher: ORGANIZATION,
+    ...(withAuthor ? { author: AUTHOR } : {}),
+    datePublished: published,
+    dateModified: modified,
+  };
+}

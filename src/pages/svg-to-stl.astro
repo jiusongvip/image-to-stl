@@ -1,8 +1,9 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { withProvenance, SITE_PUBLISHED, SITE_MODIFIED } from "../lib/site";
 import ConverterTool from "../components/ConverterTool";
 
-const schema = {
+const schema = withProvenance({
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
   name: "SVG to STL Converter",
@@ -10,7 +11,7 @@ const schema = {
   operatingSystem: "Web",
   offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
   description: "Convert SVG to STL with true vector path extrusion. Parse bezier curves into solid 3D geometry. Complete editor preparation guides for Illustrator, Inkscape, Figma, and Affinity.",
-};
+});
 
 const keywords = "svg to stl, convert svg to stl, svg to 3d, svg extrusion, vector to stl, svg path to stl, illustrator to stl, inkscape to stl";
 ---
@@ -20,6 +21,8 @@ const keywords = "svg to stl, convert svg to stl, svg to 3d, svg extrusion, vect
   description="Convert SVG to STL with real bezier path parsing, not rasterization. Crisp vector extrusion for logos, icons, and text. Free browser-based tool with 3D preview."
   canonical="https://www.image-2-stl.com/svg-to-stl/"
   schema={schema}
+  publishDate={SITE_PUBLISHED}
+  modifyDate={SITE_MODIFIED}
   keywords={keywords}
 >
   <div class="max-w-[1400px] mx-auto px-4 sm:px-6 py-8 sm:py-12">

@@ -1,8 +1,9 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { withProvenance, SITE_PUBLISHED, SITE_MODIFIED } from "../lib/site";
 import ConverterTool from "../components/ConverterTool";
 
-const schema = {
+const schema = withProvenance({
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
   name: "JPG to STL Converter",
@@ -10,7 +11,7 @@ const schema = {
   operatingSystem: "Web",
   offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
   description: "Convert JPG images to STL 3D printable files. Learn how JPEG compression affects heightmap quality, optimal camera settings, and workflow from phone photo to 3D print.",
-};
+});
 
 const keywords = "jpg to stl, convert jpg to stl, jpg to stl converter, jpeg to stl, jpg to 3d model, photo to stl, free jpg to stl";
 ---
@@ -20,6 +21,8 @@ const keywords = "jpg to stl, convert jpg to stl, jpg to stl converter, jpeg to 
   description="Convert JPG photos to STL for 3D printing. Learn how JPEG compression affects relief quality, camera settings, and the phone-to-print workflow. Free tool."
   canonical="https://www.image-2-stl.com/jpg-to-stl/"
   schema={schema}
+  publishDate={SITE_PUBLISHED}
+  modifyDate={SITE_MODIFIED}
   keywords={keywords}
 >
   <div class="max-w-[1400px] mx-auto px-4 sm:px-6 py-8 sm:py-12">

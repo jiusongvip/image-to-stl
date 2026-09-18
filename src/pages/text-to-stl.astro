@@ -1,8 +1,9 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { withProvenance, SITE_PUBLISHED, SITE_MODIFIED } from "../lib/site";
 import TextTo3D from "../components/TextTo3D";
 
-const schema = {
+const schema = withProvenance({
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
   name: "Text to STL Converter",
@@ -10,7 +11,7 @@ const schema = {
   operatingSystem: "Web",
   offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
   description: "Convert text to 3D printable STL files. Learn font selection for 3D printing, optimal text sizing for different uses, and when to use SVG extrusion for sharper text results.",
-};
+});
 
 const keywords = "text to stl, text to 3d, 3d text generator, stl text, 3d printed text, text extrusion, 3d letters, convert text to 3d";
 ---
@@ -20,6 +21,8 @@ const keywords = "text to stl, text to 3d, 3d text generator, stl text, 3d print
   description="Type text and convert to 3D printable STL instantly. Learn which fonts work best, how to size text for printing, and SVG extrusion tips. Free tool."
   canonical="https://www.image-2-stl.com/text-to-stl/"
   schema={schema}
+  publishDate={SITE_PUBLISHED}
+  modifyDate={SITE_MODIFIED}
   keywords={keywords}
 >
   <div class="max-w-[1400px] mx-auto px-4 sm:px-6 py-8 sm:py-12">

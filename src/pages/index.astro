@@ -1,19 +1,80 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import ConverterTool from "../components/ConverterTool";
+import { ORGANIZATION, WEBSITE_ID, SITE_URL, SITE_MODIFIED, SITE_PUBLISHED, AUTHOR } from "../lib/site";
 
 const softwareSchema = {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
+  "@id": `${SITE_URL}/#software`,
   name: "Image to STL Converter",
   applicationCategory: "Multimedia",
   operatingSystem: "Web",
   offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
   description:
     "Free online tool to convert images (JPG, PNG, SVG) to STL 3D models for 3D printing. Real-time 3D preview, browser-based processing. Supports heightmap, lithophane, and SVG extrusion modes.",
+  publisher: ORGANIZATION,
+  author: AUTHOR,
+  datePublished: SITE_PUBLISHED,
+  dateModified: SITE_MODIFIED,
 };
 
-const websiteSchema = { "@context": "https://schema.org", "@type": "WebSite", name: "Image to STL Converter", url: "https://www.image-2-stl.com", description: "Free online tool to convert images to STL 3D models for 3D printing. Browser-based, no uploads required.", potentialAction: { "@type": "SearchAction", target: "https://www.image-2-stl.com/search?q={search_term_string}", "query-input": "required name=search_term_string" } }; const combinedSchema = [websiteSchema, softwareSchema];
+const websiteSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "@id": WEBSITE_ID,
+  name: "Image to STL Converter",
+  url: SITE_URL,
+  description:
+    "Free online tool to convert images to STL 3D models for 3D printing. Browser-based, no uploads required.",
+  publisher: ORGANIZATION,
+  inLanguage: "en",
+  datePublished: SITE_PUBLISHED,
+  dateModified: SITE_MODIFIED,
+  potentialAction: {
+    "@type": "SearchAction",
+    target: `${SITE_URL}/search?q={search_term_string}`,
+    "query-input": "required name=search_term_string",
+  },
+};
+
+// 页面引用的外部权威来源，作为 citation 声明，提升可引用性
+const citationSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "@id": `${SITE_URL}/#webpage`,
+  url: SITE_URL,
+  name: "Image to STL Converter — Free Online 3D Model Generator",
+  isPartOf: { "@id": WEBSITE_ID },
+  about: { "@id": `${SITE_URL}/#software` },
+  inLanguage: "en",
+  datePublished: SITE_PUBLISHED,
+  dateModified: SITE_MODIFIED,
+  publisher: ORGANIZATION,
+  author: AUTHOR,
+  citation: [
+    {
+      "@type": "CreativeWork",
+      name: "STL (STereoLithography) File Format, Binary",
+      url: "https://www.loc.gov/preservation/digital/formats/fdd/fdd000505.shtml",
+      publisher: { "@type": "Organization", name: "Library of Congress" },
+    },
+    {
+      "@type": "CreativeWork",
+      name: "Wohlers Report 2025: 9.1% AM Industry Growth",
+      url: "https://wohlersassociates.com/news/wohlers-report-2025-shows-9-1-am-industry-growth/",
+      publisher: { "@type": "Organization", name: "Wohlers Associates, powered by ASTM International" },
+    },
+    {
+      "@type": "CreativeWork",
+      name: "Lithophane — porcelain artwork viewed by transmitted light",
+      url: "https://www.britannica.com/art/lithophane",
+      publisher: { "@type": "Organization", name: "Encyclopædia Britannica" },
+    },
+  ],
+};
+
+const combinedSchema = [websiteSchema, softwareSchema, citationSchema];
 
 const keywords = "image to stl, jpg to stl, png to stl, svg to stl, convert image to stl, image to 3d model, photo to stl, free stl converter, 3d printing, image to 3d print, online stl converter, heightmap to stl, lithophane maker, photo to 3d model";
 ---
@@ -27,6 +88,8 @@ const keywords = "image to stl, jpg to stl, png to stl, svg to stl, convert imag
     { name: "Image to STL Converter", url: "https://www.image-2-stl.com" }
   ]}
   keywords={keywords}
+  publishDate={SITE_PUBLISHED}
+  modifyDate={SITE_MODIFIED}
 >
   <link slot="head" rel="preload" as="image" href="/images/hero-workspace.webp" fetchpriority="high" />
   <div class="max-w-[1400px] mx-auto px-4 sm:px-6 py-8 sm:py-12">
@@ -55,6 +118,11 @@ const keywords = "image to stl, jpg to stl, png to stl, svg to stl, convert imag
           Transform your JPG, PNG, and SVG images into 3D-printable STL files &mdash; entirely in your browser.
           No uploads, no software downloads, no fees. Get instant real-time 3D preview powered by Three.js
           and download your model as STL, OBJ, or GLB in seconds.
+        </p>
+        <p class="mt-4 text-xs text-surface-500">
+          By the <a href="/about/" class="text-accent-600 dark:text-accent-400 hover:underline font-medium">Image to STL Converter Team</a>
+          &mdash; published <time datetime={SITE_PUBLISHED}>June 1, 2025</time>,
+          updated <time datetime={SITE_MODIFIED}>September 18, 2026</time>
         </p>
         <div class="mt-8 flex flex-wrap gap-3">
           <a href="#converter" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-accent-600 hover:bg-accent-700 text-white text-sm font-semibold shadow-lg shadow-accent-600/25 transition-all hover:-translate-y-0.5">
@@ -342,6 +410,37 @@ const keywords = "image to stl, jpg to stl, png to stl, svg to stl, convert imag
           <p class="text-xs text-surface-500 leading-relaxed">Fine-tune contrast, brightness, and threshold for precise reliefs.</p>
         </a>
       </div>
+    </section>
+
+    <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16 reveal">
+      <p class="section-tag">Sources</p>
+      <h2 class="editorial-title mt-2 mb-2">Sources &amp; References</h2>
+      <p class="text-sm text-surface-500 mb-8 max-w-[65ch]">Facts and background on this page are drawn from the following external references. We cite primary and institutional sources so you can verify every claim independently.</p>
+      <ol class="space-y-4 max-w-3xl list-decimal list-inside">
+        <li class="text-sm text-surface-600 dark:text-surface-400 leading-relaxed">
+          Library of Congress. <em>STL (STereoLithography) File Format, Binary</em> — Sustainability of Digital Formats.
+          Documents that STL was openly documented by Charles Hull of 3D Systems in the late 1980s, and describes the
+          binary layout: an 80-byte header, a 32-bit triangle count, and 50 bytes per triangle.
+          <a href="https://www.loc.gov/preservation/digital/formats/fdd/fdd000505.shtml" target="_blank" rel="noopener noreferrer" class="text-accent-600 dark:text-accent-400 hover:underline font-medium">loc.gov <span aria-hidden="true">&#8599;</span></a>
+        </li>
+        <li class="text-sm text-surface-600 dark:text-surface-400 leading-relaxed">
+          Wohlers Associates (powered by ASTM International). <em>Wohlers Report 2025</em> — the global additive
+          manufacturing industry grew 9.1% to USD 21.9 billion, with materials, software, and service providers
+          expanding while system manufacturers declined.
+          <a href="https://wohlersassociates.com/news/wohlers-report-2025-shows-9-1-am-industry-growth/" target="_blank" rel="noopener noreferrer" class="text-accent-600 dark:text-accent-400 hover:underline font-medium">wohlersassociates.com <span aria-hidden="true">&#8599;</span></a>
+        </li>
+        <li class="text-sm text-surface-600 dark:text-surface-400 leading-relaxed">
+          Encyclop&aelig;dia Britannica. <em>Lithophane</em> — defines a lithophane as a thin plaque of translucent
+          porcelain moulded to varying thickness so an image appears when viewed by transmitted light. Produced in
+          Germany and Britain from roughly 1830 to 1900, and the direct ancestor of the modern 3D-printed lithophane.
+          <a href="https://www.britannica.com/art/lithophane" target="_blank" rel="noopener noreferrer" class="text-accent-600 dark:text-accent-400 hover:underline font-medium">britannica.com <span aria-hidden="true">&#8599;</span></a>
+        </li>
+        <li class="text-sm text-surface-600 dark:text-surface-400 leading-relaxed">
+          ISO/ASTM 52915:2020. <em>Specification for additive manufacturing file format (AMF)</em> — the standards-track
+          successor format addressing STL's lack of colour, material, and unit metadata.
+          <a href="https://www.iso.org/standard/74640.html" target="_blank" rel="noopener noreferrer" class="text-accent-600 dark:text-accent-400 hover:underline font-medium">iso.org <span aria-hidden="true">&#8599;</span></a>
+        </li>
+      </ol>
     </section>
 
     <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16 reveal">

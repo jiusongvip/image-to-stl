@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "build": "npx astro build && node scripts/fix-sitemap-home.mjs",
+    "build": "node scripts/build.mjs",
+    "clean:dist": "node scripts/clean-dist.mjs",
+    "deploy": "npm run build && npm run clean:dist",
     "preview": "astro preview"
   },
   "dependencies": {

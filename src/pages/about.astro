@@ -1,28 +1,51 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { ORGANIZATION, SITE_URL, SITE_PUBLISHED, SITE_MODIFIED, SAME_AS } from "../lib/site";
 
 const orgSchema = {
   "@context": "https://schema.org",
-  "@type": "Organization",
-  name: "Image to STL Converter",
-  url: "https://www.image-2-stl.com",
-  description: "Free browser-based tools to convert images to STL 3D models for 3D printing. No uploads, no registration.",
-  email: "hello@image-2-stl.com",
-  foundingDate: "2025",
+  ...ORGANIZATION,
+  ...(SAME_AS.length > 0 ? { sameAs: SAME_AS } : {}),
+  contactPoint: {
+    "@type": "ContactPoint",
+    contactType: "customer support",
+    email: "hello@image-2-stl.com",
+    availableLanguage: ["English"],
+  },
 };
+
+const aboutPageSchema = {
+  "@context": "https://schema.org",
+  "@type": "AboutPage",
+  url: `${SITE_URL}/about/`,
+  name: "About Image to STL Converter",
+  isPartOf: { "@id": `${SITE_URL}/#website` },
+  about: { "@id": `${SITE_URL}/#organization` },
+  inLanguage: "en",
+  datePublished: SITE_PUBLISHED,
+  dateModified: SITE_MODIFIED,
+  publisher: ORGANIZATION,
+};
+
+const combinedSchema = [orgSchema, aboutPageSchema];
 ---
 
 <BaseLayout
   title="About Image to STL Converter — Our Story"
   description="Learn about the team behind the free image to STL converter. Our mission: make 3D printing accessible with browser-based tools that respect your privacy."
   canonical="https://www.image-2-stl.com/about/"
-  schema={orgSchema}
+  schema={combinedSchema}
   breadcrumbs={[
     { name: "About", url: "https://www.image-2-stl.com/about" }
   ]}
+  publishDate={SITE_PUBLISHED}
+  modifyDate={SITE_MODIFIED}
 >
   <div class="max-w-3xl mx-auto px-4 sm:px-6 py-12">
     <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-surface-900 dark:text-surface-100 mb-2">About Image to STL Converter</h1>
+    <p class="text-xs text-surface-400 mb-6">
+      By the Image to STL Converter Team &mdash; updated <time datetime={SITE_MODIFIED}>September 18, 2026</time>
+    </p>
     <p class="text-sm text-surface-500 mb-10 leading-relaxed">
       We build free, privacy-first tools for the 3D printing community. No uploads, no accounts, no fees — just powerful browser-based converters that turn your images into printable 3D models.
     </p>

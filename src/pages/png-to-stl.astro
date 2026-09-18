@@ -1,8 +1,9 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { withProvenance, SITE_PUBLISHED, SITE_MODIFIED } from "../lib/site";
 import ConverterTool from "../components/ConverterTool";
 
-const schema = {
+const schema = withProvenance({
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
   name: "PNG to STL Converter",
@@ -10,7 +11,7 @@ const schema = {
   operatingSystem: "Web",
   offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
   description: "Convert PNG images to STL with lossless quality. Learn how alpha transparency creates clean cutout shapes, which bit depth to use, and the complete design asset to 3D print workflow.",
-};
+});
 
 const keywords = "png to stl, convert png to stl, png to stl converter, png to 3d model, png transparency stl, lossless stl, free png to stl";
 ---
@@ -20,6 +21,8 @@ const keywords = "png to stl, convert png to stl, png to stl converter, png to 3
   description="Convert PNG to STL with zero quality loss. Use transparency for clean cutouts, choose bit depth, and go from design asset to 3D print. Free browser tool."
   canonical="https://www.image-2-stl.com/png-to-stl/"
   schema={schema}
+  publishDate={SITE_PUBLISHED}
+  modifyDate={SITE_MODIFIED}
   keywords={keywords}
 >
   <div class="max-w-[1400px] mx-auto px-4 sm:px-6 py-8 sm:py-12">

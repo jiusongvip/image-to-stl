@@ -1,8 +1,9 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { withProvenance, SITE_PUBLISHED, SITE_MODIFIED } from "../lib/site";
 import LithophaneMaker from "../components/LithophaneMaker";
 
-const schema = {
+const schema = withProvenance({
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
   name: "Image to Lithophane Maker",
@@ -10,12 +11,14 @@ const schema = {
   operatingSystem: "Web",
   offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
   description: "Convert your photos into lithophane STL files for 3D printing. Create beautiful backlit light panels. Supports flat, curved, and dome shapes.",
-};
+});
 
 const keywords = "image to lithophane, lithophane maker, photo to lithophane, lithophane stl, lithophane generator, 3d printed lithophane, lithophane converter";
 ---
 
-<BaseLayout title="Lithophane Maker — Turn Photos into Backlit 3D Art" description="Convert photos into lithophane STL files. Create backlit 3D panels with flat, curved, or dome shapes. White PLA printing guide. Free browser tool." canonical="https://www.image-2-stl.com/lithophane-maker/" schema={schema} keywords={keywords}>
+<BaseLayout title="Lithophane Maker — Turn Photos into Backlit 3D Art" description="Convert photos into lithophane STL files. Create backlit 3D panels with flat, curved, or dome shapes. White PLA printing guide. Free browser tool." canonical="https://www.image-2-stl.com/lithophane-maker/" schema={schema}
+  publishDate={SITE_PUBLISHED}
+  modifyDate={SITE_MODIFIED} keywords={keywords}>
   <div class="max-w-[1400px] mx-auto px-4 sm:px-6 py-8 sm:py-12">
     <section class="mb-10"><div class="max-w-3xl">
       <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-surface-900 dark:text-surface-100 leading-tight">Image to Lithophane Maker &mdash; Turn Photos into Backlit 3D Art</h1>
