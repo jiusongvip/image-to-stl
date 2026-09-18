@@ -85,6 +85,19 @@ import SeoHead from "../components/SeoHead.astro";
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
     </script>
+    <!-- Below-the-fold font weights (Geist Mono 500/600), loaded without
+         blocking first paint. `media="print"` makes the browser treat it as
+         non-render-blocking; the onload handler then flips it to `all` so the
+         faces register. Until it arrives those badges fall back to the
+         system monospace font for a moment, which is invisible in practice
+         because they all sit well below the fold. -->
+    <link
+      rel="stylesheet"
+      href="/fonts/deferred.css"
+      media="print"
+      onload="this.media='all'"
+    />
+    <noscript><link rel="stylesheet" href="/fonts/deferred.css" /></noscript>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="alternate icon" href="/favicon.ico" />
     <SeoHead title={title} description={description} canonical={canonical} schema={combinedSchema} keywords={keywords} ogImage={ogImage} ogType={ogType} publishDate={publishDate} modifyDate={modifyDate} />

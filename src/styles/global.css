@@ -3,7 +3,20 @@
 @tailwind utilities;
 
 /* Geist webfonts — self-hosted, subset to the glyphs this site uses.
-   Regenerate with: python scripts/subset-fonts.py */
+
+   Only the weights that appear ABOVE THE FOLD are declared here; they are what
+   the render-blocking stylesheet pulls in. Fonts measured 111 KB of the 338 KB
+   mobile total, the largest first-party group, so keeping the below-the-fold
+   faces out of this file matters.
+
+   Above the fold (declared here):
+     Geist 400/500/600/700  — body copy, nav, h1, buttons
+     Geist Mono 400         — `.section-tag`, visible in the hero
+
+   Below the fold (loaded separately, non-blocking — see /fonts/deferred.css):
+     Geist Mono 500/600     — format badges and export labels further down
+
+   Regenerate the woff2 files with: python scripts/subset-fonts.py */
 @font-face {
   font-family: "Geist";
   src: url("/fonts/Geist-Regular.woff2")
@@ -41,22 +54,6 @@
   src: url("/fonts/GeistMono-Regular.woff2")
     format("woff2");
   font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Geist Mono";
-  src: url("/fonts/GeistMono-Medium.woff2")
-    format("woff2");
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Geist Mono";
-  src: url("/fonts/GeistMono-SemiBold.woff2")
-    format("woff2");
-  font-weight: 600;
   font-style: normal;
   font-display: swap;
 }

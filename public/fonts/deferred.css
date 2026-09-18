@@ -1,0 +1,30 @@
+/* Geist Mono 500 / 600 — below-the-fold weights only.
+
+   Deliberately kept OUT of the bundle: this file lives in /public and is loaded
+   with a non-blocking pattern (media="print" + onload swap) from BaseLayout.
+
+   Why: a @font-face in an @import-ed partial gets tree-shaken away by the
+   bundler, and declaring these in global.css put ~36 KB of font on the critical
+   path even though nothing above the fold uses them. Fonts measured 111 KB of
+   the 338 KB mobile total.
+
+   These two faces serve the supported-format badges (`font-mono font-medium`)
+   and the export labels (`font-mono font-semibold`), both well below the fold.
+   `.section-tag` — the only Monospace text in the hero — is weight 400 and
+   stays in the bundled stylesheet.
+
+   Regenerate the woff2 files with: python scripts/subset-fonts.py */
+@font-face {
+  font-family: "Geist Mono";
+  src: url("/fonts/GeistMono-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Geist Mono";
+  src: url("/fonts/GeistMono-SemiBold.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}

@@ -127,6 +127,9 @@ if (astroFailed) {
 console.log("\n== 运行 sitemap 后处理 ==");
 execFileSync(process.execPath, ["scripts/fix-sitemap-home.mjs"], { stdio: "inherit" });
 
+console.log("\n== 注入主样式表 preload ==");
+execFileSync(process.execPath, ["scripts/inject-css-preload.mjs"], { stdio: "inherit" });
+
 if (!existsSync("dist/sitemap-index.xml") && !existsSync("dist/sitemap.xml")) {
   console.error("\n✗ sitemap 未生成，构建结果不完整");
   process.exit(1);
