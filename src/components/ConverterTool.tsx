@@ -742,15 +742,21 @@ export default function ConverterTool() {
           </button>
         </div>
 
-        {/* 3D Preview */}
-        <Suspense fallback={<PreviewPlaceholder />}>
-          <ThreePreview
-            imageData={imageData}
-            params={params}
-            svgTriangles={svgTriangles}
-            mode={mode}
-          />
-        </Suspense>
+        {/* 3D Preview — mounted only once there is something to preview, so the
+            Three.js chunk (the single heaviest asset on the site) is not fetched
+            on page load. */}
+        {hasPreviewData ? (
+          <Suspense fallback={<PreviewPlaceholder />}>
+            <ThreePreview
+              imageData={imageData}
+              params={params}
+              svgTriangles={svgTriangles}
+              mode={mode}
+            />
+          </Suspense>
+        ) : (
+          <PreviewPlaceholder />
+        )}
       </div>
     </div>
   );

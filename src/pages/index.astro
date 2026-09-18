@@ -106,8 +106,8 @@ const keywords = "image to stl, jpg to stl, png to stl, svg to stl, convert imag
       <img
         src="/images/hero-workspace.webp"
         alt="Image to STL conversion workspace showing a source photo beside its finished 3D printed relief model"
-        width="1792"
-        height="1024"
+        width="1000"
+        height="558"
         loading="eager"
         decoding="async"
         fetchpriority="high"
@@ -627,14 +627,15 @@ const keywords = "image to stl, jpg to stl, png to stl, svg to stl, convert imag
 
   <script>
     const revealEls = document.querySelectorAll(".reveal");
+    const show = (el) => el.classList.add("reveal-visible");
     if (!("IntersectionObserver" in window)) {
-      revealEls.forEach((el) => el.classList.add("reveal-visible"));
+      revealEls.forEach(show);
     } else {
       const io = new IntersectionObserver(
         (entries) => {
           entries.forEach((entry) => {
             if (entry.isIntersecting) {
-              entry.target.classList.add("reveal-visible");
+              show(entry.target);
               io.unobserve(entry.target);
             }
           });
@@ -642,6 +643,13 @@ const keywords = "image to stl, jpg to stl, png to stl, svg to stl, convert imag
         { threshold: 0.08, rootMargin: "0px 0px -40px 0px" }
       );
       revealEls.forEach((el) => io.observe(el));
+      // Safety net: anything already in/near the viewport is revealed immediately,
+      // so a slow or throttled observer can never leave the hero blank.
+      requestAnimationFrame(() => {
+        revealEls.forEach((el) => {
+          if (el.getBoundingClientRect().top < window.innerHeight) show(el);
+        });
+      });
     }
   </script>
 </BaseLayout>
