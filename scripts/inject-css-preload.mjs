@@ -58,8 +58,42 @@ const preloadTag = `<link rel="preload" as="style" href="/_astro/${cssName}" ${M
 const charsetAnchor = '<meta charset="UTF-8">';
 const charsetAnchorAlt = '<meta charset="UTF-8" />';
 
+/**
+ * 把 JSON-LD 结构化数据块移到 </head> 之前。
+ *
+ * 背景：SeoHead 把约 5.6 KB 的 schema 内联在 <head> 中段（实测字节 4429–10067），
+ * 而浏览器需要的 <link rel="stylesheet"> 排在它后面。移动端模拟慢速 4G 下，
+ * 文档 21 KB 要传 219 ms，schema 占其中 27% —— 它把 CSS 的发现时间整体推后。
+ *
+ * schema 本身不需要在解析早期可见（爬虫读完整份 HTML），移到最后不影响 SEO，
+ * 但能让样式表在更早的字节位置出现。
+ *
+ * @returns {string} 处理后的 HTML
+ */
+function hoistJsonLdToEnd(html) {
+  const re = /<script type="application\/ld\+json"[^>]*>[\s\S]*?<\/script>/g;
+  const blocks = html.match(re);
+  if (!blocks || !blocks.length) return html;
+
+  const headEnd = html.lastIndexOf("</head>");
+  if (headEnd === -1) return html;
+
+  // 逐个移除，再统一插入到 </head> 前
+  let stripped = html;
+  for (const b of blocks) {
+    stripped = stripped.replace(b, "");
+  }
+  const insertAt = stripped.lastIndexOf("</head>");
+  return (
+    stripped.slice(0, insertAt) +
+    blocks.join("") +
+    stripped.slice(insertAt)
+  );
+}
+
 let patched = 0;
 let already = 0;
+let hoisted = 0;
 
 for (const file of collectHtml(DIST)) {
   let html = readFileSync(file, "utf8");
@@ -68,6 +102,12 @@ for (const file of collectHtml(DIST)) {
     // 已注入（例如重复构建），先移除旧的再重新注入，保证哈希最新
     html = html.replace(new RegExp(`<link[^>]*${MARKER}[^>]*>`, "g"), "");
   }
+
+  // 先把 schema 移到 </head> 前，再插 preload（否则 preload 会被算进 schema 之后）
+  const before = html.indexOf('type="application/ld+json"');
+  html = hoistJsonLdToEnd(html);
+  const afterHoist = html.indexOf('type="application/ld+json"');
+  if (before !== -1 && afterHoist !== before) hoisted++;
 
   // 插入点：<meta charset> 之后、一切其它内容之前。
   // charset 必须留在前 1024 字节内，所以不能用它当锚点之前的位置。
@@ -82,8 +122,7 @@ for (const file of collectHtml(DIST)) {
     continue;
   }
 
-  // charset 紧跟 viewport，把 preload 放在 viewport 之后更符合常规顺序，
-  // 同时仍在 JSON-LD 之前 —— 这才是延迟的来源。
+  // charset 紧跟 viewport，把 preload 放在 viewport 之后更符合常规顺序。
   const after = idx + len;
   const viewportIdx = html.indexOf('<meta name="viewport"', after);
   const insertAt = viewportIdx !== -1 && viewportIdx < after + 400
@@ -97,6 +136,7 @@ for (const file of collectHtml(DIST)) {
 }
 
 console.log(`✓ 主样式表 preload 已注入：${cssName}（${patched} 个 HTML）`);
+console.log(`✓ JSON-LD schema 已移至 </head> 前（${hoisted} 个 HTML）`);
 
 // 自校验：确认注入点确实早于 JSON-LD，且 charset 仍在前 1024 字节内
 const sample = join(DIST, "index.html");
