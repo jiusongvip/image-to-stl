@@ -1,9 +1,18 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { ORGANIZATION, AUTHOR, SITE_URL, SITE_PUBLISHED, SITE_MODIFIED, SAME_AS, WEBSITE_ID } from "../lib/site";
 
 const faqSchema = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
+  url: `${SITE_URL}/faq/`,
+  isPartOf: { "@id": WEBSITE_ID },
+  sameAs: SAME_AS,
+  publisher: ORGANIZATION,
+  author: AUTHOR,
+  datePublished: SITE_PUBLISHED,
+  dateModified: SITE_MODIFIED,
+  inLanguage: "en",
   mainEntity: [
     { "@type": "Question", name: "What is an STL file and why do I need one?", acceptedAnswer: { "@type": "Answer", text: "STL (STereoLithography) is the universal 3D printing file format. It represents a 3D surface as a mesh of triangles and is accepted by every slicer including Cura, PrusaSlicer, and Bambu Studio." } },
     { "@type": "Question", name: "Is this image to STL converter really free?", acceptedAnswer: { "@type": "Answer", text: "Yes, completely free. No registration, no hidden fees, no watermarks. Everything runs in your browser, so there is no server to bill. You can convert unlimited images with no daily caps." } },

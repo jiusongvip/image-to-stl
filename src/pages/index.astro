@@ -1,7 +1,7 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import ConverterTool from "../components/ConverterTool";
-import { ORGANIZATION, WEBSITE_ID, SITE_URL, SITE_MODIFIED, SITE_PUBLISHED, AUTHOR, TOPIC_ENTITIES } from "../lib/site";
+import { ORGANIZATION, WEBSITE_ID, SITE_URL, SITE_MODIFIED, SITE_PUBLISHED, AUTHOR, TOPIC_ENTITIES, SAME_AS } from "../lib/site";
 
 const softwareSchema = {
   "@context": "https://schema.org",
@@ -15,6 +15,7 @@ const softwareSchema = {
     "Free online tool to convert images (JPG, PNG, SVG) to STL 3D models for 3D printing. Real-time 3D preview, browser-based processing. Supports heightmap, lithophane, and SVG extrusion modes.",
   publisher: ORGANIZATION,
   author: AUTHOR,
+  sameAs: SAME_AS,
   datePublished: SITE_PUBLISHED,
   dateModified: SITE_MODIFIED,
 };
@@ -28,6 +29,7 @@ const websiteSchema = {
   description:
     "Free online tool to convert images to STL 3D models for 3D printing. Browser-based, no uploads required.",
   publisher: ORGANIZATION,
+  sameAs: SAME_AS,
   inLanguage: "en",
   datePublished: SITE_PUBLISHED,
   dateModified: SITE_MODIFIED,
@@ -53,6 +55,7 @@ const citationSchema = {
   dateModified: SITE_MODIFIED,
   publisher: ORGANIZATION,
   author: AUTHOR,
+  sameAs: SAME_AS,
   mentions: TOPIC_ENTITIES,
   citation: [
     {

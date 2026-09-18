@@ -1,7 +1,8 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { withProvenance, SITE_PUBLISHED, SITE_MODIFIED } from "../lib/site";
 
-const schema = {
+const schema = withProvenance({
   "@context": "https://schema.org",
   "@type": "HowTo",
   name: "How to Convert an Image to STL",
@@ -12,7 +13,7 @@ const schema = {
     { "@type": "HowToStep", position: 3, name: "Adjust parameters", text: "Tune height, smoothness, and base for best results." },
     { "@type": "HowToStep", position: 4, name: "Download STL", text: "Preview in 3D and download the STL for printing." },
   ],
-};
+});
 ---
 
 <BaseLayout
@@ -20,6 +21,8 @@ const schema = {
   description="Step-by-step guide on converting images to STL files. Compare online tools, software methods, and learn best practices for 3D printing your photos."
   canonical="https://www.image-2-stl.com/how-to-convert-image-to-stl/"
   schema={schema}
+  publishDate={SITE_PUBLISHED}
+  modifyDate={SITE_MODIFIED}
 >
   <article class="max-w-3xl mx-auto px-4 sm:px-6 py-12">
     <h1 class="text-2xl sm:text-3xl font-bold tracking-tighter text-surface-900 dark:text-surface-100 mb-4">

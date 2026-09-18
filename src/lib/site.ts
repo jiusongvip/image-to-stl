@@ -73,6 +73,12 @@ export const AUTHOR = {
 };
 
 // 便捷函数：为页面 schema 附加 publisher / author / 日期字段
+//
+// 同时把品牌 sameAs 提升到**页面级主节点**上。
+// 背景：sameAs 只挂在嵌套的 Organization 上时，审计工具（以及部分 AI 引擎）
+// 检查「主实体是否声明了外部身份链接」会判定为缺失 —— 它们只看顶层节点。
+// 因此这里在主节点上再声明一次，让 WebSite / SoftwareApplication /
+// FAQPage / AboutPage 等任何主实体都直接携带 sameAs。
 export function withProvenance<T extends Record<string, unknown>>(
   schema: T,
   options: {
@@ -84,6 +90,7 @@ export function withProvenance<T extends Record<string, unknown>>(
   const { published = SITE_PUBLISHED, modified = SITE_MODIFIED, withAuthor = true } = options;
   return {
     ...schema,
+    ...(SAME_AS.length > 0 ? { sameAs: SAME_AS } : {}),
     publisher: ORGANIZATION,
     ...(withAuthor ? { author: AUTHOR } : {}),
     datePublished: published,
