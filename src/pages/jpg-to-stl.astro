@@ -33,7 +33,9 @@ const keywords = "jpg to stl, convert jpg to stl, jpg to stl converter, jpeg to 
     </section>
 
     <div class="mb-10 max-w-3xl rounded-xl overflow-hidden border border-surface-200 dark:border-surface-800">
-      <img src="/images/hero-workspace.webp" alt="JPG to STL workflow — phone photo on screen next to finished 3D printed relief" width="1792" height="1024" loading="eager" decoding="async" fetchpriority="high" class="w-full h-auto" />
+      <!-- width/height must match the real file (800x446). They feed the
+           reserved aspect-ratio box; stale values cause a layout shift. -->
+      <img src="/images/hero-workspace.webp" alt="JPG to STL workflow — phone photo on screen next to finished 3D printed relief" width="800" height="446" loading="eager" decoding="async" fetchpriority="high" class="w-full h-auto" />
     </div>
 
     <ConverterTool client:only="react" />
