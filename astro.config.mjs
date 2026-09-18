@@ -8,9 +8,4 @@ export default defineConfig({
   output: "static",
   site: "https://www.image-2-stl.com",
   trailingSlash: "always",
-  build: {
-    // The whole site shares one small stylesheet (~7 KiB). Inlining it removes the
-    // render-blocking request entirely instead of trading it for a FOUC.
-    inlineStylesheets: "always",
-  },
 });

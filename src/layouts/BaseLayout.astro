@@ -38,6 +38,10 @@ import SeoHead from "../components/SeoHead.astro";
 <!doctype html>
 <html lang="en" class="dark">
   <head>
+    <!-- Emitted first so the LCP image is discovered as early as possible. -->
+    <slot name="head-preload" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script is:inline>
       // Enables JS-only enhancements (e.g. the .reveal scroll animation) without
       // risking content being stuck invisible when JS never runs.
@@ -73,8 +77,6 @@ import SeoHead from "../components/SeoHead.astro";
         }, { once: true });
       })();
     </script>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="alternate icon" href="/favicon.ico" />
     <SeoHead title={title} description={description} canonical={canonical} schema={combinedSchema} keywords={keywords} ogImage={ogImage} ogType={ogType} publishDate={publishDate} modifyDate={modifyDate} />
