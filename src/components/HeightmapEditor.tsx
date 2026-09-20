@@ -399,7 +399,7 @@ function ParamSlider({
   return (
     <div className="space-y-1.5">
       <div className="flex items-center justify-between">
-        <label htmlFor={sliderId} className="text-xs font-medium text-surface-500">{label}</label>
+        <label htmlFor={sliderId} className="text-xs font-medium text-surface-500 dark:text-surface-400">{label}</label>
         <span className="text-xs font-mono text-surface-400">{typeof value === "number" && (label.includes("Contrast") || label.includes("Brightness") || label.includes("Level")) ? value : value.toFixed(1)}</span>
       </div>
       <input

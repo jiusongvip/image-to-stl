@@ -512,7 +512,7 @@ export default function ConverterTool() {
             className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
               mode === "heightmap"
                 ? "bg-surface-50 dark:bg-surface-700 text-surface-900 dark:text-surface-100 shadow-sm"
-                : "text-surface-500 hover:text-surface-700 dark:hover:text-surface-300"
+                : "text-surface-600 dark:text-surface-400 hover:text-surface-800 dark:hover:text-surface-300"
             }`}
           >
             Heightmap
@@ -522,7 +522,7 @@ export default function ConverterTool() {
             className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
               mode === "svg-extrude"
                 ? "bg-surface-50 dark:bg-surface-700 text-surface-900 dark:text-surface-100 shadow-sm"
-                : "text-surface-500 hover:text-surface-700 dark:hover:text-surface-300"
+                : "text-surface-600 dark:text-surface-400 hover:text-surface-800 dark:hover:text-surface-300"
             }`}
           >
             SVG Extrude
@@ -538,7 +538,7 @@ export default function ConverterTool() {
                 className={`px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                   resolution === r
                     ? "bg-surface-50 dark:bg-surface-700 text-surface-900 dark:text-surface-100 shadow-sm"
-                    : "text-surface-500 hover:text-surface-700 dark:hover:text-surface-300"
+                    : "text-surface-600 dark:text-surface-400 hover:text-surface-800 dark:hover:text-surface-300"
                 }`}
               >
                 {r.charAt(0).toUpperCase() + r.slice(1)}
@@ -714,7 +714,7 @@ export default function ConverterTool() {
                   className={`flex-1 py-2 rounded-lg text-xs font-medium transition-colors ${
                     exportFormat === fmt
                       ? "bg-accent-600 text-white"
-                      : "bg-surface-100 dark:bg-surface-800 text-surface-500 hover:text-surface-700 dark:hover:text-surface-300"
+                      : "bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400 hover:text-surface-800 dark:hover:text-surface-300"
                   }`}
                 >
                   {fmt.toUpperCase()}
@@ -781,7 +781,7 @@ function ParamSlider({
   return (
     <div className="space-y-1.5">
       <div className="flex items-center justify-between">
-        <label htmlFor={sliderId} className="text-xs font-medium text-surface-500">{label}</label>
+        <label htmlFor={sliderId} className="text-xs font-medium text-surface-500 dark:text-surface-400">{label}</label>
         <span className="text-xs font-mono text-surface-400">{value.toFixed(2)}</span>
       </div>
       <input

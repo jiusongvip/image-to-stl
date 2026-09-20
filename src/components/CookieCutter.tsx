@@ -266,7 +266,7 @@ export default function CookieCutter() {
               className={`flex-1 py-2 rounded-tool text-sm font-medium transition-colors ${
                 exportFormat === fmt
                   ? "bg-accent-600 text-white"
-                  : "bg-surface-100 dark:bg-surface-800 text-surface-500 hover:text-surface-700 dark:hover:text-surface-300"
+                  : "bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400 hover:text-surface-800 dark:hover:text-surface-300"
               }`}
             >
               {fmt.toUpperCase()}
@@ -596,7 +596,7 @@ function ParamSlider({
   return (
     <div className="space-y-1.5">
       <div className="flex items-center justify-between">
-        <label htmlFor={sliderId} className="text-xs font-medium text-surface-500">{label}</label>
+        <label htmlFor={sliderId} className="text-xs font-medium text-surface-500 dark:text-surface-400">{label}</label>
         <span className="text-xs font-mono text-surface-400">{Number.isInteger(step) ? value : value.toFixed(1)}</span>
       </div>
       <input
