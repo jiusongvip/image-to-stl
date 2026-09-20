@@ -26,9 +26,9 @@
  * Env:
  *   FP_CPU=1   disable CPU throttling (for interactive debugging)
  */
-import { spawn, execFileSync } from "node:child_process";
+import { spawn } from "node:child_process";
 import { randomBytes } from "node:crypto";
-import { existsSync } from "node:fs";
+import { existsSync, rmSync } from "node:fs";
 import net from "node:net";
 
 const [url, runsArg] = process.argv.slice(2);
@@ -400,8 +400,17 @@ try {
   try {
     chrome.kill();
   } catch {}
+  // Use Node's own rm rather than shelling out. `cmd /c rmdir` silently fails
+  // here -- Git-Bash hands cmd a forward-slash path it cannot resolve -- and
+  // the Chrome profiles accumulate in D:/tmp. fs.rmSync has no such problem.
+  //
+  // The short wait matters: Chrome releases its handles on the profile a beat
+  // after the process is signalled, and rmSync gives up silently if a file is
+  // still locked. maxRetries alone is not enough because the default retry
+  // delay is shorter than the handle release.
+  await sleep(800);
   try {
-    execFileSync("cmd", ["/c", "rmdir", "/s", "/q", profile.replace(/\//g, "\\")], { stdio: "ignore" });
+    rmSync(profile, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 });
   } catch {}
 }
 
