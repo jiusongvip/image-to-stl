@@ -7,3 +7,9 @@ dist/
 
 # Local agent workspace (memory logs, skill state) — not part of the site.
 .workbuddy-ai/
+
+# Measurement output — raw PSI / Lighthouse JSON, kept locally for comparison
+# but never part of the site. scripts/psi-run.mjs and the performance-check
+# skill write these into the repo root.
+psi-*.json
+lh-*.json
