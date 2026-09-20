@@ -27,6 +27,17 @@
 
   Also do not write brace-star comment syntax in this frontmatter: it is parsed
   as JavaScript, where that construct is a syntax error, not a comment.
+
+  FONT PRELOADS — preload every weight the above-the-fold content renders, and
+  nothing else. The list was originally Regular + SemiBold only, but the hero
+  renders Bold for the h1 and Medium for the author link and the four feature
+  badges. Those two faces were therefore fetched late (starting around 270ms,
+  after first paint) and their arrival changed text metrics and reflowed the
+  hero, which Lighthouse attributed to "Web font loaded" and cost CLS 0.072 on
+  mobile. A face that is rendered above the fold but not preloaded is strictly
+  worse than preloading it: the request happens anyway, just too late to avoid
+  the shift. Faces used only below the fold (GeistMono) are deliberately not
+  listed, so they stay out of the critical path.
 */
 import "../styles/global.css";
 import Header from "../components/Header.astro";
@@ -81,7 +92,21 @@ import SeoHead from "../components/SeoHead.astro";
       rel="preload"
       as="font"
       type="font/woff2"
+      href="/fonts/Geist-Medium.woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
       href="/fonts/Geist-SemiBold.woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href="/fonts/Geist-Bold.woff2"
       crossorigin
     />
     <script is:inline>
