@@ -154,12 +154,26 @@
 移动 Perf 98 / LCP 1.8 s，桌面 Perf 98–100 / LCP 0.5 s。
 内联关键 CSS 体积 15,053 → 14,953 B。
 
-### ⚠️ P2 — 首屏外图片过大（201 KiB 可省）
+### ✅ P2 — 首屏外图片过大（**已修复并上线**）
 
-`image-delivery-insight`：三张「作品展示」图以 1024×1024 源尺寸渲染在 414×414，
-单张浪费 42–52 KiB。均在 `section#creations`，**不在首屏**，不影响 LCP。
+原问题：`section#creations` 的 9 张图全部是 1024×1024，而桌面网格实际只渲染 **414px** 宽，
+每张超标约 2.5 倍。`image-delivery-insight` 估计浪费 201 KiB。
 
-**修法**：为这三张图生成 512px 版本或用 `srcset`。收益是可省 201 KiB 传输，属带宽优化。
+修复（提交 `feb15ea`）：新增 `scripts/optimize-gallery-images.mjs`，重编码为 **512px**
+（lanczos3 / WebP q80），输出到 `public/images/optimized/`，markup 的 `src` 与
+`width`/`height` 同步更新（1024 → 512）。
+
+| | 前 | 后 |
+|---|---|---|
+| 9 张图合计 | 699,718 B | **248,554 B**（−64.5%，省 **451 KiB**）|
+| `image-delivery-insight` | 0.5 / 201 KiB 浪费 | **1 / 0 浪费** |
+| 移动端总传输 | — | **341 KiB** |
+
+选 512 而非 414 是有意的：仍需大于最大实际显示宽度，才能在 2×/3× DPR 屏幕上保持清晰。
+脚本幂等（已 ≤512px 直接跳过，不会二次降质），且**不自动改写 markup** ——
+构建脚本静默改源码会让人无法分辨改了什么。
+
+线上核验：9 张图 HTTP 200 / `image/webp` / 字节数与本地构建逐字节一致。
 
 ### ⚠️ P3 — 第三方脚本（不可完全控，部分可在 Cloudflare 面板关）
 
@@ -169,8 +183,12 @@
   CF Email Obfuscation 注入）。
 - `unused-javascript` 72 KiB（移动端）— 主要是 GTM + GA。
 
-**修法**：前两项只能在 **Cloudflare 控制台**关闭 Web Analytics / Email Obfuscation，
-或对 `beacon.min.js` 加 `defer` 策略。GTM 属业务必需，不建议删。
+**修法**：前两项只能在 **Cloudflare 控制台**关闭 Web Analytics / Email Obfuscation。
+GTM 属业务必需，不建议删 —— 且实测桌面端偶发的 TBT 222 ms **全部来自 GTM/gtag 长任务**
+（174 + 165 ms），是当前最大的剩余单点。
+
+> 图片优化后，移动端传输量前 10 名里**已无画廊图片**（懒加载 + 已降采样），
+> 剩余主要是 **GTM 172 KiB** 与字体（约 100 KiB）。
 
 ---
 
