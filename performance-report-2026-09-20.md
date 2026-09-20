@@ -154,23 +154,41 @@
 移动 Perf 98 / LCP 1.8 s，桌面 Perf 98–100 / LCP 0.5 s。
 内联关键 CSS 体积 15,053 → 14,953 B。
 
-### ✅ P2 — 首屏外图片过大（**已修复并上线**）
+### ✅ P2 — 图片过大（**已修复并上线，含两轮**）
 
-原问题：`section#creations` 的 9 张图全部是 1024×1024，而桌面网格实际只渲染 **414px** 宽，
-每张超标约 2.5 倍。`image-delivery-insight` 估计浪费 201 KiB。
+**第一轮（提交 `feb15ea`）**：`section#creations` 的 9 张图全部是 1024×1024，而桌面网格
+实际只渲染 **414px** 宽，每张超标约 2.5 倍。`image-delivery-insight` 估计浪费 201 KiB。
 
-修复（提交 `feb15ea`）：新增 `scripts/optimize-gallery-images.mjs`，重编码为 **512px**
-（lanczos3 / WebP q80），输出到 `public/images/optimized/`，markup 的 `src` 与
-`width`/`height` 同步更新（1024 → 512）。
+修复：新增 `scripts/optimize-gallery-images.mjs`，重编码为 **512px**（lanczos3 / WebP q80），
+输出到 `public/images/optimized/`，markup 的 `src` 与 `width`/`height` 同步更新（1024 → 512）。
+
+**第二轮（提交 `feb15ea` 之后）**：第一轮只核对了首页。做**全站 15 页**审计时发现
+**5 个详情页的 hero 图仍是 1024px 原图**（`svg-to-stl` / `heightmap-editor` /
+`cookie-cutter` / `lithophane-maker` / `photo-to-3d`）。
+
+这里差点做错：我原本打算沿用 512px。但**在 Chrome 里实测渲染宽度**（没有靠 class 推断）
+得到的是 **766px**，不是 414px —— 因为详情页 hero 在 `max-w-3xl` 容器里，比首页网格宽。
+**512px 会被放大 1.5 倍、肉眼可见发虚。** 于是把脚本改造成**双尺寸组**：
+
+| 组 | 目标宽 | 用途 | 实测渲染宽 | 张数 |
+|---|---|---|---|---|
+| `gallery` | 512px | 首页网格（`aspect-square`）| 414px | 9 |
+| `hero` | 860px | 详情页 hero（`max-w-3xl`）| **766px** | 5 |
+
+860 = 766 × 1.12，留出 DPR 与亚像素余量，同时避免 1024 的浪费。
 
 | | 前 | 后 |
 |---|---|---|
-| 9 张图合计 | 699,718 B | **248,554 B**（−64.5%，省 **451 KiB**）|
+| 首页 9 张 | 699,718 B | **248,554 B**（−64.5%，省 441 KiB）|
+| 详情页 5 张 | 429,688 B | **279,508 B**（−35.0%，省 147 KiB）|
+| **合计 14 张** | **1,129,406 B** | **528,062 B**（**−53.2%**）|
 | `image-delivery-insight` | 0.5 / 201 KiB 浪费 | **1 / 0 浪费** |
 | 移动端总传输 | — | **341 KiB** |
 
-选 512 而非 414 是有意的：仍需大于最大实际显示宽度，才能在 2×/3× DPR 屏幕上保持清晰。
-脚本幂等（已 ≤512px 直接跳过，不会二次降质），且**不自动改写 markup** ——
+**刻意未动**：`/images/hero-workspace.webp`（首页 LCP 元素，800×446，仅 **15 KiB**，已是最优）
+—— grep 曾把它列进「未优化原图」，但它尺寸与实际显示一致，改它有害无益。
+
+脚本幂等（已 ≤ 目标宽直接跳过，不会二次降质），且**不自动改写 markup** ——
 构建脚本静默改源码会让人无法分辨改了什么。
 
 线上核验：9 张图 HTTP 200 / `image/webp` / 字节数与本地构建逐字节一致。
