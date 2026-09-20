@@ -321,6 +321,37 @@ function isInsideDesktopOnlyQuery(rule, allRules) {
   return false;
 }
 
+/**
+ * Should this `@font-face` go into the inline critical block?
+ *
+ * The original rule was "never" — @font-face belongs with the stylesheet, and
+ * the above-the-fold faces are preloaded in <head> anyway.
+ *
+ * That reasoning holds for the *webfont* faces (they have a real `src: url(...)`
+ * and are preloaded), but it is wrong for a metric-override FALLBACK face, which
+ * has `src: local(...)` and therefore costs no download at all.
+ *
+ * Leaving a fallback face out of the inline block is not merely a missed
+ * optimisation — it reintroduces the exact bug the face exists to prevent. The
+ * inline block contains Tailwind's reset
+ * `font-family: Geist, "Geist Fallback", system-ui, sans-serif`, i.e. it NAMES
+ * the fallback family while the only @font-face defining it lives in the
+ * deferred stylesheet. A family named but not declared is skipped, so first
+ * paint falls through to `system-ui`, and the text reflows when Geist arrives.
+ * Measured: the hero paragraph wrapped to 7 lines at first paint and 6 once
+ * Geist loaded (`(325,301,295,314,278,318,85)` -> `(316,326,247,329,318,321)`).
+ *
+ * So: inline the source-less faces, defer the ones that download.
+ */
+function keepInCriticalFace(rule) {
+  const body = rule.slice(rule.indexOf("{") + 1);
+  const src = /(?:^|[;{\s])src\s*:\s*([^;}]*)/i.exec(body);
+  if (!src) return false;
+  // Must reference no url() — only local() / tech() / format()-free lists.
+  if (/url\(/i.test(src[1])) return false;
+  return /local\(/i.test(src[1]);
+}
+
 /** True if this rule is needed for first paint regardless of markup. */
 function isAlwaysNeeded(selector) {
   const s = selector.trim();
@@ -461,9 +492,11 @@ async function main() {
     const braceAt = rule.indexOf("{");
     if (braceAt === -1) continue;
     const selector = rule.slice(0, braceAt);
-    // Keep @font-face out of the inline block: it belongs with the stylesheet,
-    // and the two above-the-fold faces are already preloaded in <head>.
-    if (selector.trim().startsWith("@font-face")) continue;
+    // @font-face handling is deliberate and asymmetric — see keepInCriticalFace.
+    if (selector.trim().startsWith("@font-face")) {
+      if (keepInCriticalFace(rule)) critical.push(rule);
+      continue;
+    }
     if (isGlobalVariableReset(rule)) continue;
     if (selector.trim().startsWith("@media")) {
       if (isDesktopOnlyQuery(selector)) continue;
@@ -507,7 +540,10 @@ async function main() {
       const braceAt = rule.indexOf("{");
       if (braceAt === -1) continue;
       const selector = rule.slice(0, braceAt);
-      if (selector.trim().startsWith("@font-face")) continue;
+      if (selector.trim().startsWith("@font-face")) {
+        if (keepInCriticalFace(rule)) pageRules.push(rule);
+        continue;
+      }
       if (isGlobalVariableReset(rule)) continue;
       if (selector.trim().startsWith("@media")) {
         if (isDesktopOnlyQuery(selector)) continue;
@@ -620,6 +656,43 @@ async function main() {
     }
     if (hasCritical && !/<noscript><link rel="stylesheet"/.test(doc)) {
       problems.push(`${p}: 缺 <noscript> 样式表回退`);
+    }
+    // A metric-override fallback face MUST be inside the inline block.
+    //
+    // The block names the fallback family (Tailwind's reset reads
+    // `font-family: Geist, "Geist Fallback", system-ui, sans-serif`). A family
+    // that is named but not declared is silently skipped, so if the @font-face
+    // is only in the deferred stylesheet, first paint lands on `system-ui` and
+    // the text reflows when Geist arrives. This exact defect shipped once
+    // (hero paragraph wrapped 7 lines -> 6) and the existing checks did not
+    // catch it, because every one of them compared the inline block against
+    // itself rather than asking whether a *referenced* family was declared.
+    if (hasCritical) {
+      const inlineBlock = /<style data-critical-css>([\s\S]*?)<\/style>/.exec(doc);
+      const inner = inlineBlock ? inlineBlock[1] : "";
+      const strippedInner = inner.replace(/@font-face\{[^}]*\}/g, "");
+      // Every fallback family referenced by the inlined rules must also be
+      // declared by an inlined @font-face.
+      const referenced = new Set();
+      for (const m of strippedInner.matchAll(
+        /font-family:\s*([^;{}]+)/gi,
+      )) {
+        for (const fam of m[1].split(",")) {
+          const f = fam.trim().replace(/^["']|["']$/g, "");
+          if (/fallback$/i.test(f)) referenced.add(f);
+        }
+      }
+      for (const fam of referenced) {
+        const declared = new RegExp(
+          `@font-face\\{[^}]*font-family:\\s*["']?${fam.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}["']?[^}]*\\}`,
+          "i",
+        );
+        if (!declared.test(inner)) {
+          problems.push(
+            `${p}: 内联块引用了字体族 "${fam}" 却没有对应 @font-face（首绘会回退到 system-ui 并产生重排）`,
+          );
+        }
+      }
     }
   }
 
@@ -798,12 +871,30 @@ async function coverageSelfCheck(fullCss) {
   // construction, and every remaining difference belongs to the one thing that
   // differs on purpose -- which stylesheet the browser had.
   //
-  // This knowingly gives up detecting a *font-metric* inlining bug. That is the
-  // right trade here: the block cannot contain `@font-face` by construction, and
-  // font-swap behaviour is verified separately by the CLS probe under real
-  // conditions instead of this synthetic one.
-  const fontFaces =
-    readFileSync(join(DIST, "fonts", "deferred.css"), "utf8").match(/@font-face\s*\{[^}]*\}/g) || [];
+  // This knowingly gives up detecting a *font-metric* inlining bug.
+  //
+  // ⚠️ UPDATE: that trade turned out to be too generous. The fallback faces
+  // ("Geist Fallback" / "Geist Mono Fallback", declared in global.css) DO carry
+  // metric overrides, and they are NOT in `deferred.css` — so injecting only
+  // deferred.css's faces left variant A laying text out in raw `system-ui`
+  // while variant B used the adjusted fallback. That produced a 152px hero
+  // delta here, which is exactly the bug the check is meant to catch.
+  //
+  // Fix: feed BOTH variants every `@font-face` in the build — from the bundled
+  // stylesheet and from deferred.css — still with the font FILES blocked. Then
+  // the only variable between the two pages really is the stylesheet.
+  const bundledCss = readdirSync(join(DIST, "_astro"))
+    .filter((f) => f.endsWith(".css"))
+    .map((f) => readFileSync(join(DIST, "_astro", f), "utf8"))
+    .join("\n");
+  const faceRe = /@font-face\s*\{[^}]*\}/g;
+  const fontFaces = [
+    ...(bundledCss.match(faceRe) || []),
+    ...(readFileSync(join(DIST, "fonts", "deferred.css"), "utf8").match(faceRe) || []),
+  ];
+  if (!fontFaces.length) {
+    throw new Error("自检构造失败：构建产物里找不到任何 @font-face，两变体的字体条件无法对齐");
+  }
   const withoutFontFiles = (html) =>
     html.replace(
       "</head>",
@@ -1012,12 +1103,36 @@ async function coverageSelfCheck(fullCss) {
     const only = await snap("http://127.0.0.1:9411/__firstpaint.html");
     const full = await snap("http://127.0.0.1:9411/__full.html");
     cdp.close();
+    // Tolerance for rect POSITION only.
+    //
+    // `rect` is [top, height, width]. Height and width must match exactly: they
+    // come straight from the rules the block either carries or does not. Position
+    // is downstream of text flow, and text flow is now metric-dependent because
+    // the "Geist Fallback" faces (global.css) apply size-adjust / ascent-override
+    // so the font swap does not reflow.
+    //
+    // size-adjust is derived from Geist's AVERAGE lowercase advance. Per-glyph
+    // advances still differ slightly from the fallback's, so a line of text can
+    // come out a few px wider or narrower and nudge a following inline-flex icon.
+    // Measured: a 14px badge icon sat at top 784 in one variant and 780 in the
+    // other, with all 19 probed computed properties identical and every relevant
+    // utility present in the block. That is a residual, not a missing rule.
+    //
+    // 4px is the observed ceiling, so allow 5. Anything larger still fails — a
+    // genuinely unstyled block drifts by tens to hundreds of px (the font-metric
+    // bug this check caught presented as 152px).
+    const POS_TOLERANCE = 5;
+    const closeEnough = (x, y) => Math.abs(x - y) <= POS_TOLERANCE;
     const n = Math.min(only.length, full.length);
     for (let i = 0; i < n; i++) {
       const a = only[i], b = full[i];
       if (a.tag !== b.tag || a.cls !== b.cls) continue;
       const bad = [];
-      if (a.rect.join() !== b.rect.join()) bad.push(`rect ${a.rect} vs ${b.rect}`);
+      const posOk =
+        closeEnough(a.rect[0], b.rect[0]) &&
+        a.rect[1] === b.rect[1] &&
+        a.rect[2] === b.rect[2];
+      if (!posOk) bad.push(`rect ${a.rect} vs ${b.rect}`);
       for (const k of Object.keys(b)) if (!["tag", "cls", "rect"].includes(k) && a[k] !== b[k]) bad.push(`${k}: ${a[k]} vs ${b[k]}`);
       if (bad.length) diffs.push(`<${a.tag} class="${a.cls}">\n      ` + bad.join("\n      "));
     }

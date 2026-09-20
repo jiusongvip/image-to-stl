@@ -24,7 +24,7 @@
  *   node scripts/psi-run.mjs <url> <mobile|desktop> <count> <outPrefix>
  */
 import { execFileSync } from "node:child_process";
-import { writeFileSync, readFileSync, unlinkSync, existsSync } from "node:fs";
+import { writeFileSync } from "node:fs";
 
 const KEY = "AIzaSyAxr1EClLvilyZBsw1i_cmdYPDtS8MdIDQ";
 const PROXY = "http://127.0.0.1:7897";
@@ -39,10 +39,15 @@ const count = Number(countArg);
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 function fetchPsi(apiUrl) {
-  // -o writes the body; we read it back so a zero-byte body is detectable.
-  const tmp = `${outPrefix}.tmp`;
+  // Pipe the body through stdin instead of `-o <file>`.
+  //
+  // Why not `-o`: this sandbox intercepts writes/deletes and, once a turn
+  // has accumulated enough of them, every unlinkSync is refused with
+  // SAFE_DELETE_BULK_CONFIRM_REQUIRED. Our own cleanup then throws and the
+  // run is reported as FAIL even though curl fetched a perfectly good body.
+  // Streaming into memory removes the temp file — and the delete — entirely.
   try {
-    execFileSync(
+    const res = execFileSync(
       "curl",
       [
         "-s",
@@ -50,19 +55,19 @@ function fetchPsi(apiUrl) {
         "-m", "180",
         "--retry", "2",
         "--retry-delay", "3",
-        "-o", tmp,
-        "-w", "%{http_code}",
+        "-w", "\n%{http_code}",
         apiUrl,
       ],
-      { encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] },
+      { encoding: "utf8", stdio: ["ignore", "pipe", "ignore"], maxBuffer: 64 * 1024 * 1024 },
     );
-    if (!existsSync(tmp)) return { ok: false, why: "curl 未写出任何响应体" };
-    const text = readFileSync(tmp, "utf8");
-    unlinkSync(tmp);
-    if (!text.trim()) return { ok: false, why: "响应体为空" };
+    const nl = res.lastIndexOf("\n");
+    const httpCode = res.slice(nl + 1).trim();
+    const text = res.slice(0, nl);
+    if (!text.trim()) {
+      return { ok: false, why: `响应体为空（http ${httpCode}）` };
+    }
     return { ok: true, text };
   } catch (e) {
-    if (existsSync(tmp)) unlinkSync(tmp);
     return { ok: false, why: `curl 失败: ${e.message.slice(0, 100)}` };
   }
 }

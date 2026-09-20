@@ -17,6 +17,132 @@
      Geist Mono 500/600     — format badges and export labels further down
 
    Regenerate the woff2 files with: python scripts/subset-fonts.py */
+
+/* ──────────────────────────────────────────────
+   Metric-override fallback faces.
+
+   Why these exist: the Tailwind font stack names "Geist Fallback" and
+   "Geist Mono Fallback", but until now NO @font-face defined them. A family
+   named in a font stack but never declared is simply skipped, so the browser
+   fell straight through to `system-ui` — a different typeface with different
+   advance widths and different ascent/descent.
+
+   Consequence: with `font-display: swap`, text was first painted in the system
+   font and then re-laid-out when Geist arrived. Measured under 4x CPU throttle
+   (the condition PSI uses), Geist does not finish loading until ~6.2s — long
+   after first paint — so the hero reflowed in view: the hero paragraph lost a
+   whole line (182px -> 156px), the h1 line box changed (160px -> 155px), and
+   the four hero badges re-wrapped (56px -> 66px). CLS 0.0126-0.0208 every run.
+
+   These faces render in the system font but force its metrics to match Geist,
+   so swapping changes glyph shapes only — no reflow.
+
+   ⚠️ The percentages are MEASURED, not computed from font files.
+
+   Two independent traps, both of which produced a value ~10% off:
+
+   1. Wrong denominator. A `src: local(...)` face composes: the browser resolves
+      local() to a real installed font, THEN applies size-adjust. So the ratio
+      needed is target / (that local face) — not target / system-ui. Here they
+      differ a lot: the same string is 7298px in Segoe UI but 7940px in
+      system-ui at 100px. Dividing by the wrong one is a silent ~9% error.
+
+      scripts/measure-size-adjust.mjs therefore self-calibrates: it renders the
+      string with the CURRENT size-adjust, backs out the base width
+      (measured / currentAdjust), then returns target / base. It converges on
+      base = 7298.3 for all three faces, which independently confirms the local()
+      resolution is stable and is Segoe UI.
+
+   2. Wrong direction. size-adjust is a multiplier applied to the fallback, so
+      it must be target/fallback. Getting it inverted made the text ~12% NARROWER
+      than Geist instead of matching it.
+
+   Measured values (all three back out to the same base, so they are consistent):
+
+     Geist Fallback w400   size-adjust 103.98%
+     Geist Fallback w700   size-adjust 109.07%
+     Geist Mono Fallback   size-adjust 125.78%
+
+   Geist Mono is much wider than a proportional system font, hence 125%.
+   ascent/descent come from the font files (scripts/font-metrics.py) and are
+   independent of size-adjust: the override is expressed relative to the used
+   font size, so it needs no correction. 85.26% / 87.66% are confirmed correct
+   by back-solving base = 7298.3 == "Geist 400 / Segoe UI".
+
+   ── The residual is a LINE-BREAK problem, not a metrics problem ──
+
+   An earlier pass got w400 to 258.67 vs Geist's 254.36 (1.7% wide) and CLS did
+   not budge. Measuring the hero paragraph with Range.getClientRects() explains
+   why, and it is not what the block height suggests:
+
+     before swap   lines=7  widths=[325, 301, 295, 314, 278, 318, 85]
+     after  swap   lines=6  widths=[316, 326, 247, 329, 318, 321]
+
+   Six lines saturate the ~327px measure and leave a 85px orphan on line 7;
+   Geist then compresses the same text into six lines. So the reflow is a
+   WRAP BOUNDARY being crossed, and it only takes ~1% of width to cross it.
+
+   Hence the values below are solved against the *measured* residual rather than
+   against the font files: measure with the current setting, back out
+   base = measured / (currentAdjust/100), set target/base. Both weights
+   back-solve to base ~= 244.6-244.7, which cross-checks the fallback resolution.
+
+   ✱ And the actual root cause of the residual CLS, which was neither: the face
+   was not reaching first paint at all.
+
+   scripts/inject-critical-css.mjs deliberately excluded EVERY @font-face from
+   the inline critical block, on the reasoning that "the above-the-fold faces
+   are preloaded in <head>". That was true for the webfonts. It was wrong for
+   these faces, because the inline block still contains Tailwind's reset
+
+     font-family: Geist, "Geist Fallback", system-ui, sans-serif
+
+   i.e. it NAMES the fallback family while the only declaration of it sat in the
+   deferred stylesheet. A family that is named but not declared is skipped, so
+   first paint rendered in `system-ui` and the paragraph wrapped 7 lines; Geist
+   then arrived and it became 6. Fixing size-adjust could never have helped,
+   because the adjusted face was never used before the swap.
+
+   Fix: inline the source-less faces (they have `src: local(...)`, so they cost
+   zero download — 519 B of declaration) and keep deferring the ones that
+   download. Result, local probe at 4x CPU throttle + slow 4G:
+
+     before   CLS 0.0126 on 8/8 runs   (paragraph 7 lines -> 6)
+     after    CLS 0.0000 on 5/6 runs; the one exception took 0.0045, and only
+              when fonts arrived at 7461 ms vs the usual ~950 ms
+              (paragraph 6 lines -> 6 — the lost line is gone)
+
+   scripts/inject-critical-css.mjs now asserts that every *Fallback family
+   referenced by the inline block is also declared by an inlined @font-face, and
+   that assertion is negative-control verified (strip the faces -> exit 1).
+
+   Caveat, stated plainly: this precision is tuned for the fallback that
+   `local("Segoe UI")` resolves to on this machine. On a host where local()
+   lands elsewhere, the fallback is merely close rather than exact — which is
+   the normal, acceptable behaviour for a fallback face. */
+@font-face {
+  font-family: "Geist Fallback";
+  src: local("Segoe UI"), local("Arial"), local("Helvetica Neue");
+  size-adjust: 103.98%;
+  ascent-override: 85.26%;
+  descent-override: 87.66%;
+}
+@font-face {
+  font-family: "Geist Fallback";
+  src: local("Segoe UI"), local("Arial"), local("Helvetica Neue");
+  font-weight: 700;
+  size-adjust: 109.07%;
+  ascent-override: 85.26%;
+  descent-override: 87.66%;
+}
+@font-face {
+  font-family: "Geist Mono Fallback";
+  src: local("Segoe UI"), local("Arial"), local("Helvetica Neue");
+  size-adjust: 125.78%;
+  ascent-override: 85.26%;
+  descent-override: 87.66%;
+}
+
 @font-face {
   font-family: "Geist";
   src: url("/fonts/Geist-Regular.woff2")
