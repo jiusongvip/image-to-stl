@@ -30,14 +30,20 @@
 
   FONT PRELOADS — preload every weight the above-the-fold content renders, and
   nothing else. The list was originally Regular + SemiBold only, but the hero
-  renders Bold for the h1 and Medium for the author link and the four feature
-  badges. Those two faces were therefore fetched late (starting around 270ms,
-  after first paint) and their arrival changed text metrics and reflowed the
-  hero, which Lighthouse attributed to "Web font loaded" and cost CLS 0.072 on
-  mobile. A face that is rendered above the fold but not preloaded is strictly
-  worse than preloading it: the request happens anyway, just too late to avoid
-  the shift. Faces used only below the fold (GeistMono) are deliberately not
-  listed, so they stay out of the critical path.
+  renders Bold for the h1, Medium for the author link and the four feature
+  badges, and GeistMono for the "01 02 03 04" step labels. Those faces were
+  therefore fetched late (starting around 270ms, after first paint) and their
+  arrival changed text metrics and reflowed the hero, which Lighthouse
+  attributed to "Web font loaded": 0.072 CLS on mobile, and 0.41 on desktop
+  where the hero section is 713px tall and overflows the 720px viewport, so
+  the mono step labels are above the fold there even though they are below it
+  on a phone. A face that is rendered above the fold but not preloaded is
+  strictly worse than preloading it: the request happens anyway, just too late
+  to avoid the shift.
+
+  Do not reason about "above the fold" from source order alone — measure the
+  element rects at both 390x844 and 1280x720. The mono block looked below the
+  fold in the markup but is inside the desktop viewport.
 */
 import "../styles/global.css";
 import Header from "../components/Header.astro";
@@ -107,6 +113,13 @@ import SeoHead from "../components/SeoHead.astro";
       as="font"
       type="font/woff2"
       href="/fonts/Geist-Bold.woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href="/fonts/GeistMono-Regular.woff2"
       crossorigin
     />
     <script is:inline>
