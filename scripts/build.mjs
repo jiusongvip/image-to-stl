@@ -130,6 +130,12 @@ execFileSync(process.execPath, ["scripts/fix-sitemap-home.mjs"], { stdio: "inher
 console.log("\n== 注入主样式表 preload ==");
 execFileSync(process.execPath, ["scripts/inject-css-preload.mjs"], { stdio: "inherit" });
 
+// 内联首屏关键 CSS，把样式表从渲染阻塞路径上摘掉。必须在 inject-css-preload 之后运行：
+// 后者负责把 preload 放到 <head> 最前面，前者改的是 <link rel="stylesheet"> 本身，
+// 且会校验 preload 仍然排在被延迟的样式表之前。
+console.log("\n== 内联首屏关键 CSS ==");
+execFileSync(process.execPath, ["scripts/inject-critical-css.mjs"], { stdio: "inherit" });
+
 if (!existsSync("dist/sitemap-index.xml") && !existsSync("dist/sitemap.xml")) {
   console.error("\n✗ sitemap 未生成，构建结果不完整");
   process.exit(1);

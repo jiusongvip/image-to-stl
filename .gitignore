@@ -4,3 +4,6 @@ dist/
 *-audit/
 *.log
 .DS_Store
+
+# Local agent workspace (memory logs, skill state) — not part of the site.
+.workbuddy-ai/
