@@ -11,5 +11,5 @@ dist/
 # Measurement output — raw PSI / Lighthouse JSON, kept locally for comparison
 # but never part of the site. scripts/psi-run.mjs and the performance-check
 # skill write these into the repo root.
-psi-*.json
+psi*.json
 lh-*.json

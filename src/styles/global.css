@@ -57,13 +57,68 @@
       it must be target/fallback. Getting it inverted made the text ~12% NARROWER
       than Geist instead of matching it.
 
-   Measured values (all three back out to the same base, so they are consistent):
+   Measured values (the four Geist weights each back out to the same base ~153.2,
+   so they are mutually consistent; the mono face backs out to base 87.93):
 
-     Geist Fallback w400   size-adjust 103.98%
-     Geist Fallback w700   size-adjust 109.07%
-     Geist Mono Fallback   size-adjust 125.78%
+     Geist Fallback w400   size-adjust 106.73%
+     Geist Fallback w500   size-adjust 108.78%
+     Geist Fallback w600   size-adjust 110.80%
+     Geist Fallback w700   size-adjust 112.82%
+     Geist Mono Fallback   size-adjust 109.16%
 
-   Geist Mono is much wider than a proportional system font, hence 125%.
+   3. ONE FACE PER WEIGHT. A weight with no face is not merely slightly off — CSS
+      font matching pairs the request with the NEAREST declared face, so a w500
+      request against a w400-only family renders 4.42% narrow and re-wraps when
+      the real w500 arrives. `font-medium` badges and `font-semibold` buttons are
+      exactly the elements PSI flagged as shifting. Declare every weight you use.
+      Same rule for mono: Geist Mono is used at w400, w500 AND w600.
+
+   4. THE MONO FALLBACK MUST ITSELF BE MONOSPACED. This is the subtlest trap and
+      the one that cost the most time.
+      Geist Mono is genuinely monospaced: measured 9.6000 px/char at 16px for
+      every string, digits, letters and spaces alike. A proportional fallback
+      has no single advance, so its per-character widths vary with the glyph mix
+      (measured 9.60 for "01" but 8.28 for "JPG / JPEG" in Segoe UI).
+      A `size-adjust` is a UNIFORM scalar — it can only scale, it cannot change
+      the width RATIO between glyph classes. So with a proportional fallback no
+      value can work: tuned to match digits, letters came out 13.78% too narrow;
+      and the four strings disagreed about the needed value by 12 percentage
+      points. With `local("Consolas"), local("Cascadia Mono"), local("Menlo"),
+      local("DejaVu Sans Mono"), …` the same four strings agreed to within
+      0.041 points and the residual fell to a uniform scale of ~1.95%.
+      Rule: match monospace to monospace, then correct the scale.
+
+   5. ascent-override / descent-override DECIDE THE LINE BOX, and getting them
+      wrong reintroduces CLS even when every width matches perfectly. This was
+      the last bug standing, and it produced a pure vertical shift:
+        P.mt-6  top 430 -> 374   h 112 -> 112
+      i.e. unchanged height, moved up, because the <h1> above it shrank by 56px
+      when the real font arrived.
+
+      The overrides must reproduce Geist's own `line-height: normal` box. Read
+      the font file (scripts/read-font-metrics.py, fonttools):
+
+        Geist hhea: ascender 920, descender -220, lineGap 100, upem 1000
+
+      so the normal line box is (920 + 220 + 100) / 1000 = 124.0%. Independently
+      measured in the browser: 124px at font-size 100px. The two agree exactly.
+
+      The override API has no line-gap slot, so fold lineGap into the ascent:
+
+        ascent-override  * size-adjust = (920 + 100) / 1000 = 102%
+        descent-override * size-adjust =  220      / 1000 =  22%
+
+      NOTE size-adjust multiplies the overrides too, so each weight needs its own
+      pair (w400 95.57/20.61, w700 90.41/19.50, …). The previous values,
+      85.26/87.66, had the DESCENT ALMOST 4x TOO LARGE — that alone inflated
+      every fallback line box to ~184% of the em and caused the shift.
+
+      Empirically confirmed: override_sum * size_adjust = 1.8456 predicted vs
+      1.8389 measured (0.36% apart), and a controlled A/B with no override at all
+      gave 1.3125/1.3214/1.3300 for Segoe UI.
+
+      Rule: derive overrides from the font's hhea table, and remember that
+      size-adjust scales them.
    ascent/descent come from the font files (scripts/font-metrics.py) and are
    independent of size-adjust: the override is expressed relative to the used
    font size, so it needs no correction. 85.26% / 87.66% are confirmed correct
@@ -119,28 +174,84 @@
    Caveat, stated plainly: this precision is tuned for the fallback that
    `local("Segoe UI")` resolves to on this machine. On a host where local()
    lands elsewhere, the fallback is merely close rather than exact — which is
-   the normal, acceptable behaviour for a fallback face. */
+   the normal, acceptable behaviour for a fallback face.
+
+   ── One face per weight, not two ──
+
+   The first version declared only w400 and w700. That is not enough, because
+   the hero uses w500 (`font-medium` badges) and w600 (`font-semibold` CTAs).
+   CSS font matching pairs a w500 request with the *nearest declared face* — the
+   w400 one — which then renders 4.4% too narrow, and the badge row re-wraps
+   when the real Geist w500 arrives. Measured ("Real-Time 3D Preview", 16px):
+
+     weight | Geist   | fallback | delta
+       400  | 163.52  |  159.30  | -2.58%
+       500  | 166.66  |  159.30  | -4.42%   <- no w500 face: resolves to w400
+       600  | 169.81  |  167.16  | -1.56%
+       700  | 172.91  |  167.16  | -3.33%
+
+   So all four weights get their own face. Solved the same self-calibrating way;
+   all four back out to base ~= 153.2, i.e. one confirmed fallback font, and the
+   results step by a clean ~2% per weight — which is what a variable-weight
+   family should do, and is a useful sanity check on the method:
+
+     400 -> 106.73%   500 -> 108.78%   600 -> 110.80%   700 -> 112.82%
+
+   Note these supersede an earlier pair (103.98 / 109.07) that was solved from a
+   single sample string and was simply wrong. Measure per weight; do not
+   interpolate between two endpoints.
+
+   `Geist Mono Fallback` keeps one face at 125.78%: the mono text above the fold
+   (`.section-tag`) is weight 400 only. */
 @font-face {
   font-family: "Geist Fallback";
   src: local("Segoe UI"), local("Arial"), local("Helvetica Neue");
-  size-adjust: 103.98%;
-  ascent-override: 85.26%;
-  descent-override: 87.66%;
+  font-weight: 400;
+  size-adjust: 106.73%;
+  ascent-override: 95.57%;
+  descent-override: 20.61%;
+}
+@font-face {
+  font-family: "Geist Fallback";
+  src: local("Segoe UI"), local("Arial"), local("Helvetica Neue");
+  font-weight: 500;
+  size-adjust: 108.78%;
+  ascent-override: 93.77%;
+  descent-override: 20.22%;
+}
+@font-face {
+  font-family: "Geist Fallback";
+  src: local("Segoe UI"), local("Arial"), local("Helvetica Neue");
+  font-weight: 600;
+  size-adjust: 110.80%;
+  ascent-override: 92.06%;
+  descent-override: 19.86%;
 }
 @font-face {
   font-family: "Geist Fallback";
   src: local("Segoe UI"), local("Arial"), local("Helvetica Neue");
   font-weight: 700;
-  size-adjust: 109.07%;
-  ascent-override: 85.26%;
-  descent-override: 87.66%;
+  size-adjust: 112.82%;
+  ascent-override: 90.41%;
+  descent-override: 19.50%;
 }
 @font-face {
   font-family: "Geist Mono Fallback";
-  src: local("Segoe UI"), local("Arial"), local("Helvetica Neue");
-  size-adjust: 125.78%;
-  ascent-override: 85.26%;
-  descent-override: 87.66%;
+  src: local("Consolas"), local("Cascadia Mono"), local("Menlo"), local("DejaVu Sans Mono"),
+    local("Liberation Mono"), local("Courier New");
+  font-weight: 400;
+  size-adjust: 109.16%;
+  ascent-override: 93.44%;
+  descent-override: 20.15%;
+}
+@font-face {
+  font-family: "Geist Mono Fallback";
+  src: local("Consolas"), local("Cascadia Mono"), local("Menlo"), local("DejaVu Sans Mono"),
+    local("Liberation Mono"), local("Courier New");
+  font-weight: 600;
+  size-adjust: 109.16%;
+  ascent-override: 93.44%;
+  descent-override: 20.15%;
 }
 
 @font-face {

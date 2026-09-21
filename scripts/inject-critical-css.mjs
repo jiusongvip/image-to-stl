@@ -324,32 +324,40 @@ function isInsideDesktopOnlyQuery(rule, allRules) {
 /**
  * Should this `@font-face` go into the inline critical block?
  *
- * The original rule was "never" — @font-face belongs with the stylesheet, and
- * the above-the-fold faces are preloaded in <head> anyway.
+ * YES for both kinds. This function previously admitted only source-less
+ * `local(...)` fallback faces and deferred every `url(...)` webfont face. That
+ * split is wrong, and it was measured to be wrong on 2026-09-21.
  *
- * That reasoning holds for the *webfont* faces (they have a real `src: url(...)`
- * and are preloaded), but it is wrong for a metric-override FALLBACK face, which
- * has `src: local(...)` and therefore costs no download at all.
+ * The inline block carries Tailwind's reset
+ *   `font-family: Geist, "Geist Fallback", system-ui, sans-serif`
+ * and every page's text is set in `Geist`. If the webfont `@font-face` for
+ * `Geist` is deferred, then at first paint the family `Geist` is NAMED but NOT
+ * DECLARED, and CSS silently skips it. First paint therefore uses
+ * `"Geist Fallback"`, and the moment the deferred stylesheet lands, `Geist`
+ * becomes available and every text node on the page re-metrics at once — a
+ * page-wide font swap that lands long after paint.
  *
- * Leaving a fallback face out of the inline block is not merely a missed
- * optimisation — it reintroduces the exact bug the face exists to prevent. The
- * inline block contains Tailwind's reset
- * `font-family: Geist, "Geist Fallback", system-ui, sans-serif`, i.e. it NAMES
- * the fallback family while the only @font-face defining it lives in the
- * deferred stylesheet. A family named but not declared is skipped, so first
- * paint falls through to `system-ui`, and the text reflows when Geist arrives.
- * Measured: the hero paragraph wrapped to 7 lines at first paint and 6 once
- * Geist loaded (`(325,301,295,314,278,318,85)` -> `(316,326,247,329,318,321)`).
+ * Diagnosed by measuring the built page in isolation: with only the inline block
+ * present, `document.fonts` was EMPTY and the string "Real-Time 3D Preview" rendered
+ * identically in `Geist`, `"Geist Fallback"`, and a deliberately non-existent
+ * family (161.20 px in all three) — proof that no webfont face existed at all.
+ * The deferred stylesheet held all 5 `url(...)` faces.
  *
- * So: inline the source-less faces, defer the ones that download.
+ * Inlining the webfont faces is nearly free: they carry no bytes beyond the CSS
+ * text itself, because the woff2 files are already `<link rel=preload>`ed at
+ * byte ~373 of every page. The face only *routes* to a resource that is being
+ * fetched regardless. Cost measured at ~1 KB of inline CSS.
+ *
+ * The `local()` fallback faces still belong here too, for the same
+ * named-but-not-declared reason — they only matter if `Geist` is also declared,
+ * which is exactly what inlining both kinds now guarantees.
  */
 function keepInCriticalFace(rule) {
   const body = rule.slice(rule.indexOf("{") + 1);
   const src = /(?:^|[;{\s])src\s*:\s*([^;}]*)/i.exec(body);
   if (!src) return false;
-  // Must reference no url() — only local() / tech() / format()-free lists.
-  if (/url\(/i.test(src[1])) return false;
-  return /local\(/i.test(src[1]);
+  // Admit local() fallback faces AND url() webfont faces.
+  return /local\(/i.test(src[1]) || /url\(/i.test(src[1]);
 }
 
 /** True if this rule is needed for first paint regardless of markup. */
@@ -671,15 +679,26 @@ async function main() {
       const inlineBlock = /<style data-critical-css>([\s\S]*?)<\/style>/.exec(doc);
       const inner = inlineBlock ? inlineBlock[1] : "";
       const strippedInner = inner.replace(/@font-face\{[^}]*\}/g, "");
-      // Every fallback family referenced by the inlined rules must also be
-      // declared by an inlined @font-face.
+      // Every family referenced by the inlined rules must also be declared by an
+      // inlined @font-face — not just the "*Fallback" ones.
+      //
+      // The earlier version of this check filtered on /fallback$/i, which is
+      // exactly why it reported "回退齐全" while the page was broken: the
+      // fallback families WERE declared, but `Geist` itself was not, because
+      // keepInCriticalFace was excluding every url(...) webfont face. A family
+      // that is named but not declared is skipped by CSS, so first paint used
+      // the fallback and the whole page re-metrics when the deferred stylesheet
+      // lands. The check must therefore ask about EVERY family the block names,
+      // and treat the first family of a text rule as the one that matters most.
       const referenced = new Set();
       for (const m of strippedInner.matchAll(
         /font-family:\s*([^;{}]+)/gi,
       )) {
         for (const fam of m[1].split(",")) {
           const f = fam.trim().replace(/^["']|["']$/g, "");
-          if (/fallback$/i.test(f)) referenced.add(f);
+          // Skip universal/system keywords — they are never declared by us.
+          if (!f || /^(system-ui|ui-\w+|sans-serif|serif|monospace|inherit|initial|unset)$/i.test(f)) continue;
+          referenced.add(f);
         }
       }
       for (const fam of referenced) {
@@ -689,7 +708,7 @@ async function main() {
         );
         if (!declared.test(inner)) {
           problems.push(
-            `${p}: 内联块引用了字体族 "${fam}" 却没有对应 @font-face（首绘会回退到 system-ui 并产生重排）`,
+            `${p}: 内联块引用了字体族 "${fam}" 却没有对应 @font-face（首绘会静默跳过该族并产生重排）`,
           );
         }
       }

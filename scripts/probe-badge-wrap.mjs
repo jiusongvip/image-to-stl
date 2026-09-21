@@ -160,6 +160,12 @@ const INSTRUMENT = `
 
   const badge = () => document.querySelector('.mt-9.flex.flex-wrap.gap-2');
 
+  // The CTA button row. PSI 2026-09-21 named this one
+  // (div.mt-8.flex.flex-wrap.gap-3) as the shifting element on
+  // desktop with a shift as large as 0.2771, so measure it explicitly rather
+  // than inferring from the badge row, which is a different element.
+  const cta = () => document.querySelector('.mt-8.flex.flex-wrap.gap-3');
+
   // Line boxes of the hero paragraph. Range.getClientRects() returns one rect per
   // line box, so this is the true line count — not an inference from height.
   const paraLines = () => {
@@ -178,15 +184,26 @@ const INSTRUMENT = `
   const snap = (label) => {
     const b = badge();
     const pl = paraLines();
+    const c = cta();
     if (!b) { window.__b.samples.push({ t: Math.round(performance.now()), label, missing: true }); return; }
     const r = b.getBoundingClientRect();
     const kids = [...b.children].map((c) => Math.round(c.getBoundingClientRect().width));
+    // Row count is the thing that matters: a flex-wrap row is only ever
+    // re-laid-out by a change in row count, so print it for the CTA too.
+    const ctaInfo = c
+      ? {
+          h: Math.round(c.getBoundingClientRect().height),
+          rows: new Set([...c.children].map((k) => Math.round(k.getBoundingClientRect().top))).size,
+          kidW: [...c.children].map((k) => Math.round(k.getBoundingClientRect().width)),
+        }
+      : null;
     window.__b.samples.push({
       t: Math.round(performance.now()), label,
       h: Math.round(r.height), w: Math.round(r.width), kidWidths: kids,
       rows: new Set([...b.children].map((c) => Math.round(c.getBoundingClientRect().top))).size,
       paraLines: pl ? pl.lines : null,
       paraWidths: pl ? pl.widths : null,
+      cta: ctaInfo,
       fontsReady: document.fonts ? document.fonts.status : 'n/a',
     });
   };
@@ -251,9 +268,15 @@ try {
   await ws.connect();
   await ws.send("Page.enable");
   await ws.send("Runtime.enable");
-  await ws.send("Emulation.setDeviceMetricsOverride", {
-    width: 412, height: 823, deviceScaleFactor: 2, mobile: true,
-  });
+  // Viewport is selectable: PSI's desktop run is where the CTA row shifted
+  // (2026-09-21, score up to 0.2771), and the fold differs per form factor, so
+  // a mobile-only probe cannot see it.
+  const fs = process.argv[3] || "mobile";
+  const vp = fs === "desktop"
+    ? { width: 1350, height: 940, deviceScaleFactor: 1, mobile: false }
+    : { width: 412, height: 823, deviceScaleFactor: 2, mobile: true };
+  console.log(`视口: ${fs} ${vp.width}x${vp.height} dpr${vp.deviceScaleFactor}`);
+  await ws.send("Emulation.setDeviceMetricsOverride", vp);
 
   // 4x CPU throttle + slow network: the condition under which PSI sees this.
   await ws.send("Network.enable");
@@ -288,6 +311,12 @@ try {
       console.log(
         `             hero <p> lines=${s.paraLines}  widths=[${s.paraWidths.join(", ")}]  ` +
         `fonts=${s.fontsReady}`,
+      );
+    }
+    if (s.cta) {
+      console.log(
+        `             CTA .mt-8  h=${s.cta.h} rows=${s.cta.rows} ` +
+        `kidW=[${s.cta.kidW.join(", ")}]`,
       );
     }
   }
