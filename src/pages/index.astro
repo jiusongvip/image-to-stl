@@ -34,11 +34,6 @@ const websiteSchema = {
   datePublished: SITE_PUBLISHED,
   dateModified: SITE_MODIFIED,
   about: TOPIC_ENTITIES,
-  potentialAction: {
-    "@type": "SearchAction",
-    target: `${SITE_URL}/search?q={search_term_string}`,
-    "query-input": "required name=search_term_string",
-  },
 };
 
 // 页面引用的外部权威来源，作为 citation 声明，提升可引用性
