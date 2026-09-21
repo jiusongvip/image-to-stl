@@ -134,13 +134,14 @@ Google 官方允许最多 5 跳，2 跳完全在正常范围。
 Cloudflare 里开 HSTS + "Always Use HTTPS"，`http://` 变体会在浏览器层直接升级，
 少一次明文往返。属顺手可做，非必需。
 
-## 八、顺带发现的两个小瑕疵（与本次报告无关，优先级低）
+## 八、顺带发现的三个小瑕疵（与本次报告无关）
 
-1. **404 页的 canonical 指向一个会跳转的 URL。**
-   `dist/404.html` 里是 `<link rel="canonical" href="https://www.image-2-stl.com/404/">`，
+1. **404 页的 canonical 指向一个会跳转的 URL。 —— 已修（见第三部分第七节）。**
+   原来 `dist/404.html` 里是 `<link rel="canonical" href="https://www.image-2-stl.com/404/">`，
    而实测 `https://www.image-2-stl.com/404/` 会 **308** 跳到 `/404`。
-   好在同一页已有 `<meta name="robots" content="noindex">`，
-   **所以不会被索引，影响为零**。真要修就是把 canonical 改成 `/404` 或直接删掉这一行。
+   同一页已有 `<meta name="robots" content="noindex">`，**所以不会被索引，影响为零** ——
+   但它与第三部分那个 BreadcrumbList 缺陷是同一类问题：**站点在声明一个会跳转的 URL 作为自己的规范地址**。
+   已改为**省略该标签**（404 页服务任意未匹配路径，本来就没有自己的规范 URL）。
 
 2. **`/404` 返回 200 而不是 404**（`https://www.image-2-stl.com/404` → 200）。
    这是 Cloudflare Pages 把 `/404` 当真实文件匹配的结果。
@@ -317,30 +318,37 @@ Google 抓它、跟一跳、把来源记进「网页会自动重定向」。
 
 ## 四、新增检查器：`scripts/audit-canonical-urls.py`
 
-扫 `dist/` 里所有「指向自己域名但不是规范形式」的 URL（来自 `<a href>` 与 JSON-LD），
-发现即 `exit 1` 并列出来源页面与所在键名。
+两项检查：
+
+1. **站内 URL 规范性** —— 扫 `dist/` 里所有「指向自己域名但不是规范形式」的 URL
+   （来自 `<a href>` 与 JSON-LD 的 `url` / `item` / `@id` / `target` / `sameAs` / `contentUrl` 等键），
+   发现即报出来源页面与所在键名。
+2. **canonical 自指** —— 每个目录式页面的 `canonical` 必须等于它自己的规范 URL；
+   **非目录式页面（`404.html`）不该声明 canonical，声明了就报错。**
+
+任一项失败即 `exit 1`。
 
 ```bash
 npm run build
-python scripts/audit-canonical-urls.py --verbose
+python scripts/audit-canonical-urls.py
 ```
 
 正常输出：
 
 ```
 扫描 19 个页面，15 个 JSON-LD 块（解析失败 0 个）
-✓ 所有站内 URL 都是规范形式（www + 尾斜杠）
+
+✓ 检查 1 通过：站内 URL 都是规范形式（www + 尾斜杠）
+✓ 检查 2 通过：18 个页面的 canonical 全部自指
 ```
 
-**已做负向对照**（本项目「自检必须能证伪」的纪律）：往 `dist/about/index.html` 注入一个缺斜杠 URL
-→ `exit=1` 且准确定位：
+**已做负向对照**（本项目「自检必须能证伪」的纪律），两个方向各一次：
 
-```
-✗ 发现 1 个非规范的站内 URL（会触发 308）：
-   https://www.image-2-stl.com/about
-        ← about/index.html [AboutPage.url]
-        ← about/index.html [ListItem.item]
-```
+| 注入 | 预期 | 实测 |
+|---|---|---|
+| `about/index.html` 的 canonical 改成首页 | 检查 2 失败 | ✅ 定位到 `about/index.html`，指出「应为 `/about/`，实际为 `/`」 |
+| 给 `404.html` 加上 `canonical="/404/"` | 检查 2 失败 | ✅ 定位到 `404.html`，指出「非目录式页面不应声明 canonical」 |
+| （第一轮的检查 1 对照）`about` 注入缺斜杠 URL | 检查 1 失败 | ✅ 定位到 `AboutPage.url` + `ListItem.item` |
 
 还原后 `exit=0`。**改完 SEO / 链接相关代码后应跑一次。**
 
@@ -350,7 +358,7 @@ python scripts/audit-canonical-urls.py --verbose
 |---|---|
 | 产物里 apex 绝对链接 | **0 条** |
 | sitemap 18 条 `<loc>` | 全是规范形式 |
-| 各页 `canonical` | 全是规范形式（首页为裸 origin，正确） |
+| 各页 `canonical` | 18 个目录式页面全部自指（首页为裸 origin，正确） |
 | 不存在的路径 | 正确 **404** |
 | 结构化数据里的外部 URL | 见下 |
 
@@ -368,5 +376,43 @@ python scripts/audit-canonical-urls.py --verbose
 
 **GSC 侧的动作**：等 Google 重新抓取后，这 13 条会逐步从「网页会自动重定向」消失。
 **不需要再手动做任何事。**
+
+## 七、同类的第三处：404 页的 canonical（已修）
+
+把「检查 1」的思路推到极致就会发现：**404 页也在声明一个会跳转的 URL 作为自己的规范地址**，
+只是检查器最初只扫 JSON-LD 与 `<a href>`，扫不到 `<link rel="canonical">`。
+
+**缺陷**：
+
+```
+dist/404.html:  <link rel="canonical" href="https://www.image-2-stl.com/404/">
+实测：https://www.image-2-stl.com/404/  →  308  →  /404
+```
+
+**为什么不能简单地「改成 `/404`」**：`404.html` 会被 Cloudflare Pages 用于服务**任意**未匹配路径，
+它没有属于自己的规范 URL。指 `/404` 只是换了一个同样不成立的地址。
+
+**为什么不能简单地「删掉这个 prop」**：`SeoHead.astro` 里 `canonical` 有默认值
+`"https://www.image-2-stl.com"` —— 删掉 prop 会让 404 页的 canonical **退化成指向首页**，
+那比现在更糟（等于把所有 404 都声明成首页的副本）。
+
+**修法**：让 `canonical` 支持「显式省略」。
+
+- `src/components/SeoHead.astro`：`canonical?: string` → `canonical?: string | null`，
+  并把 `<link rel="canonical">` 与 `<meta property="og:url">` 改为条件渲染（`{canonical && ...}`）。
+- `src/layouts/BaseLayout.astro`：透传类型同步为 `string | null`。
+- `src/pages/404.astro`：`canonical={null}`（该页已有的 `noindex` 保持不变）。
+
+**验证**（构建产物实测）：
+
+```
+dist/404.html          rel="canonical" 0 条、og:url 0 条、robots=noindex ✓
+其余 18 个页面         canonical 各 1 条，总数 18，全部自指 ✓
+audit-canonical-urls   两项检查通过，exit=0 ✓
+```
+
+**影响评估**：这一处**本来就是零影响**（404 页有 `noindex`，不会被索引）。
+修它的价值在于**一致性** —— 站点不应存在任何「声明跳转 URL 为自己的规范地址」的地方，
+否则同类问题会以新形式复现。这也是把它固化成检查器第二项的原因。
 
 
