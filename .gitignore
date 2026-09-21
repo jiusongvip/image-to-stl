@@ -12,4 +12,4 @@ dist/
 # but never part of the site. scripts/psi-run.mjs and the performance-check
 # skill write these into the repo root.
 psi*.json
-lh-*.json
+lh*.json
