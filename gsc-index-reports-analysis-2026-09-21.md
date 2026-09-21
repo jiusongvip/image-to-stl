@@ -318,37 +318,43 @@ Google 抓它、跟一跳、把来源记进「网页会自动重定向」。
 
 ## 四、新增检查器：`scripts/audit-canonical-urls.py`
 
-两项检查：
+三项检查（检查 3 是后来补的，见第四部分）：
 
 1. **站内 URL 规范性** —— 扫 `dist/` 里所有「指向自己域名但不是规范形式」的 URL
    （来自 `<a href>` 与 JSON-LD 的 `url` / `item` / `@id` / `target` / `sameAs` / `contentUrl` 等键），
    发现即报出来源页面与所在键名。
 2. **canonical 自指** —— 每个目录式页面的 `canonical` 必须等于它自己的规范 URL；
    **非目录式页面（`404.html`）不该声明 canonical，声明了就报错。**
+3. **站内引用可达性** —— `<a href>`、`<img>`/`<source>` 的 `src` 与 `srcset`、`<script src>`、
+   `<link href>`、`og:image`/`twitter:image`、内联 `<style>` 里的 `url()`，
+   是否都能落到 `dist/` 里真实存在的文件。详见第四部分。
 
 任一项失败即 `exit 1`。
 
 ```bash
 npm run build
-python scripts/audit-canonical-urls.py
+npm run audit:urls          # 等价于 python scripts/audit-canonical-urls.py
 ```
 
 正常输出：
 
 ```
 扫描 19 个页面，15 个 JSON-LD 块（解析失败 0 个）
+站内引用检查 1224 处（链接 + 资源）
 
 ✓ 检查 1 通过：站内 URL 都是规范形式（www + 尾斜杠）
 ✓ 检查 2 通过：18 个页面的 canonical 全部自指
+✓ 检查 3 通过：站内链接与资源引用全部可达
 ```
 
-**已做负向对照**（本项目「自检必须能证伪」的纪律），两个方向各一次：
+**已做负向对照**（本项目「自检必须能证伪」的纪律），逐项各一次：
 
 | 注入 | 预期 | 实测 |
 |---|---|---|
-| `about/index.html` 的 canonical 改成首页 | 检查 2 失败 | ✅ 定位到 `about/index.html`，指出「应为 `/about/`，实际为 `/`」 |
-| 给 `404.html` 加上 `canonical="/404/"` | 检查 2 失败 | ✅ 定位到 `404.html`，指出「非目录式页面不应声明 canonical」 |
-| （第一轮的检查 1 对照）`about` 注入缺斜杠 URL | 检查 1 失败 | ✅ 定位到 `AboutPage.url` + `ListItem.item` |
+| `about/index.html` 注入缺斜杠 URL | 检查 1 失败 | ✅ 定位到 `AboutPage.url` + `ListItem.item` |
+| `about/index.html` 的 canonical 改成首页 | 检查 2 失败 | ✅ 指出「应为 `/about/`，实际为 `/`」 |
+| 给 `404.html` 加上 `canonical="/404/"` | 检查 2 失败 | ✅ 指出「非目录式页面不应声明 canonical」 |
+| `about/index.html` 注入坏图片 + 坏链接 | 检查 3 失败 | ✅ 两条都列出，计数 1224 → 1226，且检查 1/2 仍绿 |
 
 还原后 `exit=0`。**改完 SEO / 链接相关代码后应跑一次。**
 
@@ -416,3 +422,156 @@ audit-canonical-urls   两项检查通过，exit=0 ✓
 否则同类问题会以新形式复现。这也是把它固化成检查器第二项的原因。
 
 
+
+---
+
+# 第四部分：延伸审计（二）—— 站内引用可达性
+
+> 起因：把「声明一个不可达的 URL」这条线继续推下去。
+> 前三部分解决的都是「URL 形式不对」，但还有一个更基本的问题从没被问过：
+> **被指向的那个东西，到底存不存在？**
+
+## 一、新增检查 3
+
+原来的审计只查 URL 形式与 canonical 自指，两者都建立在「引用是可达的」这个**未经验证的假设**上。
+补上检查 3，覆盖这些引用来源：
+
+| 来源 | 取什么 |
+|---|---|
+| `<a href>` | 站内链接 |
+| `<img>` / `<source>` | `src` 与 `srcset`（`srcset` 按逗号拆候选，丢掉描述符） |
+| `<script src>` | 脚本 |
+| `<link href>` | 样式表、preload、icon… |
+| `<meta property/name>` | `og:image`、`og:image:url`、`og:image:secure_url`、`twitter:image` |
+| 内联 `<style>` | `url(...)`（字体、背景图） |
+
+解析规则：
+
+- 去掉 `?query` 与 `#fragment`，并对路径做 URL 解码；
+- 绝对 URL 只在主机属于本站时检查，外部主机跳过；
+- 以 `/` 开头按产物根解析，相对路径按**该页面所在目录**解析；
+- 末尾 `/` → 找 `<path>/index.html`；带扩展名 → 当文件找；
+  不带扩展名的裸路径 → **先当文件找，再当目录页找**（后者会 308，但存在就不算断链）；
+- `mailto:` / `tel:` / `javascript:` / `data:` / `blob:` / `#` / `?` 开头一律跳过。
+
+## 二、第一次运行就抓到真实缺陷：`/favicon.ico`
+
+```
+✗ 检查 3 失败：1 个引用指向 dist/ 里不存在的文件
+   /favicon.ico
+        ← 404.html [link href]
+        ← about/index.html [link href]
+        ← blog/3d-printing-basics/index.html [link href]
+        ← … 另有 15 处
+```
+
+**19 个页面全部声明了 `/favicon.ico`，而 `public/` 里只有 `favicon.svg`。**
+
+线上实测：
+
+```
+https://www.image-2-stl.com/favicon.ico  →  404
+https://www.image-2-stl.com/favicon.svg  →  200
+```
+
+这与前三部分是**同一类缺陷**（`af20df5` 删掉的 `SearchAction` 也是这个形状）：
+**文档主动声明了一个解析不到的地址。**
+
+### 而且是两个错误叠在一起
+
+`src/layouts/BaseLayout.astro:154` 原文：
+
+```html
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="alternate icon" href="/favicon.ico" />
+```
+
+1. **`rel="alternate icon"` 不是有效的图标关系** —— 浏览器只认 `icon` / `shortcut icon`，
+   所以这行**从来没起到过回退作用**，哪怕文件存在也一样。
+2. **它指向的文件不存在** —— 于是变成纯粹的 404 来源。
+
+### 为什么「删掉这行」不是最好的修法
+
+因为它想解决的问题是真的：**Safari 不支持 SVG favicon**（macOS 与 iOS 都不支持）。
+只声明 `image/svg+xml` 的话，**Safari 用户看到的标签页完全没有图标**。
+`rel="alternate icon"` 这行的**意图是对的，实现是错的**。
+
+所以正确修法是**把文件真的补上**，并把 `rel` 改成有效值。
+
+## 三、修法
+
+### 1. 生成真实的 `favicon.ico`
+
+新增 `scripts/make-favicon-ico.mjs`：
+
+- `sharp` 把 `public/favicon.svg` 栅格化成 16 / 32 / 48 px 的 PNG；
+- 在本脚本里直接拼 ICO 容器（**Windows Vista 起 ICO 条目可以直接放 PNG 数据**，
+  所以不需要写 BMP 编码）。
+
+```bash
+npm run favicon        # 改了 favicon.svg 之后跑一次
+```
+
+**为什么用脚本生成而不是手提交一个二进制**：手提交的话，改了 SVG 忘了重新导出就会两者不一致，
+而且没人看得出来。生成式保证两者不可能漂移。
+
+产物校验（用 PIL 真实解码，不只是看文件头）：
+
+```
+PIL 解码 favicon.ico: ICO (48, 48) RGBA
+ICONDIR: reserved=0 type=1 count=3
+  #0: 16x16 bpp=32 bytes=484  offset=54    PNG=True
+  #1: 32x32 bpp=32 bytes=801  offset=538   PNG=True
+  #2: 48x48 bpp=32 bytes=1005 offset=1339  PNG=True
+```
+
+偏移自洽（`6 + 3×16 = 54`、`54+484 = 538`、`538+801 = 1339`、`1339+1005 = 2344` = 文件大小），
+渲染出来是蓝底圆角 + 白色立方体线稿，三个尺寸都清晰。
+
+### 2. 修正 head 声明
+
+```diff
+-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+-    <link rel="alternate icon" href="/favicon.ico" />
++    <link rel="icon" href="/favicon.ico" />
++    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+```
+
+**顺序是刻意的**：ICO 在前、SVG 在后 —— 老消费者拿 ICO，支持 SVG 的拿 SVG。
+
+### 3. 顺带把脚本接进 `package.json`
+
+```json
+"favicon": "node scripts/make-favicon-ico.mjs",
+"audit:urls": "python scripts/audit-canonical-urls.py"
+```
+
+一个没人知道的检查脚本等于不存在。
+
+## 四、验证
+
+| 检查 | 结果 |
+|---|---|
+| 构建产物 `dist/favicon.ico` | 存在（2344 B）✓ |
+| 产物 head icon 声明 | 19 页 × 2 条（ICO + SVG），`alternate icon` 残留 **0** ✓ |
+| 审计三项 | 全绿 `exit=0` ✓ |
+| 负向对照（注入坏图片 + 坏链接） | 两条都被列出，计数 1224 → 1226，检查 1/2 未受污染 ✓ |
+| **线上 `favicon.ico`** | **200**，`content-type: image/vnd.microsoft.icon` ✓ |
+| **线上内容一致性** | 字节数 2344 = 2344，**sha256 完全相同** ✓ |
+| 线上 head | 2 条 icon 声明、无 `alternate icon` ✓ |
+
+**线上内容用哈希比对而不是只看状态码** —— 200 只说明「有东西」，不说明「是对的东西」。
+
+## 五、顺带确认：检查 3 没有误报
+
+1224 处站内引用里，除 `favicon.ico` 外**零误报** —— 字体 preload、`/_astro/*.js`、
+gallery 图片、内联 CSS 里的 `url()` 全部正确解析为「存在」。
+误报是这类检查器最大的风险（一旦误报，人就会开始忽略它），所以这个数字比「抓到了 1 个」更重要。
+
+## 六、第四部分的结论
+
+前三部分是「URL **形式**不对」，第四部分是「引用**目标**不存在」——
+**两种都不报错，都只能在浏览器或审计工具里显形。**
+
+新增的检查 3 让这一类问题从「靠运气发现」变成「构建后必查」。
+`npm run audit:urls` 现在是改完任何 SEO / 链接 / 资源相关代码后的固定动作。
