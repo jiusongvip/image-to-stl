@@ -65,6 +65,22 @@ import SeoHead from "../components/SeoHead.astro";
 
  const { title, description, canonical, schema, keywords, ogImage, ogType, breadcrumbs, publishDate, modifyDate } = Astro.props;
 
+ // Breadcrumb item URLs must be the canonical form, i.e. with a trailing slash
+ // (see astro.config.mjs: site + trailingSlash:"always"). A slash-less URL is a
+ // 308 redirect, so declaring one here makes the structured data point at a
+ // redirecting URL -- Google crawls it, follows the hop, and files the source
+ // under "Page with redirect" in Search Console. Normalising in this one place
+ // means a new page cannot reintroduce it by forgetting the slash. The bare
+ // origin is deliberately left alone: that is the homepage's canonical form,
+ // and it is what the sitemap and <link rel="canonical"> use.
+ const toCanonicalUrl = (raw: string) => {
+   const m = raw.match(/^(https?:\/\/[^/?#]+)([^?#]*)([?#].*)?$/);
+   if (!m) return raw;
+   const [, origin, path, suffix = ""] = m;
+   const p = path === "" || path === "/" ? "" : path.endsWith("/") ? path : `${path}/`;
+   return `${origin}${p}${suffix}`;
+ };
+
  const breadcrumbSchema = breadcrumbs && breadcrumbs.length > 0 ? {
    "@context": "https://schema.org",
    "@type": "BreadcrumbList",
@@ -72,7 +88,7 @@ import SeoHead from "../components/SeoHead.astro";
      "@type": "ListItem",
      "position": i + 1,
      "name": item.name,
-     "item": item.url
+     "item": toCanonicalUrl(item.url)
    }))
  } : null;
 
