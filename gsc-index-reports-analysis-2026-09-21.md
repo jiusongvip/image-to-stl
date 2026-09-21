@@ -1,7 +1,13 @@
-# GSC「网页会自动重定向」报告分析 — www.image-2-stl.com
+# GSC 索引报告分析 — www.image-2-stl.com
+
+> 核实时间：2026-09-21。所有线上状态码均为实测。
+> 覆盖两份报告：**「网页会自动重定向」**（41 行）与 **「备用网页（有适当的规范标记）」**（2 行）。
+
+---
+
+# 第一部分：「网页会自动重定向」报告（41 行）
 
 > 数据来源：GSC「网页索引编制 → 网页会自动重定向」导出，共 **41 行**（抓取日期 2026-08-13 ~ 2026-09-16）。
-> 核实时间：2026-09-21。所有线上状态码均为实测。
 
 ## 一、结论
 
@@ -149,3 +155,112 @@ Cloudflare 里开 HSTS + "Always Use HTTPS"，`http://` 变体会在浏览器层
 - **原因**：站点统一到 `https://www.image-2-stl.com/<路径>/`，其他写法（http / apex / 缺尾斜杠）全部 301/308 永久跳转。Google 抓到这些入口后跟着跳到规范页，于是记入本报告。
 - **要不要改**：**不用**。41 条全是非规范变体，规范形式 0 条；跳转链全部落在 200，无断链无循环；sitemap / canonical / 站内链接三者都只使用规范形式。
 - **唯一动作**：去 GSC「已编入索引」确认那 18 个规范 URL 都在。在 → 直接忽略这份报告。
+
+---
+
+# 第二部分：「备用网页（有适当的规范标记）」报告（2 行）
+
+> 数据来源：GSC 同目录下的「备用网页（有适当的规范标记）」导出，共 **2 行**。
+>
+> | # | 网址 | 上次抓取日期 | 判定 |
+> |---|---|---|---|
+> | 1 | `https://www.image-2-stl.com/search?q={search_term_string}` | 2026-08-22 | ⚠️ **真实缺陷，已修** |
+> | 2 | `https://image-2-stl.com/blog/` | 2026-08-15 | ✅ 过期记录，无需处理 |
+
+## 一、第 1 条：`/search?q={search_term_string}` —— 真实缺陷（已修）
+
+### 原因
+
+`src/pages/index.astro` 的 `websiteSchema`（`WebSite` 节点）里声明了：
+
+```js
+potentialAction: {
+  "@type": "SearchAction",
+  target: `${SITE_URL}/search?q={search_term_string}`,
+  "query-input": "required name=search_term_string",
+},
+```
+
+`{search_term_string}` 是 schema.org / Google 规定的**占位符字面量**（不是真实查询参数），
+Google 会把这个字符串当 URL 去抓。**但本站根本没有 `/search` 路由**，实测：
+
+| 请求 | 结果 |
+|---|---|
+| `https://www.image-2-stl.com/search` | **404 Not Found** |
+| `https://www.image-2-stl.com/search/` | **404 Not Found** |
+| `https://www.image-2-stl.com/search?q=test` | **404 Not Found** |
+
+→ 这个声明是**坏的**：它把一个不存在的页面宣传成了站内搜索入口。
+
+### 为什么它落在「备用网页」而不是「未找到(404)」
+
+最可能的解释：404 兜底页 `dist/404.html` 里带着
+`<link rel="canonical" href="https://www.image-2-stl.com/404/">`，
+Google 抓到 canonical 后把它归入「备用网页（有适当的规范标记）」而不是硬 404。
+（这一条是推断，不影响结论 —— 无论归到哪一类，根因都是那个指向 404 的声明。）
+
+### 为什么是「删掉」而不是「补一个 /search 页」
+
+Google 已于 **2024-10-21 宣布弃用**、**2024-11 完全下线**「站点链接搜索框（sitelinks search box）」富媒体结果。
+官方原话：*"While you can remove sitelinks search box structured data from your site, there's no need to…"*，
+并说明该变更**不影响排名与其他 sitelinks**，相关项也会从 Search Console 报告中移除。
+
+也就是说：`SearchAction` 现在**产生不了任何富媒体结果**。留着只有三个坏处：
+
+1. 声明指向一个 404（无效声明）；
+2. Google 持续抓取那个占位符 URL（浪费抓取预算）；
+3. 就是本报告里这条噪音。
+
+### 改动
+
+删除 `src/pages/index.astro` 里 `websiteSchema` 的 `potentialAction` 整块（5 行）。
+`WebSite` 节点其余字段（`name` / `url` / `description` / `publisher` / `sameAs` / `inLanguage` /
+`datePublished` / `dateModified` / `about`）**全部保留**。
+
+### 验证（构建产物实测）
+
+- 构建通过：19 页，所有自检绿灯 —— `preload@208 < JSON-LD@3068`、`stylesheet@1012`、
+  `charset@57 (<1024)`、关键 CSS 16897 B（预算 20480 B）、浏览器级首绘样式比对一致。
+- `grep -roh "SearchAction\|search_term_string\|potentialAction" dist/*.html` → **0 条**。
+- 全站 **15 个 JSON-LD 块全部解析成功（0 失败）**，`@type` 分布完好：
+  `Organization 33 / Question 22 / Answer 22 / SoftwareApplication 9 / Offer 9 / ListItem 8 /
+  DefinedTerm 6 / BreadcrumbList 5 / HowToStep 4 / BlogPosting 3 / CreativeWork 3 / ContactPoint 1 /
+  AboutPage 1 / FAQPage 1 / HowTo 1 / WebSite 1 / WebPage 1`，**SearchAction 0**。
+
+### 修完之后的预期
+
+Google 下次抓取 `https://www.image-2-stl.com/search?q={search_term_string}` 会拿到 **404**，
+该条目会从「备用网页」移到「未找到(404)」—— 这**本来就是正确状态**（页面确实不存在），
+之后随抓取减少自然消失。**不需要再管。**
+
+## 二、第 2 条：`https://image-2-stl.com/blog/` —— 过期记录，无需处理
+
+实测：
+
+```
+https://image-2-stl.com/blog/  →  301 Moved Permanently
+                               →  https://www.image-2-stl.com/blog/
+```
+
+它**现在已经是重定向**了，本该出现在「网页会自动重定向」里。之所以还留在「备用网页」，
+是因为它的**抓取日期是 2026-08-15 —— 这 41+2 条里最旧的一条**：
+那次抓取时 apex 还是直接返回 200 且 canonical 指向 www，Google 据此归类；
+此后跳转规则生效，但这条记录还没被刷新。
+
+→ **无需任何操作**，下次抓取后会自动改判。
+
+## 三、两份报告放在一起看
+
+| 报告 | 条数 | 性质 |
+|---|---|---|
+| 网页会自动重定向 | 41 | 全部是规范变体之外的其他写法，配置正确 |
+| 备用网页（有适当的规范标记） | 2 | 1 条真实缺陷（已修）+ 1 条过期记录 |
+| 重定向错误 | 0 | ✅ 无 |
+| 软 404 | 0 | ✅ 无 |
+
+**共同规律**：这两份报告记录的都是「Google 发现了非规范 / 无效 URL，并正确地没有索引它们」——
+它们描述的是**结果**，不是**问题**。判断要不要动手的唯一标准是：
+**被指向的那个目标页是否正常存在、是否被索引。**
+
+本次唯一真正需要动手的就是那个指向 404 的 `SearchAction`，已修并推送。
+
