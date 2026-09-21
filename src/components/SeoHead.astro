@@ -1,15 +1,21 @@
 ---
- export interface Props {
-   title: string;
-   description: string;
-   canonical?: string;
-   schema?: object;
-   keywords?: string;
-   ogImage?: string;
-   ogType?: string;
-   publishDate?: string;
-   modifyDate?: string;
- }
+export interface Props {
+  title: string;
+  description: string;
+  /**
+   * Canonical URL for this page. Pass `null` to omit the tag entirely -- the
+   * 404 page does this: it is served for arbitrary unmatched paths, so it has
+   * no single canonical URL of its own, and declaring one would either point
+   * at a redirect (`/404/` 308s to `/404`) or at the homepage.
+   */
+  canonical?: string | null;
+  schema?: object;
+  keywords?: string;
+  ogImage?: string;
+  ogType?: string;
+  publishDate?: string;
+  modifyDate?: string;
+}
 
   const {
     title,
@@ -28,13 +34,13 @@
 
 <title>{fullTitle}</title>
 <meta name="description" content={description} />
-<link rel="canonical" href={canonical} />
+{canonical && <link rel="canonical" href={canonical} />}
 {keywords && <meta name="keywords" content={keywords} />}
 
 <meta property="og:title" content={fullTitle} />
 <meta property="og:description" content={description} />
 <meta property="og:type" content={ogType} />
-<meta property="og:url" content={canonical} />
+{canonical && <meta property="og:url" content={canonical} />}
 <meta property="og:image" content={ogImage} />
 <meta property="og:site_name" content="Image to STL Converter" />
 

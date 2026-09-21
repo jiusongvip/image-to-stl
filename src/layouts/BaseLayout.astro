@@ -53,7 +53,7 @@ import SeoHead from "../components/SeoHead.astro";
  export interface Props {
    title: string;
    description: string;
-   canonical?: string;
+   canonical?: string | null;
    schema?: object;
    keywords?: string;
    ogImage?: string;
