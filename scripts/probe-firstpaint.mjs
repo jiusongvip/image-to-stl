@@ -31,9 +31,11 @@ import { randomBytes } from "node:crypto";
 import { existsSync, rmSync } from "node:fs";
 import net from "node:net";
 
-const [url, runsArg] = process.argv.slice(2);
+const fpArgv = process.argv.slice(2);
+const FP_DESKTOP = fpArgv.includes("--desktop");
+const [url, runsArg] = fpArgv.filter((a) => !a.startsWith("--"));
 if (!url) {
-  console.error("usage: node scripts/probe-firstpaint.mjs <indexUrl> [runs]");
+  console.error("usage: node scripts/probe-firstpaint.mjs <indexUrl> [runs] [--desktop]");
   process.exit(2);
 }
 const RUNS = Number(runsArg || 3);
@@ -205,6 +207,15 @@ const SAMPLER = `
     const img = main && main.querySelector('img');
     const h1 = main && main.querySelector('h1');
     const wrap = main && main.firstElementChild;
+    // The hero's text wrapper. Its children are the section tag, the h1, the
+    // two paragraphs, the CTA row, the badge row and the scroll cue. Tracking
+    // their heights separately is what tells a *font swap* (a child changes
+    // height, the page below moves -> real CLS) apart from a stylesheet
+    // correction (a style property is wrong -> the critical-CSS bug).
+    const content = hero && hero.querySelector('div.relative');
+    const kids = content
+      ? [...content.children].map((el) => Math.round(el.getBoundingClientRect().height))
+      : [];
     const g = (el) => {
       if (!el) return null;
       const r = el.getBoundingClientRect();
@@ -218,7 +229,7 @@ const SAMPLER = `
       ts: Math.round(performance.now()),
       sheets: document.styleSheets.length,
       hasMain: !!main,
-      hero: g(hero), img: g(img), h1: g(h1), wrap: g(wrap),
+      hero: g(hero), img: g(img), h1: g(h1), wrap: g(wrap), kids,
     };
   };
   // requestAnimationFrame is starved under 4x CPU throttling in headless, so
@@ -284,10 +295,29 @@ async function oneRun(port, index, target) {
   await cdp.send("Runtime.enable");
   await cdp.send("Network.enable");
   await cdp.send("Network.setCacheDisabled", { cacheDisabled: true });
-  await cdp.send("Emulation.setDeviceMetricsOverride", {
-    width: 412, height: 823, deviceScaleFactor: 2, mobile: true,
-  });
-  await cdp.send("Emulation.setCPUThrottlingRate", { rate: Number(process.env.FP_CPU || 4) });
+  if (FP_DESKTOP) {
+    // PSI's desktop preset: 40 ms RTT / 10 Mbps, no CPU throttle. A hero block
+    // that reflows after first paint is invisible on the phone (it sits below
+    // the fold there) but lands inside the 1350x940 desktop viewport, so the
+    // same defect reads CLS 0.000 on mobile and 0.04+ on desktop.
+    await cdp.send("Network.emulateNetworkConditions", {
+      offline: false,
+      latency: 40,
+      downloadThroughput: (10 * 1024 * 1024) / 8,
+      uploadThroughput: (5 * 1024 * 1024) / 8,
+    });
+    await cdp.send("Emulation.setDeviceMetricsOverride", {
+      width: Number(process.env.FP_WIDTH || 1350),
+      height: Number(process.env.FP_HEIGHT || 940),
+      deviceScaleFactor: 1,
+      mobile: false,
+    });
+  } else {
+    await cdp.send("Emulation.setDeviceMetricsOverride", {
+      width: 412, height: 823, deviceScaleFactor: 2, mobile: true,
+    });
+    await cdp.send("Emulation.setCPUThrottlingRate", { rate: Number(process.env.FP_CPU || 4) });
+  }
   await cdp.send("Emulation.setEmulatedMedia", { features: [{ name: "prefers-reduced-motion", value: "no-preference" }] });
 
   await cdp.send("Page.addScriptToEvaluateOnNewDocument", { source: SAMPLER });
@@ -374,11 +404,30 @@ function analyse(data) {
     if (d <= 4 && !mismatch && firstCorrect === null && x.ts > 100) firstCorrect = x.ts;
   }
 
+  // A webfont swap re-lays-out text without breaking any style property, so the
+  // style check above cannot see it -- but the page below the reflowing block
+  // still moves, and that *is* CLS. Measure it explicitly, otherwise the verdict
+  // reads "通过" while the site scores CLS 0.044 on desktop.
+  let fontReflowPx = 0;
+  let fontReflowDetail = null;
+  for (const x of laid) {
+    if (!x.kids || !last.kids || x.kids.length !== last.kids.length) continue;
+    for (let i = 0; i < x.kids.length; i++) {
+      const d = Math.abs(x.kids[i] - last.kids[i]);
+      if (d > fontReflowPx) {
+        fontReflowPx = d;
+        fontReflowDetail = { ts: x.ts, childIndex: i, from: x.kids[i], to: last.kids[i] };
+      }
+    }
+  }
+
   return {
     samples: s.length,
     maxDeviationPx: maxDev,
     styleWrongSamples: styleWrong,
     devDetail,
+    fontReflowPx,
+    fontReflowDetail,
     lastDifferingTs: lastDiffering,
     firstCorrectTs: firstCorrect,
     settled: { heroH: last.hero.h, wrapW: last.wrap.w, imgW: last.img && last.img.w, sheets: last.sheets },
@@ -419,6 +468,8 @@ if (ok.length) {
   const avgStyle = Math.round(ok.reduce((a, b) => a + b.styleWrongSamples, 0) / ok.length);
   const avgDev = Math.round(ok.reduce((a, b) => a + b.maxDeviationPx, 0) / ok.length);
   const firstMismatch = ok.map((r) => r.devDetail && r.devDetail.mismatch).find(Boolean);
+  const avgFontReflow = Math.round(ok.reduce((a, b) => a + (b.fontReflowPx || 0), 0) / ok.length);
+  const reflowDetail = ok.map((r) => r.fontReflowDetail).find(Boolean);
   console.log("");
   console.log(`== 首绘布局误差（${ok.length} 次） ==`);
   console.log(`  样式属性错位的采样数  平均 ${avgStyle}   ${avgStyle === 0 ? "✓ 首绘样式即正确" : "✗ 首绘有样式属性是错的（关键 CSS 缺失）"}`);
@@ -426,7 +477,22 @@ if (ok.length) {
   if (firstMismatch) console.log(`  首个错位示例          ${firstMismatch}`);
   console.log(
     avgStyle === 0
-      ? "  → 通过：首绘渲染状态与完整样式表一致，LCP 不必等回流"
-      : "  → 不通过：首绘渲染在错误状态，LCP 在等样式到达后的修正",
+      ? "  → 关键 CSS 通过：首绘渲染状态与完整样式表一致，LCP 不必等回流"
+      : "  → 关键 CSS 不通过：首绘渲染在错误状态，LCP 在等样式到达后的修正",
+  );
+  // Reported separately and never folded into the verdict above: a font swap
+  // breaks no style property, so the check above passes -- but the reflow it
+  // causes is still CLS on the page. Silence here is what let a 56 px desktop
+  // reflow ship while this probe printed "通过".
+  console.log(`  字体换入后的区块高度变化  平均 ${avgFontReflow} px`);
+  if (reflowDetail) {
+    console.log(
+      `    hero 子元素 #${reflowDetail.childIndex}: ${reflowDetail.from} px -> ${reflowDetail.to} px @ ${reflowDetail.ts} ms`,
+    );
+  }
+  console.log(
+    avgFontReflow > 4
+      ? "  → ⚠️ CLS 风险：字体换入后 hero 内部重排，其下方内容整体位移（桌面端计入 CLS）"
+      : "  → 字体换入后 hero 高度稳定，无 CLS 风险",
   );
 }

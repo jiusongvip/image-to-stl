@@ -24,9 +24,11 @@ import { execFileSync } from "node:child_process";
 import { createHash, randomBytes } from "node:crypto";
 import net from "node:net";
 
-const [url, runsArg] = process.argv.slice(2);
+const argv = process.argv.slice(2);
+const DESKTOP = argv.includes("--desktop");
+const [url, runsArg] = argv.filter((a) => !a.startsWith("--"));
 if (!url) {
-  console.error("usage: node scripts/probe-cls.mjs <indexUrl> [runs]");
+  console.error("usage: node scripts/probe-cls.mjs <indexUrl> [runs] [--desktop]");
   process.exit(2);
 }
 const RUNS = Number(runsArg || 3);
@@ -363,21 +365,42 @@ try {
       await cdp.send("Page.enable");
       await cdp.send("Network.enable");
 
-      // A fixed, harsh profile so each run is comparable. Mobile 4G-ish with a
-      // slow CPU, which is where the shift shows up.
-      await cdp.send("Network.emulateNetworkConditions", {
-        offline: false,
-        latency: 150,
-        downloadThroughput: (1.6 * 1024 * 1024) / 8,
-        uploadThroughput: (750 * 1024) / 8,
-      });
-      await cdp.send("Emulation.setDeviceMetricsOverride", {
-        width: 412,
-        height: 823,
-        deviceScaleFactor: 2,
-        mobile: true,
-      });
-      await cdp.send("Emulation.setCPUThrottlingRate", { rate: 4 });
+      // A fixed profile per form factor so each run is comparable.
+      // Mobile: 4G-ish with a slow CPU, which is where the shift shows up.
+      // Desktop: PSI's 1350x940 viewport, no throttling. Needed because a shift
+      // that lands *inside* the desktop viewport is below the fold on a phone —
+      // the same page can read CLS 0.044 on desktop and 0.000 on mobile.
+      if (DESKTOP) {
+        // PSI's desktop preset: 40 ms RTT / 10 Mbps, no CPU throttle. Without
+        // this the fonts land before first paint locally and the shift that PSI
+        // reports on desktop never reproduces.
+        await cdp.send("Network.emulateNetworkConditions", {
+          offline: false,
+          latency: 40,
+          downloadThroughput: (10 * 1024 * 1024) / 8,
+          uploadThroughput: (5 * 1024 * 1024) / 8,
+        });
+        await cdp.send("Emulation.setDeviceMetricsOverride", {
+          width: 1350,
+          height: 940,
+          deviceScaleFactor: 1,
+          mobile: false,
+        });
+      } else {
+        await cdp.send("Network.emulateNetworkConditions", {
+          offline: false,
+          latency: 150,
+          downloadThroughput: (1.6 * 1024 * 1024) / 8,
+          uploadThroughput: (750 * 1024) / 8,
+        });
+        await cdp.send("Emulation.setDeviceMetricsOverride", {
+          width: 412,
+          height: 823,
+          deviceScaleFactor: 2,
+          mobile: true,
+        });
+        await cdp.send("Emulation.setCPUThrottlingRate", { rate: 4 });
+      }
 
       await cdp.send("Page.addScriptToEvaluateOnNewDocument", { source: INSTRUMENT });
 

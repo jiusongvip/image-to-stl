@@ -121,9 +121,20 @@ const keywords = "image to stl, jpg to stl, png to stl, svg to stl, convert imag
       <div class="absolute inset-0 bg-gradient-to-b from-surface-50/85 dark:from-surface-950/85 via-surface-50/70 dark:via-surface-950/70 to-surface-50 dark:to-surface-950 pointer-events-none"></div>
       <div class="absolute inset-0 bg-gradient-to-r from-surface-50/90 dark:from-surface-950/90 to-transparent pointer-events-none"></div>
 
-      <div class="relative px-6 sm:px-10 py-16 sm:py-24 max-w-4xl">
+      {/* The text column is widened at lg on purpose.
+           The <h1> below is the one block in the hero whose *line count* can
+           change when the webfont swaps in: "Convert Image to STL Online —" is
+           805 px in Geist Bold but 839 px in the metric-override fallback, i.e.
+           the fallback is 4.2% wider. At a 816 px measure that pushed the first
+           line over the edge at first paint (3 lines) and pulled it back when
+           Geist arrived (2 lines) — a 56 px reflow of everything below, which
+           PSI scores as CLS 0.044-0.21 on desktop. Widening the measure and
+           dropping the lg size one notch gives the fallback ~10% of headroom, so
+           both faces wrap the same way. Do not narrow this back without
+           re-measuring the first-line width in BOTH faces. */}
+      <div class="relative px-6 sm:px-10 py-16 sm:py-24 max-w-4xl lg:max-w-5xl">
         <p class="section-tag">Image-to-STL &mdash; Free Online Converter</p>
-        <h1 class="mt-5 text-4xl sm:text-5xl lg:text-[56px] font-bold tracking-tight text-surface-900 dark:text-surface-100 leading-[1.06]">
+        <h1 class="mt-5 text-4xl sm:text-5xl lg:text-[54px] font-bold tracking-tight text-surface-900 dark:text-surface-100 leading-[1.06]">
           Convert Image to STL Online &mdash;<br />
           <span class="text-gradient-accent">Free 3D Model Generator</span>
         </h1>
