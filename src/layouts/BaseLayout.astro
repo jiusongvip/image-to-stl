@@ -161,10 +161,16 @@ import SeoHead from "../components/SeoHead.astro";
          on a fast desktop — exactly during the LCP window — and then blocking
          the main thread for 207 ms + 129 ms.
 
-      So it is gated on the page actually being *finished and quiet*:
-      load + idle, or first user interaction, whichever comes first. Losing a few
-      seconds of the very first session's analytics is the right trade for
-      removing ~336 ms of blocking time from the critical path.
+      INTERACTION-ONLY. An earlier revision also fired on `load` (via
+      requestIdleCallback with a 2 s timeout). That still put the download and
+      its parse/execute inside the mobile LCP window, because `load` arrives
+      well before the page is idle on a throttled phone. There is no safe
+      automatic moment: the LCP window is exactly when we must not hand the main
+      thread 168 KB of JavaScript. So the fetch is now triggered ONLY by a real
+      user signal — pointerdown / keydown / touchstart / wheel — and by nothing
+      else. A session with zero interaction sends zero analytics; that is the
+      accepted trade. Note this is deliberate behaviour, not a bug: if analytics
+      volume ever looks low, check interaction rates before debugging the tag.
     */}
     <script is:inline>
       window.dataLayer = window.dataLayer || [];
@@ -181,26 +187,12 @@ import SeoHead from "../components/SeoHead.astro";
           s.src = 'https://www.googletagmanager.com/gtag/js?id=G-855ZSKSVHZ';
           document.head.appendChild(s);
         }
-        var armed = false;
-        function arm() {
-          if (armed) return;
-          armed = true;
-          // Wait for the page to be genuinely quiet, then yield one more slice
-          // so the browser can paint before we hand it 168 KB of JS.
-          ['pointerdown', 'keydown', 'touchstart', 'wheel'].forEach(function (e) {
-            window.removeEventListener(e, arm);
-          });
-          if ('requestIdleCallback' in window) {
-            requestIdleCallback(loadGtag, { timeout: 2000 });
-          } else {
-            setTimeout(loadGtag, 1200);
-          }
-        }
+        // Purely an event registration — no timer, no `load` hook. The stub
+        // above already recorded `js` and `config`, so the first event that
+        // arrives after this point still carries the right client id.
         ['pointerdown', 'keydown', 'touchstart', 'wheel'].forEach(function (e) {
-          window.addEventListener(e, arm, { once: true, passive: true });
+          window.addEventListener(e, loadGtag, { once: true, passive: true });
         });
-        if (document.readyState === 'complete') arm();
-        else window.addEventListener('load', arm, { once: true });
       })();
     </script>
   </body>
