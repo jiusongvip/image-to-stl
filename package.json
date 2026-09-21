@@ -10,7 +10,9 @@
     "deploy": "npm run build && npm run clean:dist",
     "preview": "astro preview",
     "optimize:images": "node scripts/optimize-gallery-images.mjs",
-    "optimize:images:check": "node scripts/optimize-gallery-images.mjs --check"
+    "optimize:images:check": "node scripts/optimize-gallery-images.mjs --check",
+    "favicon": "node scripts/make-favicon-ico.mjs",
+    "audit:urls": "python scripts/audit-canonical-urls.py"
   },
   "dependencies": {
     "@astrojs/react": "^3.6.2",
