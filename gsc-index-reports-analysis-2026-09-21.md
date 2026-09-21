@@ -264,3 +264,109 @@ https://image-2-stl.com/blog/  →  301 Moved Permanently
 
 本次唯一真正需要动手的就是那个指向 404 的 `SearchAction`，已修并推送。
 
+---
+
+# 第三部分：延伸审计 —— 站点在给 Google 喂自己的重定向源
+
+处理完上面两份报告后，我把「站内链接 + 结构化数据里声明的 URL」全量扫了一遍，
+结果发现**第一部分那 13 条 `www` + 缺尾斜杠条目的来源，就是本站自己的 `BreadcrumbList`**。
+
+## 一、缺陷：`BreadcrumbList` 的 `item` 全部缺尾斜杠
+
+5 个 URL 硬编码在 4 个页面的 `breadcrumbs` frontmatter 里，**全部漏了尾斜杠**：
+
+| 文件 | 错误写法 |
+|---|---|
+| `src/pages/about.astro` | `https://www.image-2-stl.com/about` |
+| `src/pages/blog/3d-printing-basics.astro` | `…/blog`、`…/blog/3d-printing-basics` |
+| `src/pages/blog/best-image-to-stl-converters.astro` | `…/blog`、`…/blog/best-image-to-stl-converters` |
+| `src/pages/blog/what-is-stl-file.astro` | `…/blog`、`…/blog/what-is-stl-file` |
+
+实测这些 URL 全部 **308**：
+
+```
+https://www.image-2-stl.com/about                  → 308 → /about/
+https://www.image-2-stl.com/blog                   → 308 → /blog/
+https://www.image-2-stl.com/blog/3d-printing-basics → 308 → /blog/3d-printing-basics/
+https://www.image-2-stl.com/blog/best-image-to-stl-converters → 308 → …/
+https://www.image-2-stl.com/blog/what-is-stl-file  → 308 → /blog/what-is-stl-file/
+```
+
+**所以 `item` 指向的是跳转 URL** —— 结构化数据里声明一个会 308 的地址，
+Google 抓它、跟一跳、把来源记进「网页会自动重定向」。
+**站点在主动制造自己的重定向源，这部分抓取预算是白白花掉的。**
+
+## 二、修复（提交 `b6ab564`）
+
+1. **4 个调用点补上尾斜杠**（7 处 URL）。
+2. **`src/layouts/BaseLayout.astro` 加 `toCanonicalUrl()` 归一化护栏** ——
+   以后新页面忘了写斜杠也不会再犯（这是产生 breadcrumb schema 的唯一位置）。
+3. **裸 origin `https://www.image-2-stl.com` 刻意保持无斜杠** ——
+   那是首页的规范形式，与 `<link rel="canonical">` 和 sitemap 一致（且它返回 200，不是跳转）。
+
+## 三、验证
+
+- 产物：全站 `BreadcrumbList` 的 `item` **全部带尾斜杠**（唯一无斜杠的是首页裸 origin，正确）。
+- 线上（Cloudflare 约 24 秒生效）：抽查 `/about/` 与 3 个博客页，**全部已是带斜杠形式**。
+  例如 `/blog/what-is-stl-file/`：
+  ```json
+  {"@type":"BreadcrumbList","itemListElement":[
+    {"@type":"ListItem","position":1,"name":"Blog","item":"https://www.image-2-stl.com/blog/"},
+    {"@type":"ListItem","position":2,"name":"What Is an STL File?","item":"https://www.image-2-stl.com/blog/what-is-stl-file/"}]}
+  ```
+
+## 四、新增检查器：`scripts/audit-canonical-urls.py`
+
+扫 `dist/` 里所有「指向自己域名但不是规范形式」的 URL（来自 `<a href>` 与 JSON-LD），
+发现即 `exit 1` 并列出来源页面与所在键名。
+
+```bash
+npm run build
+python scripts/audit-canonical-urls.py --verbose
+```
+
+正常输出：
+
+```
+扫描 19 个页面，15 个 JSON-LD 块（解析失败 0 个）
+✓ 所有站内 URL 都是规范形式（www + 尾斜杠）
+```
+
+**已做负向对照**（本项目「自检必须能证伪」的纪律）：往 `dist/about/index.html` 注入一个缺斜杠 URL
+→ `exit=1` 且准确定位：
+
+```
+✗ 发现 1 个非规范的站内 URL（会触发 308）：
+   https://www.image-2-stl.com/about
+        ← about/index.html [AboutPage.url]
+        ← about/index.html [ListItem.item]
+```
+
+还原后 `exit=0`。**改完 SEO / 链接相关代码后应跑一次。**
+
+## 五、顺带核实的其它项（均无问题）
+
+| 检查 | 结果 |
+|---|---|
+| 产物里 apex 绝对链接 | **0 条** |
+| sitemap 18 条 `<loc>` | 全是规范形式 |
+| 各页 `canonical` | 全是规范形式（首页为裸 origin，正确） |
+| 不存在的路径 | 正确 **404** |
+| 结构化数据里的外部 URL | 见下 |
+
+**外部 URL 检查的口径提醒**：用 curl 检查时 Wikipedia ×3 与 schema.org 返回 **502**、ISO 返回 **403**，
+但同一轮里 GitHub / Britannica / Cloudflare 都是 **200** ——
+**这是本地代理侧的问题，不是死链**。用另一条通道复核 Wikidata `Q1238229` = **STL（file format）** ✅ 在线且正确。
+**结论：curl 拿到 5xx/403 时不要直接判为死链。**
+
+## 六、第三部分的结论
+
+第一部分的 41 条里有 **13 条**（`www` + 缺尾斜杠）**根因在站内**，现已消除：
+
+- 4 个页面修正 + 1 处归一化护栏 → 站点不会再自己生成这类 URL；
+- 新增检查器 → 以后能自动发现回归。
+
+**GSC 侧的动作**：等 Google 重新抓取后，这 13 条会逐步从「网页会自动重定向」消失。
+**不需要再手动做任何事。**
+
+
