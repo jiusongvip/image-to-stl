@@ -1,13 +1,14 @@
 "use client";
 
-import { useState, useCallback, useRef, useId, useEffect, lazy, Suspense } from "react";
-import { computeNormal, writeBinaryStl, downloadBlob, type Triangle } from "../lib/stl-utils";
+import { useState, useCallback, useRef, useId, useEffect, useMemo, lazy, Suspense } from "react";
+import { writeBinaryStl, downloadBlob } from "../lib/stl-utils";
+import { sampleHeightGrid, buildClosedSolid, toHeightMm } from "../lib/solid";
 import PreviewPlaceholder from "./PreviewPlaceholder";
 
 interface EditorParams {
-  height: number;
+  widthMm: number;
+  reliefMm: number;
   smoothness: number;
-  baseHeight: number;
   invert: boolean;
   contrast: number;
   brightness: number;
@@ -23,9 +24,9 @@ export default function HeightmapEditor() {
   const [downloading, setDownloading] = useState(false);
   
   const [params, setParams] = useState<EditorParams>({
-    height: 0.8,
+    widthMm: 100,
+    reliefMm: 3,
     smoothness: 0.3,
-    baseHeight: 2,
     invert: false,
     contrast: 65,
     brightness: 55,
@@ -34,6 +35,9 @@ export default function HeightmapEditor() {
   });
   const fileInputRef = useRef<HTMLInputElement>(null);
   const previewCanvasRef = useRef<HTMLCanvasElement>(null);
+
+  // processedData 已含 invert 效果，预览再反转一次会抵消，所以转发时固定为 false
+  const previewParams = useMemo(() => ({ ...params, invert: false }), [params]);
 
   // Process original image through contrast/brightness/threshold
   useEffect(() => {
@@ -77,12 +81,6 @@ export default function HeightmapEditor() {
         g = 255 - g;
         b = 255 - b;
       }
-
-      // Apply height scale visually (brighter = taller)
-      const hScale = Math.max(0.2, Math.min(2.0, params.height / 0.8));
-      r = Math.min(255, Math.max(0, 128 + (r - 128) * hScale));
-      g = Math.min(255, Math.max(0, 128 + (g - 128) * hScale));
-      b = Math.min(255, Math.max(0, 128 + (b - 128) * hScale));
 
       dstData.data[i] = r;
       dstData.data[i + 1] = g;
@@ -145,71 +143,17 @@ export default function HeightmapEditor() {
     if (!processedData) return;
     setDownloading(true);
     try {
-      const w = processedData.width;
-      const h = processedData.height;
-      const { height: hScale, smoothness, baseHeight, invert } = params;
+      const { widthMm, reliefMm, smoothness } = params;
 
-      const pixels = processedData.data;
-      const heights: number[][] = Array.from({ length: h }, () => Array(w).fill(0));
-      for (let y = 0; y < h; y++) {
-        for (let x = 0; x < w; x++) {
-          const idx = (y * w + x) * 4;
-          const gray = (pixels[idx] + pixels[idx + 1] + pixels[idx + 2]) / 3 / 255;
-          heights[y][x] = (invert ? 1 - gray : gray) * hScale;
-        }
-      }
-
-      // Smooth
-      const sr = Math.floor(smoothness * 5);
-      const copy = heights.map((row) => [...row]);
-      for (let y = 0; y < h; y++) {
-        for (let x = 0; x < w; x++) {
-          let sum = copy[y][x];
-          let count = 1;
-          for (let dy = -sr; dy <= sr; dy++) {
-            for (let dx = -sr; dx <= sr; dx++) {
-              if (dx === 0 && dy === 0) continue;
-              const nx = x + dx;
-              const ny = y + dy;
-              if (nx >= 0 && nx < w && ny >= 0 && ny < h) {
-                sum += copy[ny][nx];
-                count++;
-              }
-            }
-          }
-          heights[y][x] = sum / count + baseHeight * 0.1;
-        }
-      }
-
-      const wScale = 2.0 / w;
-      const hScale2 = 2.0 / h;
-      const triangles: Triangle[] = [];
-
-      for (let y = 0; y < h - 1; y++) {
-        for (let x = 0; x < w - 1; x++) {
-          const x0 = (x - w / 2) * wScale;
-          const x1 = ((x + 1) - w / 2) * wScale;
-          const z0 = (y - h / 2) * hScale2;
-          const z1 = ((y + 1) - h / 2) * hScale2;
-
-          const v00: [number, number, number] = [x0, heights[y][x], z0];
-          const v10: [number, number, number] = [x1, heights[y][x + 1], z0];
-          const v01: [number, number, number] = [x0, heights[y + 1][x], z1];
-          const v11: [number, number, number] = [x1, heights[y + 1][x + 1], z1];
-
-          triangles.push({ normal: computeNormal(v00, v10, v11), vertices: [v00, v10, v11] });
-          triangles.push({ normal: computeNormal(v00, v11, v01), vertices: [v00, v11, v01] });
-        }
-      }
-
-      // Bottom plane
-      const bY = baseHeight * 0.1 - 0.01;
-      const bl: [number, number, number] = [-1, bY, -1];
-      const br: [number, number, number] = [1, bY, -1];
-      const tl: [number, number, number] = [-1, bY, 1];
-      const tr: [number, number, number] = [1, bY, 1];
-      triangles.push({ normal: [0, -1, 0], vertices: [bl, tr, br] });
-      triangles.push({ normal: [0, -1, 0], vertices: [bl, tl, tr] });
+      // processedData 里已经做过 invert，这里不再反转第二次
+      const heights = sampleHeightGrid(processedData, {
+        invert: false,
+        removeBackground: false,
+        smoothRadius: Math.round(smoothness * 6),
+        maxCells: 256,
+      });
+      const triangles = buildClosedSolid({ heightsMm: toHeightMm(heights, reliefMm), widthMm });
+      if (triangles.length === 0) return;
 
       const blob = writeBinaryStl(triangles, fileName);
       downloadBlob(blob, fileName.replace(/\.[^.]+$/, "") + ".stl");
@@ -300,13 +244,31 @@ export default function HeightmapEditor() {
         {/* 3D Parameters */}
         <div className="rounded-tool border border-surface-200 dark:border-surface-800 p-5 space-y-5">
           <h3 className="text-sm font-semibold text-surface-900 dark:text-surface-100">3D Settings</h3>
+          <div className="flex items-center justify-between gap-3">
+            <label htmlFor="editor-print-width" className="text-xs font-medium text-surface-500 dark:text-surface-400">
+              Print Width (mm)
+            </label>
+            <input
+              id="editor-print-width"
+              type="number"
+              inputMode="decimal"
+              min={5}
+              max={300}
+              step={5}
+              value={params.widthMm}
+              onChange={(e) =>
+                setParams((p) => ({ ...p, widthMm: Math.min(300, Math.max(5, Number(e.target.value) || 5)) }))
+              }
+              className="w-20 rounded-lg border border-surface-300 dark:border-surface-700 bg-surface-50 dark:bg-surface-900 px-2 py-1 text-xs font-mono text-surface-900 dark:text-surface-100"
+            />
+          </div>
           <ParamSlider
-            label="Height"
-            value={params.height}
-            min={0.1}
-            max={3}
-            step={0.05}
-            onChange={(v: number) => setParams((p) => ({ ...p, height: v }))}
+            label="Relief Height (mm)"
+            value={params.reliefMm}
+            min={0.2}
+            max={20}
+            step={0.2}
+            onChange={(v: number) => setParams((p) => ({ ...p, reliefMm: v }))}
           />
           <ParamSlider
             label="Smoothness"
@@ -315,14 +277,6 @@ export default function HeightmapEditor() {
             max={1}
             step={0.05}
             onChange={(v: number) => setParams((p) => ({ ...p, smoothness: v }))}
-          />
-          <ParamSlider
-            label="Base Thickness"
-            value={params.baseHeight}
-            min={0}
-            max={10}
-            step={0.5}
-            onChange={(v: number) => setParams((p) => ({ ...p, baseHeight: v }))}
           />
           <label className="flex items-center gap-3 cursor-pointer">
             <input
@@ -357,7 +311,7 @@ export default function HeightmapEditor() {
                 <ThreePreview
                   mode="heightmap"
                   imageData={processedData}
-                  params={params}
+                  params={previewParams}
                 />
               </Suspense>
           ) : (

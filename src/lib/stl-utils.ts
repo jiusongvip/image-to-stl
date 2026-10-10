@@ -22,34 +22,25 @@ export function computeNormal(
   return [normal[0] / len, normal[1] / len, normal[2] / len];
 }
 
-// Smooth a 2D array in-place using box blur
-export function smoothHeightmap(heights: number[][], radius: number): void {
-  const h = heights.length;
-  const w = heights[0].length;
-  const copy = heights.map((row) => [...row]);
-  const sr = Math.floor(radius);
-  for (let y = 0; y < h; y++) {
-    for (let x = 0; x < w; x++) {
-      let sum = copy[y][x];
-      let count = 1;
-      for (let dy = -sr; dy <= sr; dy++) {
-        for (let dx = -sr; dx <= sr; dx++) {
-          if (dx === 0 && dy === 0) continue;
-          const nx = x + dx;
-          const ny = y + dy;
-          if (nx >= 0 && nx < w && ny >= 0 && ny < h) {
-            sum += copy[ny][nx];
-            count++;
-          }
-        }
-      }
-      heights[y][x] = sum / count;
-    }
-  }
+// 站点内部一律用 Y 作为厚度轴（Three.js 的相机与网格都以 Y 朝上），
+// 但切片软件把 Z 当作竖直方向。写文件时统一绕 X 轴转 -90°，
+// 让浮雕在切片器里平躺朝上，不需要用户手动旋转。
+// (x, y, z) -> (x, -z, y) 的行列式为 +1，是纯旋转，绕序保持不变。
+export function toSlicerSpace<T extends { normal: [number, number, number]; vertices: [number, number, number][] }>(
+  triangles: T[],
+): T[] {
+  return triangles.map((t) => ({
+    ...t,
+    normal: [t.normal[0], -t.normal[2], t.normal[1]] as [number, number, number],
+    vertices: t.vertices.map(
+      (v) => [v[0], -v[2], v[1]] as [number, number, number],
+    ),
+  }));
 }
 
 // Write binary STL file to a Blob
 export function writeBinaryStl(triangles: Triangle[], modelName: string): Blob {
+  triangles = toSlicerSpace(triangles);
   const headerSize = 84;
   const triSize = 50;
   const buffer = new ArrayBuffer(headerSize + triangles.length * triSize);
@@ -93,48 +84,4 @@ export function downloadBlob(blob: Blob, filename: string): void {
   a.download = filename;
   a.click();
   URL.revokeObjectURL(url);
-}
-
-// Mesh decimation: merge nearby vertices that are too close
-export function decimateMesh(
-  heights: number[][],
-  scaleX: number,
-  scaleZ: number,
-  targetRatio: number = 0.5,
-): { triangles: Triangle[]; count: number } {
-  const h = heights.length;
-  const w = heights[0].length;
-  const step = Math.max(1, Math.round(1 / targetRatio));
-
-  const mapH = Math.ceil((h - 1) / step) + 1;
-  const mapW = Math.ceil((w - 1) / step) + 1;
-  const decimated: number[][] = Array.from({ length: mapH }, () => Array(mapW).fill(0));
-
-  for (let y = 0; y < mapH; y++) {
-    for (let x = 0; x < mapW; x++) {
-      const sy = Math.min(y * step, h - 1);
-      const sx = Math.min(x * step, w - 1);
-      decimated[y][x] = heights[sy][sx];
-    }
-  }
-
-  const triList: Triangle[] = [];
-  for (let y = 0; y < mapH - 1; y++) {
-    for (let x = 0; x < mapW - 1; x++) {
-      const x0 = (x - (mapW - 1) / 2) * scaleX * step;
-      const x1 = ((x + 1) - (mapW - 1) / 2) * scaleX * step;
-      const z0 = (y - (mapH - 1) / 2) * scaleZ * step;
-      const z1 = ((y + 1) - (mapH - 1) / 2) * scaleZ * step;
-
-      const v00: [number, number, number] = [x0, decimated[y][x], z0];
-      const v10: [number, number, number] = [x1, decimated[y][x + 1], z0];
-      const v01: [number, number, number] = [x0, decimated[y + 1][x], z1];
-      const v11: [number, number, number] = [x1, decimated[y + 1][x + 1], z1];
-
-      triList.push({ normal: computeNormal(v00, v10, v11), vertices: [v00, v10, v11] });
-      triList.push({ normal: computeNormal(v00, v11, v01), vertices: [v00, v11, v01] });
-    }
-  }
-
-  return { triangles: triList, count: triList.length };
 }

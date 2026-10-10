@@ -95,8 +95,8 @@ const keywords = "image to stl, jpg to stl, png to stl, svg to stl, convert imag
   modifyDate={SITE_MODIFIED}
 >
   <link slot="head-preload" rel="preload" as="image" href="/images/hero-workspace.webp" fetchpriority="high" />
-  <div class="max-w-[1400px] mx-auto px-4 sm:px-6 py-8 sm:py-12">
-    <section class="relative overflow-hidden rounded-3xl border border-surface-200/70 dark:border-surface-800/70 mb-10">
+  <div class="max-w-[1400px] mx-auto px-4 sm:px-6 pt-6 pb-8 sm:pt-8 sm:pb-12">
+    <section class="relative overflow-hidden rounded-3xl border border-surface-200/70 dark:border-surface-800/70 mb-6">
       <!-- 电影感背景大图
            Rendered at 30% opacity beneath two gradient overlays, so most of its
            high-frequency detail is invisible. Slightly blurred to match —
@@ -118,77 +118,74 @@ const keywords = "image to stl, jpg to stl, png to stl, svg to stl, convert imag
 
       {/* The text column is widened at lg on purpose.
            The <h1> below is the one block in the hero whose *line count* can
-           change when the webfont swaps in: "Convert Image to STL Online —" is
-           805 px in Geist Bold but 839 px in the metric-override fallback, i.e.
-           the fallback is 4.2% wider. At a 816 px measure that pushed the first
-           line over the edge at first paint (3 lines) and pulled it back when
-           Geist arrived (2 lines) — a 56 px reflow of everything below, which
-           PSI scores as CLS 0.044-0.21 on desktop. Widening the measure and
-           dropping the lg size one notch gives the fallback ~10% of headroom, so
-           both faces wrap the same way. Do not narrow this back without
-           re-measuring the first-line width in BOTH faces. */}
-      <div class="relative px-6 sm:px-10 py-16 sm:py-24 max-w-4xl lg:max-w-5xl">
+           change when the webfont swaps in: Geist Bold and the metric-override
+           fallback differ by ~4.2% in width, so a measure that only just fits
+           the line wraps 2 lines → 3 lines when the font swaps. That reflow of
+           everything below is what PSI scores as CLS. Dropping the h1 to
+           44 px at lg leaves the first line ~300 px of headroom in both faces,
+           so they wrap identically. Do not narrow this column or raise the h1
+           without re-measuring the first-line width in BOTH faces. */}
+      <div class="relative px-6 sm:px-10 py-7 sm:py-9 max-w-4xl lg:max-w-5xl">
         <p class="section-tag">Image-to-STL &mdash; Free Online Converter</p>
-        <h1 class="mt-5 text-4xl sm:text-5xl lg:text-[54px] font-bold tracking-tight text-surface-900 dark:text-surface-100 leading-[1.06]">
+        <h1 class="mt-3 text-[28px] sm:text-4xl lg:text-[44px] font-bold tracking-tight text-surface-900 dark:text-surface-100 leading-[1.08]">
           Convert Image to STL Online &mdash;<br />
           <span class="text-gradient-accent">Free 3D Model Generator</span>
         </h1>
-        <p class="mt-6 text-base sm:text-lg text-surface-600 dark:text-surface-400 leading-relaxed max-w-[58ch]">
-          Transform your JPG, PNG, and SVG images into 3D-printable STL files &mdash; entirely in your browser.
-          No uploads, no software downloads, no fees. Get instant real-time 3D preview powered by Three.js
-          and download your model as STL, OBJ, or GLB in seconds.
+        <p class="mt-3 text-sm sm:text-base text-surface-600 dark:text-surface-400 leading-relaxed max-w-[62ch]">
+          Turn JPG, PNG, and SVG images into print-ready STL, OBJ, and GLB files &mdash; in your browser, with a real-time 3D preview.
         </p>
-        <p class="mt-4 text-xs text-surface-500">
-          By the <a href="/about/" class="text-accent-600 dark:text-accent-400 hover:underline font-medium">Image to STL Converter Team</a>
-          &mdash; published <time datetime={SITE_PUBLISHED}>June 1, 2025</time>,
-          updated <time datetime={SITE_MODIFIED}>September 18, 2026</time>
-        </p>
-        <div class="mt-8 flex flex-wrap gap-3">
-          <a href="#converter" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-accent-600 hover:bg-accent-700 text-white text-sm font-semibold shadow-lg shadow-accent-600/25 transition-all hover:-translate-y-0.5">
-            Start Converting
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg>
-          </a>
-          <a href="#creations" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-surface-300 dark:border-surface-700 bg-surface-50/80 dark:bg-surface-900/60 text-surface-700 dark:text-surface-300 text-sm font-semibold hover:border-accent-400 hover:text-accent-600 dark:hover:text-accent-400 transition-all hover:-translate-y-0.5">
-            See Examples
-          </a>
-        </div>
-        <div class="mt-9 flex flex-wrap gap-2">
-          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-medium">
-            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            100% Browser-Based &mdash; No Uploads
-          </span>
-          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-accent-100 dark:bg-accent-900/30 text-accent-700 dark:text-accent-400 text-xs font-medium">
-            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-            Export: STL + OBJ + GLB
-          </span>
-          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-200 dark:bg-surface-800 text-surface-600 dark:text-surface-400 text-xs font-medium">
-            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
-            No Registration Required
-          </span>
-          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-xs font-medium">
-            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-            Real-Time 3D Preview
-          </span>
-        </div>
-
-        <!-- 滚动提示 -->
-        <div class="mt-12 flex items-center gap-2 font-mono text-[11px] text-surface-400 dark:text-surface-500 uppercase tracking-[0.2em]">
-          <span>Scroll to explore</span>
-          <svg class="w-3.5 h-3.5 animate-bounce" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg>
-        </div>
       </div>
     </section>
 
     <!-- 01 — Converter -->
-    <div id="converter" class="scroll-mt-28 reveal">
-      <p class="section-tag">01 &mdash; The converter</p>
-      <h2 class="editorial-title mt-2 mb-6">Turn any image into a <span class="text-gradient-accent">print-ready 3D model</span></h2>
-      {/* client:visible — the island hydrates when it scrolls into view. The
-          Five.js/React runtime (44 KB) used to hydrate during the initial load
-          and competed with the hero image for bandwidth and main thread, which
-          pushed mobile LCP to 4.4 s. Nothing above the fold depends on this
-          island, so deferring it is free. */}
+    {/* No `reveal` here on purpose. The critical-CSS inliner cuts its class set
+        at the first reveal element, and this block is now inside the first
+        viewport, so a reveal wrapper would leave the converter's own utilities
+        out of the inlined block and repaint when the stylesheet lands. It also
+        has to be paint-ready on the first frame — it is the thing the visitor
+        came for. */}
+    <div id="converter" class="scroll-mt-28">
+      <h2 class="mb-3 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+        <span class="section-tag">01 &mdash; The converter</span>
+        <span class="text-lg sm:text-xl font-semibold text-surface-900 dark:text-surface-100">Turn any image into a <span class="text-gradient-accent">print-ready 3D model</span></span>
+      </h2>
+      {/* client:visible keeps the React runtime off the initial critical path
+          (it hydrates on the first paint anyway now that the converter sits in
+          the first screen), and the SSR placeholder keeps the sections below it
+          from shifting — client-rendering the island measured CLS 0.158. */}
       <ConverterTool client:visible />
+
+      <!-- 信任标签：首屏让给转换器，紧接其下仍在一屏滚动范围内 -->
+      <div class="mt-5 flex flex-wrap gap-2">
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-medium">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          100% Browser-Based &mdash; No Uploads
+        </span>
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-accent-100 dark:bg-accent-900/30 text-accent-700 dark:text-accent-400 text-xs font-medium">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          Export: STL + OBJ + GLB
+        </span>
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-200 dark:bg-surface-800 text-surface-600 dark:text-surface-400 text-xs font-medium">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
+          No Registration Required
+        </span>
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-xs font-medium">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          Real-Time 3D Preview
+        </span>
+      </div>
+
+      <div class="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2">
+        <a href="#creations" class="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.2em] text-surface-500 dark:text-surface-400 hover:text-accent-600 dark:hover:text-accent-400 transition-colors">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg>
+          See printed examples
+        </a>
+        <p class="text-xs text-surface-500">
+          By the <a href="/about/" class="text-accent-600 dark:text-accent-400 hover:underline font-medium">Image to STL Converter Team</a>
+          &mdash; published <time datetime={SITE_PUBLISHED}>June 1, 2025</time>,
+          updated <time datetime={SITE_MODIFIED}>September 18, 2026</time>
+        </p>
+      </div>
     </div>
 
     <!-- 02 — At a glance -->
@@ -231,7 +228,7 @@ const keywords = "image to stl, jpg to stl, png to stl, svg to stl, convert imag
         <div class="flex flex-col gap-2">
           <span class="font-mono text-3xl sm:text-4xl font-semibold text-accent-500/90 dark:text-accent-400/90 tracking-tight">02</span>
           <h3 class="font-medium text-surface-900 dark:text-surface-100">Choose Mode &amp; Adjust</h3>
-          <p class="text-sm text-surface-500 leading-relaxed">Select Heightmap for photo reliefs, SVG Extrude for logos, or Lithophane for backlit panels. Fine-tune height, smoothness, base thickness, and resolution with live sliders.</p>
+          <p class="text-sm text-surface-500 leading-relaxed">Select Heightmap for photo reliefs, SVG Extrude for logos, or Lithophane for backlit panels. Fine-tune relief height, smoothness, and resolution with live sliders.</p>
         </div>
         <div class="flex flex-col gap-2">
           <span class="font-mono text-3xl sm:text-4xl font-semibold text-accent-500/90 dark:text-accent-400/90 tracking-tight">03</span>
@@ -496,7 +493,7 @@ const keywords = "image to stl, jpg to stl, png to stl, svg to stl, convert imag
         <div class="flex gap-3 p-4 rounded-tool border border-surface-200 dark:border-surface-800"><span class="w-5 h-5 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center flex-shrink-0 mt-0.5"><svg class="w-3 h-3 text-amber-600 dark:text-amber-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span><div><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-1">Use High-Contrast Images</h3><p class="text-xs text-surface-500 leading-relaxed">Images with clear light/dark separation produce the best reliefs. Avoid flat, low-contrast photos &mdash; they result in shallow, indistinct 3D surfaces.</p></div></div>
         <div class="flex gap-3 p-4 rounded-tool border border-surface-200 dark:border-surface-800"><span class="w-5 h-5 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center flex-shrink-0 mt-0.5"><svg class="w-3 h-3 text-amber-600 dark:text-amber-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span><div><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-1">Choose the Right Mode</h3><p class="text-xs text-surface-500 leading-relaxed">Use Heightmap for photographs and realistic reliefs. Use SVG Extrusion for logos, icons, and vector art. Use Lithophane only when you plan to backlight the print.</p></div></div>
         <div class="flex gap-3 p-4 rounded-tool border border-surface-200 dark:border-surface-800"><span class="w-5 h-5 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center flex-shrink-0 mt-0.5"><svg class="w-3 h-3 text-amber-600 dark:text-amber-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span><div><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-1">Adjust Smoothness Carefully</h3><p class="text-xs text-surface-500 leading-relaxed">Too much smoothing loses detail; too little creates a noisy mesh. Preview the wireframe to check mesh quality before downloading.</p></div></div>
-        <div class="flex gap-3 p-4 rounded-tool border border-surface-200 dark:border-surface-800"><span class="w-5 h-5 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center flex-shrink-0 mt-0.5"><svg class="w-3 h-3 text-amber-600 dark:text-amber-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span><div><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-1">Scale for Your Printer</h3><p class="text-xs text-surface-500 leading-relaxed">Set base dimensions to match your printer bed size. Larger models show more detail but take longer to slice and print.</p></div></div>
+        <div class="flex gap-3 p-4 rounded-tool border border-surface-200 dark:border-surface-800"><span class="w-5 h-5 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center flex-shrink-0 mt-0.5"><svg class="w-3 h-3 text-amber-600 dark:text-amber-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span><div><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-1">Scale for Your Printer</h3><p class="text-xs text-surface-500 leading-relaxed">Set the print width to match your printer bed size. Larger models show more detail but take longer to slice and print.</p></div></div>
         <div class="flex gap-3 p-4 rounded-tool border border-surface-200 dark:border-surface-800"><span class="w-5 h-5 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center flex-shrink-0 mt-0.5"><svg class="w-3 h-3 text-amber-600 dark:text-amber-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span><div><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-1">Check Mesh in Wireframe View</h3><p class="text-xs text-surface-500 leading-relaxed">Toggle wireframe mode in the 3D preview to inspect triangle density and detect any artifacts before exporting.</p></div></div>
         <div class="flex gap-3 p-4 rounded-tool border border-surface-200 dark:border-surface-800"><span class="w-5 h-5 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center flex-shrink-0 mt-0.5"><svg class="w-3 h-3 text-amber-600 dark:text-amber-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span><div><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-1">Export the Right Format</h3><p class="text-xs text-surface-500 leading-relaxed">Use STL for direct 3D printing. Use OBJ for editing in Blender. Use GLB for sharing online or embedding in web-based viewers.</p></div></div>
         <div class="flex gap-3 p-4 rounded-tool border border-surface-200 dark:border-surface-800">
@@ -517,11 +514,11 @@ const keywords = "image to stl, jpg to stl, png to stl, svg to stl, convert imag
         </div>
         <div class="flex gap-3 p-4 rounded-tool border border-surface-200 dark:border-surface-800">
           <span class="w-5 h-5 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center flex-shrink-0 mt-0.5"><svg class="w-3 h-3 text-amber-600 dark:text-amber-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span>
-          <div><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-1">Add a Base Plate for Stability</h3><p class="text-xs text-surface-500 leading-relaxed">Enable the base plate option to add a flat bottom surface. This makes relief models stand upright for display, improves bed adhesion during printing, and gives the print a professional finished look.</p></div>
+          <div><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-1">Print Flat on the Bed, Nothing to Snap Off</h3><p class="text-xs text-surface-500 leading-relaxed">Reliefs start at Z&nbsp;=&nbsp;0, so each raised area bonds directly to the print bed and the finished piece lifts off as it is &mdash; no sheet to saw or snap away afterwards. Choose the relief height to suit the design.</p></div>
         </div>
         <div class="flex gap-3 p-4 rounded-tool border border-surface-200 dark:border-surface-800">
           <span class="w-5 h-5 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center flex-shrink-0 mt-0.5"><svg class="w-3 h-3 text-amber-600 dark:text-amber-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span>
-          <div><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-1">Resize in Your Slicer, Not the Tool</h3><p class="text-xs text-surface-500 leading-relaxed">The tool generates a model at a default scale. Resize it in your slicer (Cura, PrusaSlicer) to fit your printer bed and desired output size. This gives you millimeter-precise control over the final print dimensions.</p></div>
+          <div><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-1">Set the Size Here, Not in the Slicer</h3><p class="text-xs text-surface-500 leading-relaxed">Heightmap export takes a print width in millimetres plus a relief thickness, and the file comes out exactly that big &mdash; a 100&nbsp;mm panel lands in Cura as 100&nbsp;mm, lying flat on the bed at Z&nbsp;=&nbsp;0. Scale in the slicer only to fit a bigger or smaller print, not to fix the units.</p></div>
         </div>
 
       </div>
@@ -534,7 +531,7 @@ const keywords = "image to stl, jpg to stl, png to stl, svg to stl, convert imag
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div class="rounded-tool border border-surface-200 dark:border-surface-800 p-4">
           <h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">Processing Resolution</h3>
-          <p class="text-xs text-surface-500 leading-relaxed">Images are processed at 512px on the longest side for performance. This generates STL meshes with up to 250K+ triangles, which provides excellent detail for FDM and resin 3D printing. The limiting factor is typically your slicer's mesh handling, not the conversion quality.</p>
+          <p class="text-xs text-surface-500 leading-relaxed">Source images are downscaled to 1024&nbsp;px on the longest side before sampling, and the Resolution control decides how many cells the mesh uses across: 128 (Low), 224 (Medium), 320 (High), 448 (Ultra). Ultra produces roughly 300,000 triangles for a 4:3 image, enough that the pixel grid, not the mesh, is the limiting factor. A 448-cell relief across a 100&nbsp;mm print resolves about 0.22&nbsp;mm per cell &mdash; finer than a 0.4&nbsp;mm nozzle can lay down.</p>
         </div>
         <div class="rounded-tool border border-surface-200 dark:border-surface-800 p-4">
           <h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">STL Output Quality</h3>
@@ -554,7 +551,7 @@ const keywords = "image to stl, jpg to stl, png to stl, svg to stl, convert imag
         </div>
         <div class="rounded-tool border border-surface-200 dark:border-surface-800 p-4">
           <h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm mb-2">Supported 3D Printers</h3>
-          <p class="text-xs text-surface-500 leading-relaxed">Compatible with all FDM printers (Creality, Prusa, Bambu Lab, Anycubic, Elegoo) and resin/SLA printers. The STL format is universal. Print size is determined by your printer bed &mdash; scale in your slicer to fit any build volume.</p>
+          <p class="text-xs text-surface-500 leading-relaxed">Compatible with all FDM printers (Creality, Prusa, Bambu Lab, Anycubic, Elegoo) and resin/SLA printers. The STL format is universal. The part arrives at the millimetre size you set in the tool, lying flat on Z&nbsp;=&nbsp;0 &mdash; scale it in the slicer only when that size exceeds your build plate.</p>
         </div>
       </div>
     </section>
@@ -614,9 +611,9 @@ const keywords = "image to stl, jpg to stl, png to stl, svg to stl, convert imag
       <dl class="space-y-5 max-w-3xl">
         <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">How do I know if my image is high-contrast enough for a good relief?</dt><dd class="text-sm text-surface-500 leading-relaxed">Squint at it. If the main subject still reads clearly when half-closed, it will convert well. Relief depth is driven purely by tonal separation, so a portrait lit from one side produces far more depth than a flat, evenly lit snapshot. If the result looks shallow, raise contrast in a photo editor before uploading rather than pushing the height slider to its limit &mdash; extreme height on a low-contrast source just amplifies noise.</dd></div>
         <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">My SVG has gradients and text effects. Will extrusion handle it?</dt><dd class="text-sm text-surface-500 leading-relaxed">Extrusion works on geometry, not paint, so gradients, drop shadows, and raster filters are ignored entirely &mdash; only the underlying filled shapes are extruded. Convert text to outlines first, and flatten any effects before export. If the file still fails to extrude, the tool falls back to heightmap mode automatically, which rasterises the design and produces a usable model at the cost of crisp edges.</dd></div>
-        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">What determines the physical size of the printed part?</dt><dd class="text-sm text-surface-500 leading-relaxed">Only your slicer. The STL stores geometry with no unit system attached, so a model exported here has no inherent millimetres. Scale it in Cura, PrusaSlicer, or Bambu Studio to match your build plate. That also means the 512px processing resolution is not a size limit &mdash; a 512px relief scaled to 200&nbsp;mm is simply coarser per millimetre than the same relief printed at 80&nbsp;mm.</dd></div>
+        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">What determines the physical size of the printed part?</dt><dd class="text-sm text-surface-500 leading-relaxed">The numbers you type into the tool. STL itself carries no unit tag, so a file is only as large as the software reading it assumes &mdash; but every convention in 3D printing treats one STL unit as one millimetre, and this converter writes real millimetres: a 100&nbsp;mm width and a 3&nbsp;mm relief export as a model 100&nbsp;mm across and 3&nbsp;mm thick, sitting flush on the bed. Cura, PrusaSlicer and Bambu Studio will show that exact size without any scaling step. Sample density is a separate matter: printing the same relief twice as large does not add detail, it just spreads the same cells further apart.</dd></div>
         <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">Which is better for a lithophane: thicker or thinner?</dt><dd class="text-sm text-surface-500 leading-relaxed">Thicker prints hold more contrast but block more light and take longer. Start around 3&nbsp;mm maximum thickness with roughly a 0.8&nbsp;mm floor, then print a small test tile before committing to a full-size panel. The floor thickness matters more than the maximum &mdash; drop it too low and the panel becomes fragile and prone to light bleed between adjacent areas.</dd></div>
-        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">Why is my STL file unexpectedly huge?</dt><dd class="text-sm text-surface-500 leading-relaxed">Triangle count is the cause, and triangle count is set by your smoothness setting. A 512px heightmap at maximum detail generates a dense mesh where a simplified one would look nearly identical once printed. Raise smoothness for geometric subjects and logos; keep it low only for fine photographic texture. Reducing triangle count also shortens slicing time noticeably.</dd></div>
+        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">Why is my STL file unexpectedly huge?</dt><dd class="text-sm text-surface-500 leading-relaxed">Triangle count is the cause, and triangle count is set by the Resolution control, not by smoothness. Each cell in the height grid costs two triangles (one for the surface, one for the underside), so Ultra on a 4:3 image lands near 300,000 triangles (roughly 15&nbsp;MB of binary STL) while Medium gives you about 77,000 for the same picture. Most photographs print identically at Medium, because a 0.4&nbsp;mm nozzle cannot resolve the extra cells anyway. Drop the resolution before you reach for mesh-decimation software; smoothness only blurs the heightmap, it does not shrink the file.</dd></div>
         <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">Can I edit the model after converting, without CAD software?</dt><dd class="text-sm text-surface-500 leading-relaxed">Yes, within limits. The heightmap editor lets you crop, invert, and reshape the depth profile before export, which covers most corrective work. For anything structural &mdash; adding a base, hollowing, drilling a mounting hole &mdash; bring the STL into a free slicer or mesh tool. Because the output is a standard watertight mesh, it imports cleanly into Blender, MeshLab, or Tinkercad without repair.</dd></div>
       </dl>
       <p class="mt-8 text-sm text-surface-500 leading-relaxed max-w-3xl">Looking for something more specific &mdash; privacy, file limits, licensing, printer compatibility, or troubleshooting a preview that looks wrong? Those are answered in full on the <a href="/faq/" class="text-accent-600 dark:text-accent-400 hover:underline font-medium">FAQ page</a>, and the <a href="/how-to-convert-image-to-stl/" class="text-accent-600 dark:text-accent-400 hover:underline font-medium">step-by-step guide</a> walks through a full conversion start to finish.</p>

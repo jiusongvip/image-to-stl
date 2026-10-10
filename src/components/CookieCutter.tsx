@@ -1,17 +1,16 @@
 "use client";
 
-import { useState, useCallback, useRef, useId, lazy, Suspense } from "react";
+import { useState, useCallback, useRef, useId, useMemo, lazy, Suspense } from "react";
 import PreviewPlaceholder from "./PreviewPlaceholder";
-import { computeNormal, writeBinaryStl, downloadBlob, type Triangle } from "../lib/stl-utils";
+import { writeBinaryStl, downloadBlob, type Triangle } from "../lib/stl-utils";
 import { exportToObj } from "../lib/export-utils";
+import { buildCookieCutterMesh } from "../lib/cutter";
 
 type ExportFormat = "stl" | "obj";
 
 interface CutterParams {
   wallHeight: number;
   wallThickness: number;
-  baseHeight: number;
-  baseInset: number;
   threshold: number;
   smoothing: number;
   simplifyTolerance: number;
@@ -27,8 +26,6 @@ export default function CookieCutter() {
   const [params, setParams] = useState<CutterParams>({
     wallHeight: 25,
     wallThickness: 1.5,
-    baseHeight: 2,
-    baseInset: 0.5,
     threshold: 128,
     smoothing: 3,
     simplifyTolerance: 1.5,
@@ -131,14 +128,11 @@ export default function CookieCutter() {
     }
   }, [contour, params, exportFormat, fileName]);
 
-  // Create a fake imageData for ThreePreview using the contour
-  const previewImageData = imageData;
-  const previewParams = {
-    height: 0.5,
-    smoothness: 0.1,
-    baseHeight: params.baseHeight,
-    invert: false,
-  };
+  // 预览直接渲染导出用的那一份网格，拖动滑块时看到的就是切片器会看到的。
+  const previewTriangles = useMemo(
+    () => (contour && contour.length >= 3 ? buildCookieCutterMesh(contour, params) : null),
+    [contour, params],
+  );
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -247,14 +241,6 @@ export default function CookieCutter() {
             step={0.5}
             onChange={(v: number) => setParams((p) => ({ ...p, wallThickness: v }))}
           />
-          <ParamSlider
-            label="Base Height"
-            value={params.baseHeight}
-            min={0}
-            max={5}
-            step={0.5}
-            onChange={(v: number) => setParams((p) => ({ ...p, baseHeight: v }))}
-          />
         </div>
 
         {/* Export format */}
@@ -292,7 +278,7 @@ export default function CookieCutter() {
       <div className="flex flex-col gap-4">
         <div className="min-h-[400px] lg:min-h-[600px]">
             <Suspense fallback={<PreviewPlaceholder />}>
-              <ThreePreview imageData={previewImageData} params={previewParams} />
+              <ThreePreview imageData={null} params={{}} svgTriangles={previewTriangles} mode="svg-extrude" />
             </Suspense>
         </div>
         <div className="p-3 rounded-lg bg-surface-100 dark:bg-surface-800/50">
@@ -301,7 +287,7 @@ export default function CookieCutter() {
             Use high-contrast images for best results. Black-and-white silhouettes work perfectly.
             Adjust <strong>Threshold</strong> to control what becomes the cutting edge.
             Lower <strong>Simplify</strong> for more detail, higher for smoother curves.
-            Print with food-safe PLA and use the base for stability when cutting dough.
+            Print with food-safe PLA and press with the cutter square to the dough so the wall cuts cleanly.
           </p>
         </div>
       </div>
@@ -449,132 +435,6 @@ function perpendicularDistance(
   const projX = lineStart[0] + t * dx;
   const projY = lineStart[1] + t * dy;
   return Math.hypot(point[0] - projX, point[1] - projY);
-}
-
-// ────────────────────────────────────────────────────────────
-// Cookie Cutter Mesh Builder
-// ────────────────────────────────────────────────────────────
-
-function buildCookieCutterMesh(contour: [number, number][], params: CutterParams): Triangle[] {
-  const { wallHeight, wallThickness, baseHeight, baseInset } = params;
-  const triangles: Triangle[] = [];
-
-  // Normalize contour to centered coordinates
-  let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
-  for (const [x, y] of contour) {
-    if (x < minX) minX = x;
-    if (x > maxX) maxX = x;
-    if (y < minY) minY = y;
-    if (y > maxY) maxY = y;
-  }
-
-  const cx = (minX + maxX) / 2;
-  const cy = (minY + maxY) / 2;
-  const scale = 80 / Math.max(maxX - minX, maxY - minY); // Fit into ~80mm
-
-  const normalized = contour.map(([x, y]): [number, number] => [(x - cx) * scale, (y - cy) * scale]);
-  const n = normalized.length;
-  if (n < 3) return triangles;
-
-  const inset = wallThickness / 2;
-
-  // Build outer wall (bottom to top)
-  for (let i = 0; i < n; i++) {
-    const next = (i + 1) % n;
-    const [x0, z0] = normalized[i];
-    const [x1, z1] = normalized[next];
-
-    // Compute outward normal for this segment
-    const segDx = x1 - x0;
-    const segDz = z1 - z0;
-    const segLen = Math.hypot(segDx, segDz);
-    if (segLen < 0.001) continue;
-    // Outward normal (right-hand rule for CCW contour)
-    const nx = segDz / segLen;
-    const nz = -segDx / segLen;
-
-    // Outer face (4 vertices: bottom-left, bottom-right, top-right, top-left)
-    const obl: [number, number, number] = [x0, 0, z0];
-    const obr: [number, number, number] = [x1, 0, z1];
-    const otr: [number, number, number] = [x1, wallHeight, z1];
-    const otl: [number, number, number] = [x0, wallHeight, z0];
-
-    triangles.push({ normal: [nx, 0, nz], vertices: [obl, obr, otr] });
-    triangles.push({ normal: [nx, 0, nz], vertices: [obl, otr, otl] });
-
-    // Inner face (inset by wallThickness)
-    const ix0 = x0 - nx * wallThickness;
-    const iz0 = z0 - nz * wallThickness;
-    const ix1 = x1 - nx * wallThickness;
-    const iz1 = z1 - nz * wallThickness;
-
-    const ibl: [number, number, number] = [ix0, 0, iz0];
-    const ibr: [number, number, number] = [ix1, 0, iz1];
-    const itr: [number, number, number] = [ix1, wallHeight, iz1];
-    const itl: [number, number, number] = [ix0, wallHeight, iz0];
-
-    triangles.push({ normal: [-nx, 0, -nz], vertices: [ibr, ibl, itl] });
-    triangles.push({ normal: [-nx, 0, -nz], vertices: [ibr, itl, itr] });
-
-    // Top cap (connect outer top to inner top)
-    triangles.push({ normal: [0, 1, 0], vertices: [otl, otr, itr] });
-    triangles.push({ normal: [0, 1, 0], vertices: [otl, itr, itl] });
-
-    // Bottom cutting edge (beveled)
-    const bevelH = 1; // 1mm cutting edge bevel
-    const obl2: [number, number, number] = [x0 - nx * 0.3, bevelH, z0 - nz * 0.3];
-    const obr2: [number, number, number] = [x1 - nx * 0.3, bevelH, z1 - nz * 0.3];
-    // Bottom face
-    triangles.push({ normal: [0, -1, 0], vertices: [ibr, ibl, obl] });
-    triangles.push({ normal: [0, -1, 0], vertices: [ibr, obl, obr] });
-  }
-
-  // Base plate (optional)
-  if (baseHeight > 0) {
-    // Create a slightly inset base plate
-    const baseContour = normalized.map(([x, y]): [number, number] => {
-      // Move each point inward by baseInset
-      const dx = x > 0 ? -baseInset : baseInset;
-      const dy = y > 0 ? -baseInset : baseInset;
-      return [x + dx, y + dy];
-    });
-
-    // Simple triangulated base using fan from center
-    const baseY = 0;
-    const topY = baseHeight;
-
-    for (let i = 0; i < baseContour.length; i++) {
-      const next = (i + 1) % baseContour.length;
-      const [x0, z0] = baseContour[i];
-      const [x1, z1] = baseContour[next];
-
-      // Top face of base
-      triangles.push({ normal: [0, 1, 0], vertices: [[0, topY, 0], [x0, topY, z0], [x1, topY, z1]] });
-      // Bottom face of base
-      triangles.push({ normal: [0, -1, 0], vertices: [[0, baseY, 0], [x1, baseY, z1], [x0, baseY, z0]] });
-    }
-
-    // Side walls of base
-    for (let i = 0; i < baseContour.length; i++) {
-      const next = (i + 1) % baseContour.length;
-      const [x0, z0] = baseContour[i];
-      const [x1, z1] = baseContour[next];
-
-      const segDx = x1 - x0;
-      const segDz = z1 - z0;
-      const segLen = Math.hypot(segDx, segDz);
-      if (segLen < 0.001) continue;
-      const nx = segDz / segLen;
-      const nz = -segDx / segLen;
-
-      triangles.push(
-        { normal: [nx, 0, nz], vertices: [[x0, baseY, z0], [x1, baseY, z1], [x1, topY, z1]] },
-        { normal: [nx, 0, nz], vertices: [[x0, baseY, z0], [x1, topY, z1], [x0, topY, z0]] },
-      );
-    }
-  }
-
-  return triangles;
 }
 
 function ParamSlider({

@@ -90,9 +90,8 @@ export default function LithophaneMaker() {
 
   // Map lithophane params to ThreePreview-compatible format
   const previewParams = {
-    height: params.maxThickness / 5,
+    reliefMm: params.maxThickness,
     smoothness: 0.3,
-    baseHeight: 0,
     invert: true, // lithophane is always inverted
   };
 

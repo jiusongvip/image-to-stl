@@ -27,21 +27,25 @@ const keywords = "heightmap editor, heightmap to stl, heightmap generator, 3d re
 >
   <div class="max-w-[1400px] mx-auto px-4 sm:px-6 py-8 sm:py-12">
 
-    <section class="mb-10 max-w-3xl">
+    <section class="mb-6 max-w-3xl">
       <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-surface-900 dark:text-surface-100 leading-tight">Heightmap Editor &mdash; Pixel-Level Control for Perfect Reliefs</h1>
-      <p class="mt-3 text-surface-500 text-sm sm:text-base leading-relaxed">The main converter's height and smoothness sliders are enough for most images. But when a photo has poor contrast, a busy background, or uneven lighting, you need finer control. The heightmap editor gives you the same adjustments a photo editor would &mdash; contrast, brightness, threshold, invert &mdash; applied directly to the heightmap before the 3D mesh is generated. Each pixel's brightness determines its final height. By adjusting the brightness distribution, you control exactly which parts of your image become raised surfaces and which become recessed.</p>
+      <p class="mt-2 text-sm sm:text-base text-surface-500 leading-relaxed">Tune contrast, brightness and threshold on the heightmap itself, then export the relief as STL, OBJ, or GLB.</p>
     </section>
-
-    <div class="mb-10 max-w-3xl rounded-xl overflow-hidden border border-surface-200 dark:border-surface-800">
-      <img src="/images/optimized/hero/topographic-terrain-map.webp" alt="3D printed topographic terrain map showing mountain ranges with elevation detail" width="860" height="860" loading="eager" decoding="async" class="w-full h-auto" />
-    </div>
 
       {/* client:visible, not client:only — the React runtime (44 KB) used to
         hydrate during initial load and competed with the hero image for
         bandwidth and main thread, and client-rendering the island shifted
-        the sections below it (measured CLS 0.158 on /jpg-to-stl/). Nothing
-        above the fold depends on this island, so deferring it is free. */}
+        the sections below it (measured CLS 0.158 on /jpg-to-stl/). The island
+        is now the first thing below the title, so the observer fires on the
+        very first paint and it still costs nothing to defer. */}
     <HeightmapEditor client:visible />
+
+    <section class="mt-14 sm:mt-16 max-w-3xl">
+      <p class="text-sm text-surface-500 leading-relaxed">The main converter's height and smoothness sliders are enough for most images. But when a photo has poor contrast, a busy background, or uneven lighting, you need finer control. The heightmap editor gives you the same adjustments a photo editor would &mdash; contrast, brightness, threshold, invert &mdash; applied directly to the heightmap before the 3D mesh is generated. Each pixel's brightness determines its final height. By adjusting the brightness distribution, you control exactly which parts of your image become raised surfaces and which become recessed.</p>
+      <div class="mt-8 rounded-xl overflow-hidden border border-surface-200 dark:border-surface-800">
+        <img src="/images/optimized/hero/topographic-terrain-map.webp" alt="3D printed topographic terrain map showing mountain ranges with elevation detail" width="860" height="860" loading="lazy" decoding="async" fetchpriority="low" class="w-full h-auto" />
+      </div>
+    </section>
 
     <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16 max-w-3xl">
       <h2 class="text-xl font-semibold mb-6 text-surface-900 dark:text-surface-100">Understanding the Controls: What Each Slider Actually Does</h2>

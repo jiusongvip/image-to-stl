@@ -2,32 +2,37 @@
 
 import { useState, useCallback, useRef, lazy, Suspense, useId } from "react";
 import PreviewPlaceholder from "./PreviewPlaceholder";
-import { computeNormal, writeBinaryStl, downloadBlob, type Triangle } from "../lib/stl-utils";
-import { parseSvgPath, extractPathsFromSvg, extrudePolygonToMesh } from "../lib/svg-parser";
+import { writeBinaryStl, downloadBlob, type Triangle } from "../lib/stl-utils";
+import { extractShapesFromSvg, extrudeShapesToMesh, hasGradientPaint } from "../lib/svg-parser";
 import { exportToObj, exportToGlb } from "../lib/export-utils";
+import {
+  sampleHeightGrid,
+  buildClosedSolid,
+  toHeightMm,
+  estimateTriangleCount,
+  fitToWidth,
+  gridShape,
+} from "../lib/solid";
 
 type ConversionMode = "heightmap" | "svg-extrude";
 type Resolution = "low" | "medium" | "high" | "ultra";
 type ExportFormat = "stl" | "obj" | "glb";
 
-const RESOLUTION_MAP: Record<Resolution, number> = {
-  low: 256,
-  medium: 512,
-  high: 1024,
-  ultra: 2048,
+// 输出网格的长边格数，同时决定面数与浮雕细节
+const GRID_CELLS_MAP: Record<Resolution, number> = {
+  low: 128,
+  medium: 224,
+  high: 320,
+  ultra: 448,
 };
 
-const DECIMATION_MAP: Record<Resolution, number> = {
-  low: 1,
-  medium: 1,
-  high: 0.6,
-  ultra: 0.35,
-};
+// 源图解压到的最大像素边长，与网格密度解耦
+const MAX_SOURCE_DIM = 1024;
 
 interface ConversionParams {
-  height: number;
+  widthMm: number;
+  reliefMm: number;
   smoothness: number;
-  baseHeight: number;
   invert: boolean;
   extrusionDepth: number;
   removeBg: boolean;
@@ -78,9 +83,9 @@ export default function ConverterTool() {
   const [mode, setMode] = useState<ConversionMode>("heightmap");
   const [resolution, setResolution] = useState<Resolution>("medium");
   const [params, setParams] = useState<ConversionParams>({
-    height: 0.8,
+    widthMm: 100,
+    reliefMm: 3,
     smoothness: 0.3,
-    baseHeight: 2,
     invert: false,
     extrusionDepth: 3,
     removeBg: false,
@@ -93,7 +98,7 @@ export default function ConverterTool() {
   // Define rasterizeSvg BEFORE processImage since processImage references it
   const rasterizeSvg = useCallback(
     (svgText: string) => {
-      const maxDim = RESOLUTION_MAP[resolution];
+      const maxDim = MAX_SOURCE_DIM;
       // Parse viewBox to get intrinsic dimensions
       const vbMatch = svgText.match(/viewBox=["']([^"']+)["']/);
       let vbW = maxDim;
@@ -213,7 +218,7 @@ export default function ConverterTool() {
         setImageData(ctx.getImageData(0, 0, w, h));
       }
     },
-    [resolution],
+    [],
   );
 
   const loadRaster = useCallback(
@@ -222,7 +227,7 @@ export default function ConverterTool() {
       reader.onload = (e) => {
         const img = new Image();
         img.onload = () => {
-          const maxDim = RESOLUTION_MAP[resolution];
+          const maxDim = MAX_SOURCE_DIM;
           let w = img.width;
           let h = img.height;
           if (w > maxDim || h > maxDim) {
@@ -241,7 +246,7 @@ export default function ConverterTool() {
       };
       reader.readAsDataURL(file);
     },
-    [resolution],
+    [],
   );
 
   const processImage = useCallback(
@@ -254,28 +259,22 @@ export default function ConverterTool() {
         const reader = new FileReader();
         reader.onload = (e) => {
           const svgText = e.target?.result as string;
-          const paths = extractPathsFromSvg(svgText);
-          if (paths.length === 0) {
+          if (hasGradientPaint(svgText)) {
+            // 渐变表达的是明暗不是轮廓，走高度图才留得住
+            setMode("heightmap");
+            rasterizeSvg(svgText);
+            return;
+          }
+          const shapes = extractShapesFromSvg(svgText);
+          if (shapes.length === 0) {
             // No extractable paths: rasterize as heightmap
             setMode("heightmap");
             rasterizeSvg(svgText);
             return;
           }
 
-          const allTriangles: Triangle[] = [];
-          for (const pathData of paths) {
-            const polygons = parseSvgPath(pathData);
-            for (const poly of polygons) {
-              if (poly.points.length < 3) continue;
-              const tris = extrudePolygonToMesh(
-                poly.points,
-                params.extrusionDepth,
-                0,
-                1,
-              );
-              allTriangles.push(...tris);
-            }
-          }
+          // 一次调用：嵌套轮廓要放在一起才知道谁是孔
+          const allTriangles = extrudeShapesToMesh(shapes, params.extrusionDepth, 0, 1);
 
           // Check if extruded geometry covers enough of the viewBox
           let useExtrude = allTriangles.length >= 4;
@@ -323,17 +322,17 @@ export default function ConverterTool() {
 
       const svgText = decodeURIComponent(sample.url.replace("data:image/svg+xml,", ""));
 
-      // Always try path/polygon extrusion first
-      const paths = extractPathsFromSvg(svgText);
-      const allTriangles: Triangle[] = [];
-      for (const pathData of paths) {
-        const polygons = parseSvgPath(pathData);
-        for (const poly of polygons) {
-          if (poly.points.length < 3) continue;
-          const tris = extrudePolygonToMesh(poly.points, params.extrusionDepth, 0, 1);
-          allTriangles.push(...tris);
-        }
+      // 示例是策展出来的演示：sample.type 标了它要展示哪条路线。
+      // 真实上传走下面的自动判断（渐变一律走高度图）。
+      if (sample.type === "heightmap" || hasGradientPaint(svgText)) {
+        setMode("heightmap");
+        rasterizeSvg(svgText);
+        return;
       }
+
+      // Always try path/polygon extrusion first
+      const shapes = extractShapesFromSvg(svgText);
+      const allTriangles = extrudeShapesToMesh(shapes, params.extrusionDepth, 0, 1);
 
       // Check if extruded geometry covers enough of the viewBox
       let useExtrude = allTriangles.length >= 4;
@@ -388,105 +387,26 @@ export default function ConverterTool() {
   const handleDownloadStl = useCallback(() => {
     setDownloading(true);
     try {
-      // SVG extrusion mode
+      // SVG extrusion mode — viewBox 单位没有尺寸概念，按目标打印宽度缩放平面轮廓
       if (svgTriangles) {
         const outputName = fileName.replace(/\.[^.]+$/, "");
-        exportTriangles(svgTriangles, outputName, exportFormat);
+        exportTriangles(fitToWidth(svgTriangles, params.widthMm), outputName, exportFormat);
         return;
       }
 
       if (!imageData) return;
 
-      const w = imageData.width;
-      const h = imageData.height;
-      const pixels = imageData.data;
-      const { height: hScale, smoothness, baseHeight, invert, removeBg } = params;
+      const { widthMm, reliefMm, smoothness, invert, removeBg } = params;
+      const heights = sampleHeightGrid(imageData, {
+        invert,
+        removeBackground: removeBg,
+        smoothRadius: Math.round(smoothness * 6),
+        maxCells: GRID_CELLS_MAP[resolution],
+      });
 
-      // Build heightmap
-      const heights: number[][] = Array.from({ length: h }, () => Array(w).fill(0));
-      for (let y = 0; y < h; y++) {
-        for (let x = 0; x < w; x++) {
-          const idx = (y * w + x) * 4;
-          let gray = (pixels[idx] + pixels[idx + 1] + pixels[idx + 2]) / 3 / 255;
-
-          // Background removal: if pixel is near-white and at edges, set to 0
-          if (removeBg) {
-            const isEdge = x === 0 || y === 0 || x === w - 1 || y === h - 1;
-            const alpha = pixels[idx + 3] / 255;
-            if (alpha < 0.1 || (isEdge && gray > 0.9)) {
-              gray = 0;
-            }
-          }
-
-          heights[y][x] = (invert ? 1 - gray : gray) * hScale;
-        }
-      }
-
-      // Smooth
-      const sr = Math.floor(smoothness * 5);
-      const copy = heights.map((row) => [...row]);
-      for (let y = 0; y < h; y++) {
-        for (let x = 0; x < w; x++) {
-          let sum = copy[y][x];
-          let count = 1;
-          for (let dy = -sr; dy <= sr; dy++) {
-            for (let dx = -sr; dx <= sr; dx++) {
-              if (dx === 0 && dy === 0) continue;
-              const nx = x + dx;
-              const ny = y + dy;
-              if (nx >= 0 && nx < w && ny >= 0 && ny < h) {
-                sum += copy[ny][nx];
-                count++;
-              }
-            }
-          }
-          heights[y][x] = sum / count + baseHeight * 0.1;
-        }
-      }
-
-      // Decimate if needed
-      const decimationRatio = DECIMATION_MAP[resolution];
-      const step = decimationRatio < 1 ? Math.max(1, Math.round(1 / decimationRatio)) : 1;
-
-      const dH = Math.ceil((h - 1) / step) + 1;
-      const dW = Math.ceil((w - 1) / step) + 1;
-
-      const wScale = 2.0 / dW;
-      const hScale2 = 2.0 / dH;
-      const triangles: Triangle[] = [];
-
-      for (let y = 0; y < dH - 1; y++) {
-        for (let x = 0; x < dW - 1; x++) {
-          const sy = Math.min(y * step, h - 1);
-          const sx = Math.min(x * step, w - 1);
-          const sy2 = Math.min((y + 1) * step, h - 1);
-          const sx2 = Math.min((x + 1) * step, w - 1);
-
-          const x0 = (x - dW / 2) * wScale * step;
-          const x1 = ((x + 1) - dW / 2) * wScale * step;
-          const z0 = (y - dH / 2) * hScale2 * step;
-          const z1 = ((y + 1) - dH / 2) * hScale2 * step;
-
-          const v00: [number, number, number] = [x0, heights[sy][sx], z0];
-          const v10: [number, number, number] = [x1, heights[sy][sx2], z0];
-          const v01: [number, number, number] = [x0, heights[sy2][sx], z1];
-          const v11: [number, number, number] = [x1, heights[sy2][sx2], z1];
-
-          triangles.push({ normal: computeNormal(v00, v10, v11), vertices: [v00, v10, v11] });
-          triangles.push({ normal: computeNormal(v00, v11, v01), vertices: [v00, v11, v01] });
-        }
-      }
-
-      // Bottom plane
-      const bY = baseHeight * 0.1 - 0.01;
-      const halfX = (dW / 2) * wScale * step;
-      const halfZ = (dH / 2) * hScale2 * step;
-      const bl: [number, number, number] = [-halfX, bY, -halfZ];
-      const br: [number, number, number] = [halfX, bY, -halfZ];
-      const tl: [number, number, number] = [-halfX, bY, halfZ];
-      const tr: [number, number, number] = [halfX, bY, halfZ];
-      triangles.push({ normal: [0, -1, 0], vertices: [bl, tr, br] });
-      triangles.push({ normal: [0, -1, 0], vertices: [bl, tl, tr] });
+      // 顶面 + 周圈侧壁 + 平底，没有底板：起伏从 Z=0 起，导出的是封闭实体而非开口壳体
+      const triangles = buildClosedSolid({ heightsMm: toHeightMm(heights, reliefMm), widthMm });
+      if (triangles.length === 0) return;
 
       const outputName = fileName.replace(/\.[^.]+$/, "");
       exportTriangles(triangles, outputName, exportFormat);
@@ -496,11 +416,11 @@ export default function ConverterTool() {
   }, [imageData, svgTriangles, fileName, params, resolution, exportFormat]);
 
   const hasPreviewData = !!(imageData || svgTriangles);
-  const triangleCount = svgTriangles
-    ? svgTriangles.length
-    : imageData
-      ? Math.round(((imageData.width - 1) * (imageData.height - 1) * 2) / (DECIMATION_MAP[resolution] < 1 ? DECIMATION_MAP[resolution] : 1))
-      : 0;
+  const grid = imageData ? gridShape(imageData.width, imageData.height, GRID_CELLS_MAP[resolution]) : null;
+  const triangleCount = svgTriangles ? svgTriangles.length : grid ? estimateTriangleCount(grid.rows, grid.cols) : 0;
+  const sizeMm = mode === "heightmap" && grid
+    ? `${params.widthMm.toFixed(0)} × ${((params.widthMm * (grid.rows - 1)) / (grid.cols - 1)).toFixed(0)} × ${params.reliefMm.toFixed(1)} mm`
+    : `${params.widthMm.toFixed(0)} mm wide × ${params.extrusionDepth.toFixed(1)} mm deep`;
 
   return (
     <div>
@@ -556,7 +476,7 @@ export default function ConverterTool() {
 
         {hasPreviewData && (
           <span className="text-2xs text-surface-400 font-mono">
-            ~{triangleCount.toLocaleString()} triangles
+            {sizeMm} · ~{triangleCount.toLocaleString()} triangles
           </span>
         )}
       </div>
@@ -637,13 +557,35 @@ export default function ConverterTool() {
           {mode === "heightmap" && (
             <div className="rounded-tool border border-surface-200 dark:border-surface-800 p-5 space-y-5">
               <h3 className="text-sm font-semibold text-surface-900 dark:text-surface-100">Parameters</h3>
+              <div className="flex items-center justify-between gap-3">
+                <label htmlFor="print-width" className="text-xs font-medium text-surface-500 dark:text-surface-400">
+                  Print Width
+                </label>
+                <span className="flex items-center gap-1.5">
+                  <input
+                    id="print-width"
+                    type="number"
+                    inputMode="decimal"
+                    min={5}
+                    max={300}
+                    step={5}
+                    value={params.widthMm}
+                    onChange={(e) =>
+                      setParams((p) => ({ ...p, widthMm: Math.min(300, Math.max(5, Number(e.target.value) || 5)) }))
+                    }
+                    className="w-20 rounded-lg border border-surface-300 dark:border-surface-700 bg-surface-50 dark:bg-surface-900 px-2 py-1 text-xs font-mono text-surface-900 dark:text-surface-100"
+                  />
+                  <span className="text-xs text-surface-500">mm</span>
+                </span>
+              </div>
               <ParamSlider
-                label="Height"
-                value={params.height}
-                min={0.1}
-                max={3}
-                step={0.05}
-                onChange={(v: number) => setParams((p) => ({ ...p, height: v }))}
+                label="Relief Height"
+                unit="mm"
+                value={params.reliefMm}
+                min={0.2}
+                max={20}
+                step={0.2}
+                onChange={(v: number) => setParams((p) => ({ ...p, reliefMm: v }))}
               />
               <ParamSlider
                 label="Smoothness"
@@ -652,14 +594,6 @@ export default function ConverterTool() {
                 max={1}
                 step={0.05}
                 onChange={(v: number) => setParams((p) => ({ ...p, smoothness: v }))}
-              />
-              <ParamSlider
-                label="Base Thickness"
-                value={params.baseHeight}
-                min={0}
-                max={10}
-                step={0.5}
-                onChange={(v: number) => setParams((p) => ({ ...p, baseHeight: v }))}
               />
               <label className="flex items-center gap-3 cursor-pointer">
                 <input
@@ -687,6 +621,7 @@ export default function ConverterTool() {
               <h3 className="text-sm font-semibold text-surface-900 dark:text-surface-100">Extrusion Settings</h3>
               <ParamSlider
                 label="Extrusion Depth"
+                unit="mm"
                 value={params.extrusionDepth}
                 min={0.5}
                 max={10}
@@ -768,6 +703,7 @@ function ParamSlider({
   min,
   max,
   step,
+  unit,
   onChange,
 }: {
   label: string;
@@ -775,6 +711,7 @@ function ParamSlider({
   min: number;
   max: number;
   step: number;
+  unit?: string;
   onChange: (v: number) => void;
 }) {
   const sliderId = useId();
@@ -782,7 +719,10 @@ function ParamSlider({
     <div className="space-y-1.5">
       <div className="flex items-center justify-between">
         <label htmlFor={sliderId} className="text-xs font-medium text-surface-500 dark:text-surface-400">{label}</label>
-        <span className="text-xs font-mono text-surface-400">{value.toFixed(2)}</span>
+        <span className="text-xs font-mono text-surface-400">
+          {unit ? value.toFixed(1) : value.toFixed(2)}
+          {unit ? ` ${unit}` : ""}
+        </span>
       </div>
       <input
         id={sliderId}

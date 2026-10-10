@@ -2,7 +2,8 @@
 
 import { useState, useCallback, useRef, useId, useEffect, lazy, Suspense } from "react";
 import PreviewPlaceholder from "./PreviewPlaceholder";
-import { computeNormal, writeBinaryStl, downloadBlob, type Triangle } from "../lib/stl-utils";
+import { writeBinaryStl, downloadBlob, type Triangle } from "../lib/stl-utils";
+import { sampleHeightGrid, buildClosedSolid, toHeightMm } from "../lib/solid";
 import { exportToObj } from "../lib/export-utils";
 
 type ExportFormat = "stl" | "obj";
@@ -12,7 +13,7 @@ interface TextParams {
   fontSize: number;
   fontWeight: string;
   extrusionDepth: number;
-  baseThickness: number;
+  widthMm: number;
   bevelSize: number;
   canvasWidth: number;
   canvasHeight: number;
@@ -29,7 +30,7 @@ export default function TextTo3D() {
     fontSize: 120,
     fontWeight: "700",
     extrusionDepth: 3,
-    baseThickness: 1,
+    widthMm: 100,
     bevelSize: 0.3,
     canvasWidth: 512,
     canvasHeight: 256,
@@ -98,9 +99,8 @@ export default function TextTo3D() {
   }, [imageData, params, exportFormat]);
 
   const previewParams = {
-    height: params.extrusionDepth / 5,
+    reliefMm: params.extrusionDepth,
     smoothness: 0.1,
-    baseHeight: params.baseThickness,
     invert: false,
   };
 
@@ -160,21 +160,31 @@ export default function TextTo3D() {
         {/* 3D Settings */}
         <div className="rounded-tool border border-surface-200 dark:border-surface-800 p-5 space-y-5">
           <h3 className="text-sm font-semibold text-surface-900 dark:text-surface-100">3D Settings</h3>
+          <div className="flex items-center justify-between gap-3">
+            <label htmlFor="text-print-width" className="text-xs font-medium text-surface-500 dark:text-surface-400">
+              Print Width (mm)
+            </label>
+            <input
+              id="text-print-width"
+              type="number"
+              inputMode="decimal"
+              min={10}
+              max={300}
+              step={5}
+              value={params.widthMm}
+              onChange={(e) =>
+                setParams((p) => ({ ...p, widthMm: Math.min(300, Math.max(10, Number(e.target.value) || 10)) }))
+              }
+              className="w-20 rounded-lg border border-surface-300 dark:border-surface-700 bg-surface-50 dark:bg-surface-900 px-2 py-1 text-xs font-mono text-surface-900 dark:text-surface-100"
+            />
+          </div>
           <ParamSlider
-            label="Extrusion Depth"
+            label="Extrusion Depth (mm)"
             value={params.extrusionDepth}
             min={0.5}
             max={10}
             step={0.5}
             onChange={(v: number) => setParams((p) => ({ ...p, extrusionDepth: v }))}
-          />
-          <ParamSlider
-            label="Base Thickness"
-            value={params.baseThickness}
-            min={0}
-            max={5}
-            step={0.5}
-            onChange={(v: number) => setParams((p) => ({ ...p, baseThickness: v }))}
           />
           <ParamSlider
             label="Bevel / Smoothness"
@@ -265,107 +275,20 @@ export default function TextTo3D() {
 
 /**
  * Build a 3D mesh from text-rendered image data.
- * Uses heightmap approach: white text → raised, black background → base.
+ * Uses heightmap approach: 文字凸起到 extrusionDepth，背景就是 Z=0 的底面。
  */
 function buildTextMesh(imageData: ImageData, params: TextParams): Triangle[] {
-  const { width: w, height: h, data: pixels } = imageData;
-  const { extrusionDepth, baseThickness, bevelSize } = params;
+  const heights = sampleHeightGrid(imageData, {
+    invert: false,
+    removeBackground: false,
+    smoothRadius: Math.max(0, Math.round(params.bevelSize * 6)),
+    maxCells: 256,
+  });
 
-  const triangles: Triangle[] = [];
-  const heights: number[][] = Array.from({ length: h }, () => Array(w).fill(0));
-
-  // Extract heightmap from alpha/luminance
-  for (let y = 0; y < h; y++) {
-    for (let x = 0; x < w; x++) {
-      const idx = (y * w + x) * 4;
-      const gray = (pixels[idx] + pixels[idx + 1] + pixels[idx + 2]) / 3 / 255;
-      heights[y][x] = gray * extrusionDepth;
-    }
-  }
-
-  // Apply bevel (simple box blur on height)
-  if (bevelSize > 0) {
-    const r = Math.max(1, Math.floor(bevelSize * 3));
-    const copy = heights.map((row) => [...row]);
-    for (let y = 0; y < h; y++) {
-      for (let x = 0; x < w; x++) {
-        let sum = copy[y][x];
-        let count = 1;
-        for (let dy = -r; dy <= r; dy++) {
-          for (let dx = -r; dx <= r; dx++) {
-            if (dx === 0 && dy === 0) continue;
-            const nx = x + dx;
-            const ny = y + dy;
-            if (nx >= 0 && nx < w && ny >= 0 && ny < h) {
-              sum += copy[ny][nx];
-              count++;
-            }
-          }
-        }
-        heights[y][x] = sum / count;
-      }
-    }
-  }
-
-  // Decimate: skip pixels for performance
-  const step = Math.max(1, Math.round(Math.max(w, h) / 256));
-
-  const scaleX = 2.0 / Math.ceil(w / step);
-  const scaleZ = 2.0 / Math.ceil(h / step);
-
-  // Top surface
-  for (let y = 0; y < h - step; y += step) {
-    for (let x = 0; x < w - step; x += step) {
-      const x0 = (x - w / 2) * scaleX;
-      const x1 = (x + step - w / 2) * scaleX;
-      const z0 = (y - h / 2) * scaleZ;
-      const z1 = (y + step - h / 2) * scaleZ;
-
-      const v00: [number, number, number] = [x0, heights[y][x] + baseThickness * 0.1, z0];
-      const v10: [number, number, number] = [x1, heights[y][Math.min(x + step, w - 1)] + baseThickness * 0.1, z0];
-      const v01: [number, number, number] = [x0, heights[Math.min(y + step, h - 1)][x] + baseThickness * 0.1, z1];
-      const v11: [number, number, number] = [x1, heights[Math.min(y + step, h - 1)][Math.min(x + step, w - 1)] + baseThickness * 0.1, z1];
-
-      triangles.push({ normal: computeNormal(v00, v10, v11), vertices: [v00, v10, v11] });
-      triangles.push({ normal: computeNormal(v00, v11, v01), vertices: [v00, v11, v01] });
-    }
-  }
-
-  // Bottom plane
-  const bY = 0;
-  const halfX = (w / 2) * scaleX;
-  const halfZ = (h / 2) * scaleZ;
-  const bl: [number, number, number] = [-halfX, bY, -halfZ];
-  const br: [number, number, number] = [halfX, bY, -halfZ];
-  const tl: [number, number, number] = [-halfX, bY, halfZ];
-  const tr: [number, number, number] = [halfX, bY, halfZ];
-  triangles.push({ normal: [0, -1, 0], vertices: [bl, tr, br] });
-  triangles.push({ normal: [0, -1, 0], vertices: [bl, tl, tr] });
-
-  // Side walls
-  const wallH = extrusionDepth + baseThickness * 0.1;
-  // Front wall (z = -halfZ)
-  triangles.push(
-    { normal: [0, 0, -1], vertices: [[-halfX, bY, -halfZ], [-halfX, wallH, -halfZ], [halfX, wallH, -halfZ]] },
-    { normal: [0, 0, -1], vertices: [[-halfX, bY, -halfZ], [halfX, wallH, -halfZ], [halfX, bY, -halfZ]] },
-  );
-  // Back wall (z = halfZ)
-  triangles.push(
-    { normal: [0, 0, 1], vertices: [[halfX, bY, halfZ], [halfX, wallH, halfZ], [-halfX, wallH, halfZ]] },
-    { normal: [0, 0, 1], vertices: [[halfX, bY, halfZ], [-halfX, wallH, halfZ], [-halfX, bY, halfZ]] },
-  );
-  // Left wall (x = -halfX)
-  triangles.push(
-    { normal: [-1, 0, 0], vertices: [[-halfX, bY, halfZ], [-halfX, wallH, halfZ], [-halfX, wallH, -halfZ]] },
-    { normal: [-1, 0, 0], vertices: [[-halfX, bY, halfZ], [-halfX, wallH, -halfZ], [-halfX, bY, -halfZ]] },
-  );
-  // Right wall (x = halfX)
-  triangles.push(
-    { normal: [1, 0, 0], vertices: [[halfX, bY, -halfZ], [halfX, wallH, -halfZ], [halfX, wallH, halfZ]] },
-    { normal: [1, 0, 0], vertices: [[halfX, bY, -halfZ], [halfX, wallH, halfZ], [halfX, bY, halfZ]] },
-  );
-
-  return triangles;
+  return buildClosedSolid({
+    heightsMm: toHeightMm(heights, params.extrusionDepth),
+    widthMm: params.widthMm,
+  });
 }
 
 function ParamSlider({

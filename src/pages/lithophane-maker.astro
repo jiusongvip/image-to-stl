@@ -20,26 +20,30 @@ const keywords = "image to lithophane, lithophane maker, photo to lithophane, li
   publishDate={SITE_PUBLISHED}
   modifyDate={SITE_MODIFIED} keywords={keywords}>
   <div class="max-w-[1400px] mx-auto px-4 sm:px-6 py-8 sm:py-12">
-    <section class="mb-10"><div class="max-w-3xl">
+    <section class="mb-6"><div class="max-w-3xl">
       <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-surface-900 dark:text-surface-100 leading-tight">Image to Lithophane Maker &mdash; Turn Photos into Backlit 3D Art</h1>
-      <p class="mt-3 text-surface-500 text-sm sm:text-base leading-relaxed max-w-[70ch]">A lithophane is a thin 3D-printed object that reveals an image when light shines through it. Thinner sections appear brighter, thicker sections appear darker &mdash; creating stunning, detailed images from your photos. Choose flat, curved, or dome shapes for lamps, night lights, and window displays.</p>
+      <p class="mt-2 text-sm sm:text-base text-surface-500 leading-relaxed max-w-[70ch]">Load a photo and the tool maps its brightness into panel thickness, so thin areas glow brighter when backlit. Choose flat, curved, or dome below.</p>
+    </div></section>
+
+      {/* client:visible, not client:only — the React runtime (44 KB) used to
+        hydrate during initial load and competed with the hero image for
+        bandwidth and main thread, and client-rendering the island shifted
+        the sections below it (measured CLS 0.158 on /jpg-to-stl/). The island
+        is now the first thing below the title, so the observer fires on the
+        very first paint and it still costs nothing to defer. */}
+    <LithophaneMaker client:visible />
+
+    <section class="mt-14 sm:mt-16"><div class="max-w-3xl">
+      <p class="text-sm text-surface-500 leading-relaxed">A lithophane is a thin 3D-printed object that reveals an image when light shines through it. Thinner sections appear brighter, thicker sections appear darker &mdash; creating stunning, detailed images from your photos. Choose flat, curved, or dome shapes for lamps, night lights, and window displays.</p>
       <div class="mt-4 flex flex-wrap gap-2">
         <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-medium"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>Flat, Curved &amp; Dome Shapes</span>
         <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-accent-100 dark:bg-accent-900/30 text-accent-700 dark:text-accent-400 text-xs font-medium"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2v4"/><path d="M12 18v4"/><path d="M4.93 4.93l2.83 2.83"/><path d="M16.24 16.24l2.83 2.83"/></svg>Real-Time Preview</span>
         <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-200 dark:bg-surface-800 text-surface-600 dark:text-surface-400 text-xs font-medium"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>Print-Ready STL</span>
       </div>
+      <div class="mt-8 rounded-xl overflow-hidden border border-surface-200 dark:border-surface-800">
+        <img src="/images/optimized/hero/lithophane-backlit.webp" alt="3D printed lithophane panel glowing with warm backlight showing a landscape scene" width="860" height="860" loading="lazy" decoding="async" fetchpriority="low" class="w-full h-auto" />
+      </div>
     </div></section>
-
-    <div class="mb-10 max-w-3xl rounded-xl overflow-hidden border border-surface-200 dark:border-surface-800">
-      <img src="/images/optimized/hero/lithophane-backlit.webp" alt="3D printed lithophane panel glowing with warm backlight showing a landscape scene" width="860" height="860" loading="eager" decoding="async" class="w-full h-auto" />
-    </div>
-
-      {/* client:visible, not client:only — the React runtime (44 KB) used to
-        hydrate during initial load and competed with the hero image for
-        bandwidth and main thread, and client-rendering the island shifted
-        the sections below it (measured CLS 0.158 on /jpg-to-stl/). Nothing
-        above the fold depends on this island, so deferring it is free. */}
-    <LithophaneMaker client:visible />
 
     <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16">
       <h2 class="text-xl font-semibold mb-6 text-surface-900 dark:text-surface-100">How Lithophanes Work</h2>
