@@ -92,9 +92,11 @@ import SeoHead from "../components/SeoHead.astro";
    }))
  } : null;
 
- const combinedSchema = schema
-   ? [schema, breadcrumbSchema].filter(Boolean)
-   : breadcrumbSchema ? [breadcrumbSchema] : undefined;
+ // schema 允许是单个对象，也可能是对象数组（同一页的 SoftwareApplication + FAQPage）。
+ // 直接把数组当成一个元素拼进去会序列化成 [[a,b],c] —— JSON-LD 的顶层嵌套数组
+ // 不会被解析，所以这里先展平再追加面包屑。
+ const schemaItems = Array.isArray(schema) ? schema : schema ? [schema] : [];
+ const combinedSchema = [...schemaItems, ...(breadcrumbSchema ? [breadcrumbSchema] : [])];
 ---
 
 <!doctype html>
@@ -152,7 +154,7 @@ import SeoHead from "../components/SeoHead.astro";
     <noscript><link rel="stylesheet" href="/fonts/deferred.css" /></noscript>
     <link rel="icon" href="/favicon.ico" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <SeoHead title={title} description={description} canonical={canonical} schema={combinedSchema} keywords={keywords} ogImage={ogImage} ogType={ogType} publishDate={publishDate} modifyDate={modifyDate} />
+    <SeoHead title={title} description={description} canonical={canonical} schema={combinedSchema.length > 0 ? combinedSchema : undefined} keywords={keywords} ogImage={ogImage} ogType={ogType} publishDate={publishDate} modifyDate={modifyDate} />
     <slot name="head" />
   </head>
   <body class="flex flex-col min-h-[100dvh]">

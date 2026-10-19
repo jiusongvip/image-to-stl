@@ -97,3 +97,25 @@ export function withProvenance<T extends Record<string, unknown>>(
     dateModified: modified,
   };
 }
+
+export interface FaqItem {
+  q: string;
+  a: string;
+}
+
+// 页面内 FAQ 的唯一数据源：可见问答列表与 FAQPage 结构化数据都从同一个数组渲染，
+// 避免同一问答在正文和标记里各写一份、改一处漏一处。
+export function faqPageSchema(url: string, faqs: FaqItem[]) {
+  return withProvenance({
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    url,
+    isPartOf: { "@id": WEBSITE_ID },
+    inLanguage: "en",
+    mainEntity: faqs.map((f) => ({
+      "@type": "Question",
+      name: f.q,
+      acceptedAnswer: { "@type": "Answer", text: f.a },
+    })),
+  });
+}

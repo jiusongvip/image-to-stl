@@ -1,9 +1,9 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { withProvenance, SITE_PUBLISHED, SITE_MODIFIED } from "../lib/site";
+import { withProvenance, faqPageSchema, SITE_PUBLISHED, SITE_MODIFIED, type FaqItem } from "../lib/site";
 import ConverterTool from "../components/ConverterTool";
 
-const schema = withProvenance({
+const softwareSchema = withProvenance({
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
   name: "JPG to STL Converter",
@@ -13,12 +13,46 @@ const schema = withProvenance({
   description: "Convert JPG images to STL 3D printable files. Learn how JPEG compression affects heightmap quality, optimal camera settings, and workflow from phone photo to 3D print.",
 });
 
+// 唯一数据源：下面的问答既渲染成可见 FAQ，也生成 FAQPage 标记。
+const faqs: FaqItem[] = [
+  {
+    q: "Is JPG and JPEG the same file for converting to STL?",
+    a: "Yes. .jpg and .jpeg are two extensions for the same Joint Photographic Experts Group format, and the converter reads them identically — the file name suffix has no effect on the heightmap or the STL output. Whether your camera writes IMG_0231.jpg or IMG_0231.jpeg, drop it in the same way. What does change the result is the compression quality the camera chose, not the extension.",
+  },
+  {
+    q: "Should I use my phone's default camera app or a pro mode?",
+    a: "Your phone's default app is fine. What matters more is lighting and JPEG quality. If your phone has a \"Pro\" or \"Manual\" mode, set JPEG quality to maximum and disable any auto-HDR or heavy processing. Some phones apply aggressive sharpening and noise reduction that can create artifacts in the heightmap. If you notice this, try a third-party camera app that offers raw or lightly-processed JPEG output.",
+  },
+  {
+    q: "Does the STL preserve the colors from my JPG?",
+    a: "No. The STL format is geometry-only and stores no color information. The tool converts your JPG to grayscale based on perceived brightness, then maps each gray level to a physical height. The 3D print will be a single-color relief. If you want color, export as OBJ (stores vertex colors) and print with a multi-material or full-color printer, or paint the finished print by hand.",
+  },
+  {
+    q: "What JPG resolution gives the best STL detail?",
+    a: "The tool downsamples originals to 1024px on the longest side, then the Resolution control decides how many cells the mesh uses (128 to 448 across). Starting from a higher-resolution original (2000px+) means the downsampling averages more pixels per sample, which cancels JPEG noise instead of freezing it into the relief. A 12MP phone photo scaled to 1024px gives a cleaner heightmap than an 800×600 web image stretched to the same size. Always start with the highest resolution JPG you have.",
+  },
+  {
+    q: "Can I convert a screenshot or web image to STL?",
+    a: "Yes, but screenshots are typically low resolution (72-144 DPI screen resolution) and may have visible pixel grid patterns. Web images are often heavily compressed. The heightmap will reflect these limitations. For best results with screenshots, capture at the highest possible resolution and save as PNG to avoid adding JPEG compression on top of the screen capture.",
+  },
+  {
+    q: "How do old scanned photos perform vs digital photos?",
+    a: "Scanned photos add an extra layer of quality loss: the original photo, the printing process, the paper texture, and the scanner sensor all introduce artifacts. However, many scanned photos have natural contrast that works well for heightmaps. Scan at 600 DPI or higher, save as PNG (not JPEG) to avoid adding more compression, and use the Heightmap Editor to clean up paper texture and dust spots before conversion.",
+  },
+  {
+    q: "What is better: JPG at quality 100 or PNG for STL conversion?",
+    a: "PNG is always technically better because it is lossless. A PNG conversion will have zero compression artifacts in the heightmap. However, a quality-100 JPEG is virtually indistinguishable from PNG for photo content (as opposed to text/graphics). For photos: quality-95+ JPEG is fine. For text, logos, or anything with sharp edges: use PNG. The file size difference (PNG is larger) only matters for upload speed, not conversion quality.",
+  },
+];
+
+const schema = [softwareSchema, faqPageSchema("https://www.image-2-stl.com/jpg-to-stl/", faqs)];
+
 const keywords = "jpg to stl, convert jpg to stl, jpg to stl converter, jpeg to stl, jpg to 3d model, photo to stl, free jpg to stl";
 ---
 
 <BaseLayout
-  title="JPG to STL Converter — Phone Photo to 3D Print"
-  description="Convert JPG photos to STL for 3D printing. Learn how JPEG compression affects relief quality, camera settings, and the phone-to-print workflow. Free tool."
+  title="JPG to STL Converter (JPEG Too) — Phone Photo to 3D Print"
+  description="Convert JPG and JPEG photos to a print-ready STL, free in your browser. How JPEG compression affects relief quality, plus camera settings for the best results."
   canonical="https://www.image-2-stl.com/jpg-to-stl/"
   schema={schema}
   publishDate={SITE_PUBLISHED}
@@ -29,7 +63,7 @@ const keywords = "jpg to stl, convert jpg to stl, jpg to stl converter, jpeg to 
 
     <section class="mb-6 max-w-3xl">
       <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-surface-900 dark:text-surface-100 leading-tight">JPG to STL &mdash; Turn Everyday Photos into 3D Prints</h1>
-      <p class="mt-2 text-sm sm:text-base text-surface-500 leading-relaxed">Drop a JPG in and get a print-ready STL, OBJ, or GLB back &mdash; the converter turns pixel brightness into relief height right here in your browser.</p>
+      <p class="mt-2 text-sm sm:text-base text-surface-500 leading-relaxed">Drop a JPG in &mdash; a JPEG file works exactly the same, it is the same format under a different extension &mdash; and get a print-ready STL, OBJ, or GLB back. The converter turns pixel brightness into relief height right here in your browser.</p>
     </section>
 
       {/* client:visible, not client:only — the React runtime (44 KB) used to
@@ -163,12 +197,12 @@ const keywords = "jpg to stl, convert jpg to stl, jpg to stl converter, jpeg to 
     <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16 max-w-3xl" id="faq">
       <h2 class="text-xl font-semibold mb-6 text-surface-900 dark:text-surface-100">JPG to STL Questions</h2>
       <dl class="space-y-5">
-        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">Should I use my phone&apos;s default camera app or a pro mode?</dt><dd class="text-sm text-surface-500 leading-relaxed">Your phone&apos;s default app is fine. What matters more is <strong>lighting</strong> and <strong>JPEG quality</strong>. If your phone has a "Pro" or "Manual" mode, set JPEG quality to maximum and disable any auto-HDR or heavy processing. Some phones apply aggressive sharpening and noise reduction that can create artifacts in the heightmap. If you notice this, try a third-party camera app that offers raw or lightly-processed JPEG output.</dd></div>
-        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">Does the STL preserve the colors from my JPG?</dt><dd class="text-sm text-surface-500 leading-relaxed">No. The STL format is geometry-only and stores no color information. The tool converts your JPG to grayscale based on perceived brightness, then maps each gray level to a physical height. The 3D print will be a single-color relief. If you want color, export as OBJ (stores vertex colors) and print with a multi-material or full-color printer, or paint the finished print by hand.</dd></div>
-        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">What JPG resolution gives the best STL detail?</dt><dd class="text-sm text-surface-500 leading-relaxed">The tool downsamples originals to 1024px on the longest side, then the Resolution control decides how many cells the mesh uses (128 to 448 across). Starting from a higher-resolution original (2000px+) means the downsampling averages more pixels per sample, which cancels JPEG noise instead of freezing it into the relief. A 12MP phone photo scaled to 1024px gives a cleaner heightmap than an 800&times;600 web image stretched to the same size. <strong>Always start with the highest resolution JPG you have.</strong></dd></div>
-        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">Can I convert a screenshot or web image to STL?</dt><dd class="text-sm text-surface-500 leading-relaxed">Yes, but screenshots are typically low resolution (72-144 DPI screen resolution) and may have visible pixel grid patterns. Web images are often heavily compressed. The heightmap will reflect these limitations. For best results with screenshots, capture at the highest possible resolution and save as PNG to avoid adding JPEG compression on top of the screen capture.</dd></div>
-        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">How do old scanned photos perform vs digital photos?</dt><dd class="text-sm text-surface-500 leading-relaxed">Scanned photos add an extra layer of quality loss: the original photo, the printing process, the paper texture, and the scanner sensor all introduce artifacts. However, many scanned photos have natural contrast that works well for heightmaps. Scan at 600 DPI or higher, save as PNG (not JPEG) to avoid adding more compression, and use the Heightmap Editor to clean up paper texture and dust spots before conversion.</dd></div>
-        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">What is better: JPG at quality 100 or PNG for STL conversion?</dt><dd class="text-sm text-surface-500 leading-relaxed">PNG is always technically better because it is lossless. A PNG conversion will have zero compression artifacts in the heightmap. However, a quality-100 JPEG is virtually indistinguishable from PNG for photo content (as opposed to text/graphics). <strong>For photos: quality-95+ JPEG is fine. For text, logos, or anything with sharp edges: use PNG.</strong> The file size difference (PNG is larger) only matters for upload speed, not conversion quality.</dd></div>
+        {faqs.map((f) => (
+          <div>
+            <dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">{f.q}</dt>
+            <dd class="text-sm text-surface-500 leading-relaxed">{f.a}</dd>
+          </div>
+        ))}
       </dl>
     </section>
 
@@ -199,7 +233,7 @@ const keywords = "jpg to stl, convert jpg to stl, jpg to stl converter, jpeg to 
         <div class="flex flex-wrap gap-2 justify-center">
           <a href="/png-to-stl/" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400 hover:text-accent-600 text-sm transition-colors">PNG to STL (lossless, transparency)</a>
           <a href="/svg-to-stl/" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400 hover:text-accent-600 text-sm transition-colors">SVG to STL (vector extrusion)</a>
-          <a href="/photo-to-3d/" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400 hover:text-accent-600 text-sm transition-colors">Photo to 3D (depth mapping)</a>
+          <a href="/photo-to-3d/" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400 hover:text-accent-600 text-sm transition-colors">Photo to STL (photography guide)</a>
         </div>
       </div>
     </section>

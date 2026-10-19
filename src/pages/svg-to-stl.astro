@@ -1,9 +1,9 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { withProvenance, SITE_PUBLISHED, SITE_MODIFIED } from "../lib/site";
+import { withProvenance, faqPageSchema, SITE_PUBLISHED, SITE_MODIFIED, type FaqItem } from "../lib/site";
 import ConverterTool from "../components/ConverterTool";
 
-const schema = withProvenance({
+const softwareSchema = withProvenance({
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
   name: "SVG to STL Converter",
@@ -12,6 +12,28 @@ const schema = withProvenance({
   offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
   description: "Convert SVG to STL with true vector path extrusion. Parse bezier curves into solid 3D geometry. Complete editor preparation guides for Illustrator, Inkscape, Figma, and Affinity.",
 });
+
+// 唯一数据源：可见问答与 FAQPage 标记共用同一数组。
+const faqs: FaqItem[] = [
+  {
+    q: "How is this different from uploading an SVG as an image?",
+    a: "When you upload an SVG as an image to a standard converter, it is rasterized (converted to pixels) at a fixed resolution — typically 512px. A thin line in your SVG becomes 1-2 pixels wide in the raster, which creates a tiny bump in the heightmap instead of a clean extrusion. Our SVG parser reads the actual mathematical path data and extrudes it directly, preserving edges at any resolution. A 1mm line in your SVG becomes a 1mm feature in the STL, regardless of canvas size.",
+  },
+  {
+    q: "Why does my SVG produce a flat rectangle instead of my design?",
+    a: "This means the tool fell back to raster mode. The most common causes: (a) Text was not converted to outlines — use Create Outlines. (b) The SVG contains raster images (PNG/JPG embedded inside the SVG) — remove them or use only vector elements. (c) The SVG uses unsupported features like complex gradients, filters, or clip-paths — simplify to basic paths and solid fills. (d) The file is not a valid SVG — some tools export HTML-wrapped SVGs. Open it in a text editor and confirm it starts with the <svg tag.",
+  },
+  {
+    q: "Can I control how thick the extrusion is?",
+    a: "Yes, the height slider controls the extrusion depth. This is a uniform thickness applied to all shapes in the SVG. For different thicknesses on different parts, split your SVG into separate files and convert each with different height settings, then combine them in your slicer. Alternatively, create the depth variation in the 3D model itself using the heightmap mode for the overall shape and SVG extrusion for the raised details.",
+  },
+  {
+    q: "What happens to very small details in my SVG?",
+    a: "Details smaller than your printer's nozzle diameter (typically 0.4mm for FDM) will not print well regardless of the STL quality. Our tool preserves sub-millimeter details in the mesh, but they may be lost during slicing if they are thinner than the extrusion width. For very fine detail work, use a smaller nozzle (0.2mm) or switch to resin/SLA printing which can resolve details down to 0.05mm. Design your SVG with your printer's capabilities in mind.",
+  },
+];
+
+const schema = [softwareSchema, faqPageSchema("https://www.image-2-stl.com/svg-to-stl/", faqs)];
 
 const keywords = "svg to stl, convert svg to stl, svg to 3d, svg extrusion, vector to stl, svg path to stl, illustrator to stl, inkscape to stl";
 ---
@@ -108,10 +130,12 @@ const keywords = "svg to stl, convert svg to stl, svg to 3d, svg extrusion, vect
     <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16 max-w-3xl" id="faq">
       <h2 class="text-xl font-semibold mb-6 text-surface-900 dark:text-surface-100">SVG to STL Questions</h2>
       <dl class="space-y-5">
-        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">How is this different from uploading an SVG as an image?</dt><dd class="text-sm text-surface-500 leading-relaxed">When you upload an SVG as an image to a standard converter, it is rasterized (converted to pixels) at a fixed resolution &mdash; typically 512px. A thin line in your SVG becomes 1-2 pixels wide in the raster, which creates a tiny bump in the heightmap instead of a clean extrusion. Our SVG parser reads the actual mathematical path data and extrudes it directly, preserving edges at any resolution. A 1mm line in your SVG becomes a 1mm feature in the STL, regardless of canvas size.</dd></div>
-        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">Why does my SVG produce a flat rectangle instead of my design?</dt><dd class="text-sm text-surface-500 leading-relaxed">This means the tool fell back to raster mode. The most common causes: <strong>(a)</strong> Text was not converted to outlines &mdash; use Create Outlines. <strong>(b)</strong> The SVG contains raster images (PNG/JPG embedded inside the SVG) &mdash; remove them or use only vector elements. <strong>(c)</strong> The SVG uses unsupported features like complex gradients, filters, or clip-paths &mdash; simplify to basic paths and solid fills. <strong>(d)</strong> The file is not a valid SVG &mdash; some tools export HTML-wrapped SVGs. Open in a text editor and confirm it starts with <code class="bg-surface-100 dark:bg-surface-800 px-1 rounded text-accent-600 text-2xs">&lt;svg</code>.</dd></div>
-        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">Can I control how thick the extrusion is?</dt><dd class="text-sm text-surface-500 leading-relaxed">Yes, the height slider controls the extrusion depth. This is a uniform thickness applied to all shapes in the SVG. For different thicknesses on different parts, split your SVG into separate files and convert each with different height settings, then combine them in your slicer. Alternatively, create the depth variation in the 3D model itself using the heightmap mode for the overall shape and SVG extrusion for the raised details.</dd></div>
-        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">What happens to very small details in my SVG?</dt><dd class="text-sm text-surface-500 leading-relaxed">Details smaller than your printer's nozzle diameter (typically 0.4mm for FDM) will not print well regardless of the STL quality. Our tool preserves sub-millimeter details in the mesh, but they may be lost during slicing if they are thinner than the extrusion width. For very fine detail work, use a smaller nozzle (0.2mm) or switch to resin/SLA printing which can resolve details down to 0.05mm. Design your SVG with your printer's capabilities in mind.</dd></div>
+        {faqs.map((f) => (
+          <div>
+            <dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">{f.q}</dt>
+            <dd class="text-sm text-surface-500 leading-relaxed">{f.a}</dd>
+          </div>
+        ))}
       </dl>
     </section>
 

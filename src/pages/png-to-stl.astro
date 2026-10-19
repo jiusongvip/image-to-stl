@@ -1,9 +1,9 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { withProvenance, SITE_PUBLISHED, SITE_MODIFIED } from "../lib/site";
+import { withProvenance, faqPageSchema, SITE_PUBLISHED, SITE_MODIFIED, type FaqItem } from "../lib/site";
 import ConverterTool from "../components/ConverterTool";
 
-const schema = withProvenance({
+const softwareSchema = withProvenance({
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
   name: "PNG to STL Converter",
@@ -12,6 +12,32 @@ const schema = withProvenance({
   offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
   description: "Convert PNG images to STL with lossless quality. Learn how alpha transparency creates clean cutout shapes, which bit depth to use, and the complete design asset to 3D print workflow.",
 });
+
+// 唯一数据源：可见问答与 FAQPage 标记共用同一数组。
+const faqs: FaqItem[] = [
+  {
+    q: "When should I use PNG instead of JPG for STL conversion?",
+    a: "Use PNG when your image has transparency, sharp edges (logos, text, icons), you plan to edit and re-save, or you need the absolute best quality. JPG is acceptable when you are converting a photo directly from your camera, the image has no transparency, and quality-90+ JPEG compression is acceptable. Rule of thumb: if you created it in a design tool, export as PNG. If you photographed it, the original JPG is fine.",
+  },
+  {
+    q: "What happens if my PNG has a white background instead of transparency?",
+    a: "A solid white background (RGB 255,255,255) maps to maximum height in the heightmap. This means your subject will be at the same height level as the background — producing a rectangular block instead of a cutout shape. Always remove the background and export with transparency if you want the subject to stand alone. If your PNG must have a background, use pure black (height = 0) to make the subject raised above it.",
+  },
+  {
+    q: "Does PNG compression level affect STL quality?",
+    a: "No. PNG compression is completely lossless regardless of the compression level. Level 0 (no compression) and level 9 (maximum compression) produce identical pixel data — they just take different amounts of time to compress and decompress. The STL output will be identical. Choose whatever compression level is convenient; the conversion quality does not change.",
+  },
+  {
+    q: "Can I use a PNG with a drop shadow or glow effect?",
+    a: "Yes, but be aware that shadows and glows in the PNG image will become physical height variations in the STL. A soft drop shadow will produce a sloping surface around your subject. This can look great (like a natural base) or terrible (like a messy blob) depending on your intent. For clean extrusions, disable all effects before export. For artistic reliefs, effects can add interesting depth. The transparency workflow described above applies here too.",
+  },
+  {
+    q: "My transparent PNG produces a flat disc instead of a raised shape. Why?",
+    a: "This usually happens when the subject in your PNG is very light (near white) and the transparent area maps to zero height while the light subject maps to maximum height — but the brightness difference is too small to notice. Fix: increase the height scale, or convert the subject to a darker color before export. A mid-gray subject on a transparent background will produce a much more visible relief than a white subject on transparency.",
+  },
+];
+
+const schema = [softwareSchema, faqPageSchema("https://www.image-2-stl.com/png-to-stl/", faqs)];
 
 const keywords = "png to stl, convert png to stl, png to stl converter, png to 3d model, png transparency stl, lossless stl, free png to stl";
 ---
@@ -129,11 +155,12 @@ const keywords = "png to stl, convert png to stl, png to stl converter, png to 3
 <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16 max-w-3xl" id="faq">
       <h2 class="text-xl font-semibold mb-6 text-surface-900 dark:text-surface-100">PNG to STL Questions</h2>
       <dl class="space-y-5">
-        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">When should I use PNG instead of JPG for STL conversion?</dt><dd class="text-sm text-surface-500 leading-relaxed"><strong>Use PNG when:</strong> your image has transparency, sharp edges (logos, text, icons), you plan to edit and re-save, or you need the absolute best quality. <strong>JPG is acceptable when:</strong> you are converting a photo directly from your camera, the image has no transparency, and quality-90+ JPEG compression is acceptable. <strong>Rule of thumb:</strong> if you created it in a design tool, export as PNG. If you photographed it, the original JPG is fine.</dd></div>
-        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">What happens if my PNG has a white background instead of transparency?</dt><dd class="text-sm text-surface-500 leading-relaxed">A solid white background (RGB 255,255,255) maps to maximum height in the heightmap. This means your subject will be at the same height level as the background &mdash; producing a rectangular block instead of a cutout shape. <strong>Always remove the background and export with transparency</strong> if you want the subject to stand alone. If your PNG must have a background, use pure black (height = 0) to make the subject raised above it.</dd></div>
-        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">Does PNG compression level affect STL quality?</dt><dd class="text-sm text-surface-500 leading-relaxed">No. PNG compression is completely lossless regardless of the compression level. Level 0 (no compression) and level 9 (maximum compression) produce identical pixel data &mdash; they just take different amounts of time to compress and decompress. The STL output will be identical. Choose whatever compression level is convenient; the conversion quality does not change.</dd></div>
-        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">Can I use a PNG with a drop shadow or glow effect?</dt><dd class="text-sm text-surface-500 leading-relaxed">Yes, but be aware that shadows and glows in the PNG image will become physical height variations in the STL. A soft drop shadow will produce a sloping surface around your subject. This can look great (like a natural base) or terrible (like a messy blob) depending on your intent. <strong>For clean extrusions, disable all effects before export.</strong> For artistic reliefs, effects can add interesting depth. The transparency workflow described above applies here too.</dd></div>
-        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">My transparent PNG produces a flat disc instead of a raised shape. Why?</dt><dd class="text-sm text-surface-500 leading-relaxed">This usually happens when the subject in your PNG is very light (near white) and the transparent area maps to zero height while the light subject maps to maximum height &mdash; but the brightness difference is too small to notice. <strong>Fix:</strong> increase the height scale, or convert the subject to a darker color before export. A mid-gray subject on a transparent background will produce a much more visible relief than a white subject on transparency.</dd></div>
+        {faqs.map((f) => (
+          <div>
+            <dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">{f.q}</dt>
+            <dd class="text-sm text-surface-500 leading-relaxed">{f.a}</dd>
+          </div>
+        ))}
       </dl>
     </section>
 

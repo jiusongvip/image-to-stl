@@ -1,9 +1,9 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { withProvenance, SITE_PUBLISHED, SITE_MODIFIED } from "../lib/site";
+import { withProvenance, faqPageSchema, SITE_PUBLISHED, SITE_MODIFIED, type FaqItem } from "../lib/site";
 import HeightmapEditor from "../components/HeightmapEditor";
 
-const schema = withProvenance({
+const softwareSchema = withProvenance({
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
   name: "Heightmap to STL Editor",
@@ -12,6 +12,28 @@ const schema = withProvenance({
   offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
   description: "Advanced heightmap editor with contrast, brightness, threshold, and invert controls. Learn how to fix common image problems for optimal 3D relief generation.",
 });
+
+// 唯一数据源：可见问答与 FAQPage 标记共用同一数组。
+const faqs: FaqItem[] = [
+  {
+    q: "What order should I adjust the controls?",
+    a: "1. Contrast — always first. Spread the brightness values across the full range. 2. Brightness — shift the overall floor level. 3. Threshold — only if you want a binary relief. Skip for smooth gradients. 4. Invert — try both and choose. 5. In the 3D panel: adjust height scale and smoothness last, once the heightmap itself looks right. This order works because each step builds on the previous one. Changing contrast after threshold, for example, will shift where the threshold cut happens.",
+  },
+  {
+    q: "My image is too dark overall. Which control fixes that?",
+    a: "If the entire image is dark (underexposed), all pixels cluster near black, producing a very shallow relief. Increase brightness first to shift the whole histogram upward. Then increase contrast to spread the mid-tones. You may need to increase both significantly for a severely underexposed image. The live preview shows the effect instantly.",
+  },
+  {
+    q: "When should I NOT use the heightmap editor?",
+    a: "Skip the editor when your source image already has good contrast (clear blacks and whites), you are converting text or simple logos (the main converter handles these well), or you want the fastest possible workflow. The heightmap editor is for images that need fixing — not a required step for every image. Most well-lit photos convert fine without it.",
+  },
+  {
+    q: "Can I save my heightmap adjustments as a preset?",
+    a: "The editor does not save presets, but the controls are simple enough that you can remember or write down the values (e.g. \"contrast +30, brightness -10, threshold off\"). Once you find a combination that works for your typical image type, re-applying it takes seconds. All processing is local and instant, so you are never waiting for results.",
+  },
+];
+
+const schema = [softwareSchema, faqPageSchema("https://www.image-2-stl.com/heightmap-editor/", faqs)];
 
 const keywords = "heightmap editor, heightmap to stl, heightmap generator, 3d relief editor, stl heightmap, depth map to stl, contrast for stl";
 ---
@@ -102,10 +124,12 @@ const keywords = "heightmap editor, heightmap to stl, heightmap generator, 3d re
 <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16 max-w-3xl" id="faq">
       <h2 class="text-xl font-semibold mb-6 text-surface-900 dark:text-surface-100">Heightmap Editor Questions</h2>
       <dl class="space-y-5">
-        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">What order should I adjust the controls?</dt><dd class="text-sm text-surface-500 leading-relaxed"><strong>1. Contrast</strong> — always first. Spread the brightness values across the full range. <strong>2. Brightness</strong> — shift the overall floor level. <strong>3. Threshold</strong> — only if you want a binary relief. Skip for smooth gradients. <strong>4. Invert</strong> — try both and choose. <strong>5. In the 3D panel:</strong> adjust height scale and smoothness last, once the heightmap itself looks right. This order works because each step builds on the previous one. Changing contrast after threshold, for example, will shift where the threshold cut happens.</dd></div>
-        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">My image is too dark overall. Which control fixes that?</dt><dd class="text-sm text-surface-500 leading-relaxed">If the entire image is dark (underexposed), all pixels cluster near black, producing a very shallow relief. <strong>Increase brightness first</strong> to shift the whole histogram upward. Then increase contrast to spread the mid-tones. You may need to increase both significantly for a severely underexposed image. The live preview shows the effect instantly.</dd></div>
-        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">When should I NOT use the heightmap editor?</dt><dd class="text-sm text-surface-500 leading-relaxed">Skip the editor when: your source image already has good contrast (clear blacks and whites), you are converting text or simple logos (the main converter handles these well), or you want the fastest possible workflow. The heightmap editor is for images that need fixing &mdash; not a required step for every image. Most well-lit photos convert fine without it.</dd></div>
-        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">Can I save my heightmap adjustments as a preset?</dt><dd class="text-sm text-surface-500 leading-relaxed">The editor does not save presets, but the controls are simple enough that you can remember or write down the values (e.g., "contrast +30, brightness -10, threshold off"). Once you find a combination that works for your typical image type, re-applying it takes seconds. All processing is local and instant, so you are never waiting for results.</dd></div>
+        {faqs.map((f) => (
+          <div>
+            <dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">{f.q}</dt>
+            <dd class="text-sm text-surface-500 leading-relaxed">{f.a}</dd>
+          </div>
+        ))}
       </dl>
     </section>
 
@@ -114,7 +138,7 @@ const keywords = "heightmap editor, heightmap to stl, heightmap generator, 3d re
         <p class="text-sm text-surface-500 mb-4">The heightmap editor pairs well with these tools for complete control over your 3D reliefs.</p>
         <div class="flex flex-wrap gap-2 justify-center">
           <a href="/" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400 hover:text-accent-600 text-sm transition-colors">Image to STL (main converter)</a>
-          <a href="/photo-to-3d/" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400 hover:text-accent-600 text-sm transition-colors">Photo to 3D (photography guide)</a>
+          <a href="/photo-to-3d/" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400 hover:text-accent-600 text-sm transition-colors">Photo to STL (photography guide)</a>
         </div>
       </div>
     </section>

@@ -1,9 +1,9 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { withProvenance, SITE_PUBLISHED, SITE_MODIFIED } from "../lib/site";
+import { withProvenance, faqPageSchema, SITE_PUBLISHED, SITE_MODIFIED, type FaqItem } from "../lib/site";
 import LithophaneMaker from "../components/LithophaneMaker";
 
-const schema = withProvenance({
+const softwareSchema = withProvenance({
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
   name: "Image to Lithophane Maker",
@@ -13,10 +13,40 @@ const schema = withProvenance({
   description: "Convert your photos into lithophane STL files for 3D printing. Create beautiful backlit light panels. Supports flat, curved, and dome shapes.",
 });
 
+// 唯一数据源：可见问答与 FAQPage 标记共用同一数组。
+const faqs: FaqItem[] = [
+  {
+    q: "What is a lithophane and how does it work?",
+    a: "A lithophane is a thin etched or molded artwork that reveals an image when backlit. In 3D printing, varying thickness controls light transmission: thin = bright, thick = dark. The result is a detailed monochrome image visible only when illuminated from behind.",
+  },
+  {
+    q: "What filament is best for lithophanes?",
+    a: "White PLA is the gold standard. It transmits light evenly and produces the clearest images. Natural PLA also works well. Avoid dark colors, transparent, silk, or glitter filaments which scatter or block light.",
+  },
+  {
+    q: "Why should I print lithophanes vertically?",
+    a: "Vertical orientation (on the narrow edge) aligns layers parallel to the image plane. This creates smoother surfaces and better light transmission since light passes through layers rather than across them.",
+  },
+  {
+    q: "What photos work best for lithophanes?",
+    a: "Photos with strong contrast and clear subjects. Portraits, landscapes with distinct features, and images with a good tonal range produce the most striking results. Avoid very dark or washed-out photos.",
+  },
+  {
+    q: "What lighting works best for displaying lithophanes?",
+    a: "LED strips or bulbs placed 5-15cm behind the lithophane produce the best results. Warm white (2700-3000K) gives a soft, natural look. Cool white (5000-6500K) shows more detail but can feel harsh. Avoid point-source lights that create hot spots.",
+  },
+  {
+    q: "Can I paint or color a lithophane?",
+    a: "Painting blocks light and ruins the lithophane effect. Instead, add color by placing a colored transparent film behind the lithophane, using colored LEDs, or printing with a colored translucent filament. You can also paint the frame while leaving the lithophane panel unpainted.",
+  },
+];
+
+const schema = [softwareSchema, faqPageSchema("https://www.image-2-stl.com/lithophane-maker/", faqs)];
+
 const keywords = "image to lithophane, lithophane maker, photo to lithophane, lithophane stl, lithophane generator, 3d printed lithophane, lithophane converter";
 ---
 
-<BaseLayout title="Lithophane Maker — Turn Photos into Backlit 3D Art" description="Convert photos into lithophane STL files. Create backlit 3D panels with flat, curved, or dome shapes. White PLA printing guide. Free browser tool." canonical="https://www.image-2-stl.com/lithophane-maker/" schema={schema}
+<BaseLayout title="Lithophane Maker — Turn Photos into Backlit 3D Art" description="Convert a photo into a lithophane STL right in your browser — free, no sign-up, nothing uploaded. Flat, curved or dome panels, plus a printing guide." canonical="https://www.image-2-stl.com/lithophane-maker/" schema={schema}
   publishDate={SITE_PUBLISHED}
   modifyDate={SITE_MODIFIED} keywords={keywords}>
   <div class="max-w-[1400px] mx-auto px-4 sm:px-6 py-8 sm:py-12">
@@ -97,14 +127,13 @@ const keywords = "image to lithophane, lithophane maker, photo to lithophane, li
 <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16" id="faq">
       <h2 class="text-xl font-semibold mb-6 text-surface-900 dark:text-surface-100">Lithophane FAQ</h2>
       <dl class="space-y-6 max-w-3xl">
-        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">What is a lithophane and how does it work?</dt><dd class="text-sm text-surface-500 leading-relaxed">A lithophane is a thin etched or molded artwork that reveals an image when backlit. In 3D printing, varying thickness controls light transmission: thin = bright, thick = dark. The result is a detailed monochrome image visible only when illuminated from behind.</dd></div>
-        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">What filament is best for lithophanes?</dt><dd class="text-sm text-surface-500 leading-relaxed">White PLA is the gold standard. It transmits light evenly and produces the clearest images. Natural PLA also works well. Avoid dark colors, transparent, silk, or glitter filaments which scatter or block light.</dd></div>
-        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">Why should I print lithophanes vertically?</dt><dd class="text-sm text-surface-500 leading-relaxed">Vertical orientation (on the narrow edge) aligns layers parallel to the image plane. This creates smoother surfaces and better light transmission since light passes through layers rather than across them.</dd></div>
-        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">What photos work best for lithophanes?</dt><dd class="text-sm text-surface-500 leading-relaxed">Photos with strong contrast and clear subjects. Portraits, landscapes with distinct features, and images with a good tonal range produce the most striking results. Avoid very dark or washed-out photos.</dd></div>
-      
-        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">What lighting works best for displaying lithophanes?</dt><dd class="text-sm text-surface-500 leading-relaxed">LED strips or bulbs placed 5-15cm behind the lithophane produce the best results. Warm white (2700-3000K) gives a soft, natural look. Cool white (5000-6500K) shows more detail but can feel harsh. Avoid point-source lights that create hot spots.</dd></div>
-        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">Can I paint or color a lithophane?</dt><dd class="text-sm text-surface-500 leading-relaxed">Painting blocks light and ruins the lithophane effect. Instead, add color by placing a colored transparent film behind the lithophane, using colored LEDs, or printing with a colored translucent filament. You can also paint the frame while leaving the lithophane panel unpainted.</dd></div>
-</dl>
+        {faqs.map((f) => (
+          <div>
+            <dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">{f.q}</dt>
+            <dd class="text-sm text-surface-500 leading-relaxed">{f.a}</dd>
+          </div>
+        ))}
+      </dl>
     </section>
 
     <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16 mb-4">
@@ -112,7 +141,7 @@ const keywords = "image to lithophane, lithophane maker, photo to lithophane, li
         <h2 class="text-xl font-semibold mb-3 text-surface-900 dark:text-surface-100">Create Your Lithophane Now</h2>
         <p class="text-sm text-surface-500 mb-6 leading-relaxed">Upload a photo above and create a beautiful 3D printed lithophane. Free, instant, no registration.</p>
         <div class="flex flex-wrap gap-2 justify-center">
-          <a href="/photo-to-3d/" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-accent-600 hover:bg-accent-700 text-white text-sm font-medium transition-colors">Photo to 3D</a>
+          <a href="/photo-to-3d/" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-accent-600 hover:bg-accent-700 text-white text-sm font-medium transition-colors">Photo to STL</a>
           <a href="/heightmap-editor/" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-accent-600 hover:bg-accent-700 text-white text-sm font-medium transition-colors">Heightmap Editor</a>
         </div>
       </div>

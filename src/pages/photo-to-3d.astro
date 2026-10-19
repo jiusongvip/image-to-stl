@@ -1,24 +1,50 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { withProvenance, SITE_PUBLISHED, SITE_MODIFIED } from "../lib/site";
+import { withProvenance, faqPageSchema, SITE_PUBLISHED, SITE_MODIFIED, type FaqItem } from "../lib/site";
 import ConverterTool from "../components/ConverterTool";
 
-const schema = withProvenance({
+const softwareSchema = withProvenance({
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
-  name: "Photo to 3D Model Converter",
+  name: "Photo to STL Converter",
   applicationCategory: "Multimedia",
   operatingSystem: "Web",
   offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
   description: "Convert photos to 3D printable STL models. Learn photo composition for optimal reliefs, lighting techniques, and how to choose the right photo subjects for 3D conversion.",
 });
 
+// 唯一数据源：可见问答与 FAQPage 标记共用同一数组。
+const faqs: FaqItem[] = [
+  {
+    q: "Can I turn a photo into an STL file?",
+    a: "Yes — that is exactly what this page does. Upload the photo and the heightmap mode reads each pixel's brightness, maps it to a physical height, and writes a watertight STL you can slice directly. The photo becomes a raised relief, like a coin or a bas-relief panel, and the whole conversion runs in your browser: no upload, no account, no payment.",
+  },
+  {
+    q: "Is this true 3D or just a relief?",
+    a: "This is a relief (2.5D). The heightmap maps a single brightness value per pixel to a single height value. This creates a raised surface that looks 3D from the front but is flat from the side, like a coin or a bas-relief sculpture. True 3D (photogrammetry) requires dozens of photos from different angles and specialized software. What our tool produces is highly detailed reliefs — not full 360-degree models. For most decorative 3D printing purposes (wall art, plaques, lithophanes), a relief is exactly what you want.",
+  },
+  {
+    q: "How do I photograph a person for the best 3D portrait?",
+    a: "Setup: seat the person near a window with light coming from one side. No direct sunlight — use diffused daylight or a white curtain. Position them at a slight angle so the light falls across their face. Camera: use your phone at eye level, about 1-2 meters away. No flash. Tap to focus on the eyes. Clothing: solid colors work best. Busy patterns create noisy heightmaps. A simple dark or light shirt provides clean contrast against the face. After shooting: crop tightly to the face and shoulders. Convert to black and white. Boost contrast +15. The B&W preview is essentially what your heightmap will look like.",
+  },
+  {
+    q: "Can I convert an old scanned photo to 3D?",
+    a: "Yes, but manage your expectations. Old photos have faded contrast, paper texture, dust, scratches, and often soft focus. Each of these translates to surface noise or flatness in the STL. Before uploading: scan at 600 DPI, restore contrast digitally, remove dust and scratches with a healing tool, and optionally apply gentle sharpening. The heightmap editor can help clean up remaining noise. The result will not be as crisp as a digital photo, but it can still produce a meaningful relief — especially for memorial or sentimental projects.",
+  },
+  {
+    q: "Why does my photo look great on screen but produce a flat STL?",
+    a: "Your screen displays a full-color image with contrast that your eyes perceive as depth thanks to shadows, colors, and edge detection. The heightmap algorithm strips all of that away and only looks at raw brightness values. A photo that appears \"contrasty\" to your eyes may actually have a narrow brightness histogram. Test: convert your photo to grayscale. If the B&W version looks flat and muddy, the STL will be flat and muddy. Boost contrast until the B&W version has clear light and dark separation, then upload.",
+  },
+];
+
+const schema = [softwareSchema, faqPageSchema("https://www.image-2-stl.com/photo-to-3d/", faqs)];
+
 const keywords = "photo to 3d, photo to 3d model, convert photo to 3d, picture to stl, photo to stl, turn photo into 3d, photo to 3d print";
 ---
 
 <BaseLayout
-  title="Photo to 3D Model — Photography Guide for 3D Reliefs"
-  description="Convert photos to 3D printable STL reliefs. Photography guide: lighting, subject selection, and post-processing for optimal heightmap results. Free tool."
+  title="Photo to STL — Turn Any Photo into a 3D Printable Model"
+  description="Convert a photo to an STL relief you can 3D print — free, in your browser. Photography guide: lighting, subject choice, and post-processing for a deep heightmap."
   canonical="https://www.image-2-stl.com/photo-to-3d/"
   schema={schema}
   publishDate={SITE_PUBLISHED}
@@ -28,8 +54,8 @@ const keywords = "photo to 3d, photo to 3d model, convert photo to 3d, picture t
   <div class="max-w-[1400px] mx-auto px-4 sm:px-6 py-8 sm:py-12">
 
     <section class="mb-6 max-w-3xl">
-      <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-surface-900 dark:text-surface-100 leading-tight">Photo to 3D Model &mdash; The Photographer&apos;s Guide to 3D Conversion</h1>
-      <p class="mt-2 text-sm sm:text-base text-surface-500 leading-relaxed">A photo&apos;s brightness map becomes a physical height map. Pick a well-lit shot and turn it into a relief below.</p>
+      <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-surface-900 dark:text-surface-100 leading-tight">Photo to STL &mdash; The Photographer&apos;s Guide to 3D Reliefs</h1>
+      <p class="mt-2 text-sm sm:text-base text-surface-500 leading-relaxed">A photo&apos;s brightness map becomes a physical height map. Pick a well-lit shot, drop it below, and download the STL &mdash; free, no sign-up, and the file never leaves your device.</p>
     </section>
 
       {/* client:visible, not client:only — the React runtime (44 KB) used to
@@ -128,12 +154,14 @@ const keywords = "photo to 3d, photo to 3d model, convert photo to 3d, picture t
       </div>
     </section>
 <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16 max-w-3xl" id="faq">
-      <h2 class="text-xl font-semibold mb-6 text-surface-900 dark:text-surface-100">Photo to 3D Questions</h2>
+      <h2 class="text-xl font-semibold mb-6 text-surface-900 dark:text-surface-100">Photo to STL Questions</h2>
       <dl class="space-y-5">
-        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">Is this true 3D or just a relief?</dt><dd class="text-sm text-surface-500 leading-relaxed">This is a relief (2.5D). The heightmap maps a single brightness value per pixel to a single height value. This creates a raised surface that looks 3D from the front but is flat from the side, like a coin or a bas-relief sculpture. True 3D (photogrammetry) requires dozens of photos from different angles and specialized software. What our tool produces is <strong>highly detailed reliefs</strong> &mdash; not full 360-degree models. For most decorative 3D printing purposes (wall art, plaques, lithophanes), a relief is exactly what you want.</dd></div>
-        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">How do I photograph a person for the best 3D portrait?</dt><dd class="text-sm text-surface-500 leading-relaxed"><strong>Setup:</strong> Seat the person near a window with light coming from one side. No direct sunlight &mdash; use diffused daylight or a white curtain. Position them at a slight angle so the light falls across their face. <strong>Camera:</strong> Use your phone at eye level, about 1-2 meters away. No flash. Tap to focus on the eyes. <strong>Clothing:</strong> Solid colors work best. Busy patterns create noisy heightmaps. A simple dark or light shirt provides clean contrast against the face. <strong>After shooting:</strong> Crop tightly to the face and shoulders. Convert to black and white. Boost contrast +15. The B&W preview is essentially what your heightmap will look like.</dd></div>
-        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">Can I convert an old scanned photo to 3D?</dt><dd class="text-sm text-surface-500 leading-relaxed">Yes, but manage your expectations. Old photos have faded contrast, paper texture, dust, scratches, and often soft focus. Each of these translates to surface noise or flatness in the STL. <strong>Before uploading:</strong> scan at 600 DPI, restore contrast digitally, remove dust and scratches with a healing tool, and optionally apply gentle sharpening. The heightmap editor can help clean up remaining noise. The result will not be as crisp as a digital photo, but it can still produce a meaningful relief &mdash; especially for memorial or sentimental projects.</dd></div>
-        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">Why does my photo look great on screen but produce a flat STL?</dt><dd class="text-sm text-surface-500 leading-relaxed">Your screen displays a full-color image with contrast that your eyes perceive as depth thanks to shadows, colors, and edge detection. The heightmap algorithm strips all of that away and only looks at raw brightness values. A photo that appears "contrasty" to your eyes may actually have a narrow brightness histogram. <strong>Test:</strong> Convert your photo to grayscale. If the B&W version looks flat and muddy, the STL will be flat and muddy. Boost contrast until the B&W version has clear light and dark separation, then upload.</dd></div>
+        {faqs.map((f) => (
+          <div>
+            <dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">{f.q}</dt>
+            <dd class="text-sm text-surface-500 leading-relaxed">{f.a}</dd>
+          </div>
+        ))}
       </dl>
     </section>
 

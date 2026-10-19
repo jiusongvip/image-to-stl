@@ -1,7 +1,7 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import ConverterTool from "../components/ConverterTool";
-import { ORGANIZATION, WEBSITE_ID, SITE_URL, SITE_MODIFIED, SITE_PUBLISHED, AUTHOR, TOPIC_ENTITIES, SAME_AS } from "../lib/site";
+import { ORGANIZATION, WEBSITE_ID, SITE_URL, SITE_MODIFIED, SITE_PUBLISHED, AUTHOR, TOPIC_ENTITIES, SAME_AS, faqPageSchema, type FaqItem } from "../lib/site";
 
 const softwareSchema = {
   "@context": "https://schema.org",
@@ -12,7 +12,7 @@ const softwareSchema = {
   operatingSystem: "Web",
   offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
   description:
-    "Free online tool to convert images (JPG, PNG, SVG) to STL 3D models for 3D printing. Real-time 3D preview, browser-based processing. Supports heightmap, lithophane, and SVG extrusion modes.",
+    "Free online tool to convert photos and images (JPG, PNG, SVG) to STL 3D models for 3D printing. Real-time 3D preview, browser-based processing. Supports heightmap, lithophane, and SVG extrusion modes.",
   publisher: ORGANIZATION,
   author: AUTHOR,
   sameAs: SAME_AS,
@@ -27,7 +27,7 @@ const websiteSchema = {
   name: "Image to STL Converter",
   url: SITE_URL,
   description:
-    "Free online tool to convert images to STL 3D models for 3D printing. Browser-based, no uploads required.",
+    "Free online tool to convert photos and images to STL 3D models for 3D printing. Browser-based, no uploads required.",
   publisher: ORGANIZATION,
   sameAs: SAME_AS,
   inLanguage: "en",
@@ -42,7 +42,7 @@ const citationSchema = {
   "@type": "WebPage",
   "@id": `${SITE_URL}/#webpage`,
   url: SITE_URL,
-  name: "Image to STL Converter — Free Online 3D Model Generator",
+  name: "Image to STL Converter — Free Photo to STL Generator Online",
   isPartOf: { "@id": WEBSITE_ID },
   about: { "@id": `${SITE_URL}/#software` },
   inLanguage: "en",
@@ -77,14 +77,46 @@ const citationSchema = {
   ],
 };
 
-const combinedSchema = [websiteSchema, softwareSchema, citationSchema];
+// 唯一数据源：可见问答与 FAQPage 标记共用同一数组。
+const faqs: FaqItem[] = [
+  {
+    q: "Which photo formats turn into the best STL reliefs?",
+    a: "Any format a browser can decode works: JPG and JPEG, PNG, WebP, BMP, and single-frame GIF. A photo lit from one side converts best, because relief depth comes entirely from tonal separation — the shadow gradient across a face becomes a smooth 3D contour. PNG is the safer choice when you plan to edit and re-save, since it is lossless, and a photo straight from your camera at quality 90+ is fine as-is. Originals are sampled at 1024 px on the longest side, so start from the highest-resolution photo you have.",
+  },
+  {
+    q: "How do I know if my image is high-contrast enough for a good relief?",
+    a: "Squint at it. If the main subject still reads clearly when half-closed, it will convert well. Relief depth is driven purely by tonal separation, so a portrait lit from one side produces far more depth than a flat, evenly lit snapshot. If the result looks shallow, raise contrast in a photo editor before uploading rather than pushing the height slider to its limit — extreme height on a low-contrast source just amplifies noise.",
+  },
+  {
+    q: "My SVG has gradients and text effects. Will extrusion handle it?",
+    a: "Extrusion works on geometry, not paint, so gradients, drop shadows, and raster filters are ignored entirely — only the underlying filled shapes are extruded. Convert text to outlines first, and flatten any effects before export. If the file still fails to extrude, the tool falls back to heightmap mode automatically, which rasterises the design and produces a usable model at the cost of crisp edges.",
+  },
+  {
+    q: "What determines the physical size of the printed part?",
+    a: "The numbers you type into the tool. STL itself carries no unit tag, so a file is only as large as the software reading it assumes — but every convention in 3D printing treats one STL unit as one millimetre, and this converter writes real millimetres: a 100 mm width and a 3 mm relief export as a model 100 mm across and 3 mm thick, sitting flush on the bed. Cura, PrusaSlicer and Bambu Studio will show that exact size without any scaling step. Sample density is a separate matter: printing the same relief twice as large does not add detail, it just spreads the same cells further apart.",
+  },
+  {
+    q: "Which is better for a lithophane: thicker or thinner?",
+    a: "Thicker prints hold more contrast but block more light and take longer. Start around 3 mm maximum thickness with roughly a 0.8 mm floor, then print a small test tile before committing to a full-size panel. The floor thickness matters more than the maximum — drop it too low and the panel becomes fragile and prone to light bleed between adjacent areas.",
+  },
+  {
+    q: "Why is my STL file unexpectedly huge?",
+    a: "Triangle count is the cause, and triangle count is set by the Resolution control, not by smoothness. Each cell in the height grid costs two triangles (one for the surface, one for the underside), so Ultra on a 4:3 image lands near 300,000 triangles (roughly 15 MB of binary STL) while Medium gives you about 77,000 for the same picture. Most photographs print identically at Medium, because a 0.4 mm nozzle cannot resolve the extra cells anyway. Drop the resolution before you reach for mesh-decimation software; smoothness only blurs the heightmap, it does not shrink the file.",
+  },
+  {
+    q: "Can I edit the model after converting, without CAD software?",
+    a: "Yes, within limits. The heightmap editor lets you crop, invert, and reshape the depth profile before export, which covers most corrective work. For anything structural — adding a base, hollowing, drilling a mounting hole — bring the STL into a free slicer or mesh tool. Because the output is a standard watertight mesh, it imports cleanly into Blender, MeshLab, or Tinkercad without repair.",
+  },
+];
+
+const combinedSchema = [websiteSchema, softwareSchema, citationSchema, faqPageSchema(`${SITE_URL}/`, faqs)];
 
 const keywords = "image to stl, jpg to stl, png to stl, svg to stl, convert image to stl, image to 3d model, photo to stl, free stl converter, 3d printing, image to 3d print, online stl converter, heightmap to stl, lithophane maker, photo to 3d model";
 ---
 
 <BaseLayout
-  title="Image to STL Converter — Free Online 3D Model Generator"
-  description="Convert JPG, PNG & SVG images to STL, OBJ, and GLB files for 3D printing. 100% browser-based, no uploads. Real-time 3D preview. Free, no registration."
+  title="Image to STL Converter — Turn a Photo into STL, Free Online"
+  description="Turn a photo, JPG, PNG or SVG into a print-ready STL for 3D printing. Free, 100% browser-based — no uploads, no sign-up. Real-time 3D preview."
   canonical="https://www.image-2-stl.com"
  schema={combinedSchema}
   breadcrumbs={[
@@ -132,7 +164,7 @@ const keywords = "image to stl, jpg to stl, png to stl, svg to stl, convert imag
           <span class="text-gradient-accent">Free 3D Model Generator</span>
         </h1>
         <p class="mt-3 text-sm sm:text-base text-surface-600 dark:text-surface-400 leading-relaxed max-w-[62ch]">
-          Turn JPG, PNG, and SVG images into print-ready STL, OBJ, and GLB files &mdash; in your browser, with a real-time 3D preview.
+          Turn a photo, a logo, or any JPG, PNG, and SVG image into a print-ready STL, OBJ, or GLB &mdash; in your browser, with a real-time 3D preview. Free, no sign-up, and nothing is ever uploaded.
         </p>
       </div>
     </section>
@@ -411,8 +443,8 @@ const keywords = "image to stl, jpg to stl, png to stl, svg to stl, convert imag
           <p class="text-xs text-surface-500 leading-relaxed">Extrude vector paths into watertight 3D solids for printing.</p>
         </a>
         <a href="/photo-to-3d/" class="block p-4 rounded-tool border border-surface-200 dark:border-surface-800 hover:border-accent-300 dark:hover:border-accent-700 transition-colors group">
-          <div class="flex items-center gap-3 mb-2"><span class="w-8 h-8 rounded-lg bg-accent-100 dark:bg-accent-900/40 flex items-center justify-center flex-shrink-0"><svg class="w-4 h-4 text-accent-600 dark:text-accent-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="2.5"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m22 16-5-5-3.5 3.5-3-3L2 18"/></svg></span><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm group-hover:text-accent-600 dark:group-hover:text-accent-400 transition-colors">Photo to 3D</h3></div>
-          <p class="text-xs text-surface-500 leading-relaxed">Turn any photo into a 3D model with advanced depth mapping.</p>
+          <div class="flex items-center gap-3 mb-2"><span class="w-8 h-8 rounded-lg bg-accent-100 dark:bg-accent-900/40 flex items-center justify-center flex-shrink-0"><svg class="w-4 h-4 text-accent-600 dark:text-accent-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="2.5"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m22 16-5-5-3.5 3.5-3-3L2 18"/></svg></span><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm group-hover:text-accent-600 dark:group-hover:text-accent-400 transition-colors">Photo to STL</h3></div>
+          <p class="text-xs text-surface-500 leading-relaxed">Turn any photo into a print-ready STL relief with heightmap depth mapping.</p>
         </a>
         <a href="/text-to-stl/" class="block p-4 rounded-tool border border-surface-200 dark:border-surface-800 hover:border-accent-300 dark:hover:border-accent-700 transition-colors group">
           <div class="flex items-center gap-3 mb-2"><span class="w-8 h-8 rounded-lg bg-accent-100 dark:bg-accent-900/40 flex items-center justify-center flex-shrink-0"><svg class="w-4 h-4 text-accent-600 dark:text-accent-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg></span><h3 class="font-medium text-surface-900 dark:text-surface-100 text-sm group-hover:text-accent-600 dark:group-hover:text-accent-400 transition-colors">Text to STL</h3></div>
@@ -609,12 +641,12 @@ const keywords = "image to stl, jpg to stl, png to stl, svg to stl, convert imag
         </div>
       </div>
       <dl class="space-y-5 max-w-3xl">
-        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">How do I know if my image is high-contrast enough for a good relief?</dt><dd class="text-sm text-surface-500 leading-relaxed">Squint at it. If the main subject still reads clearly when half-closed, it will convert well. Relief depth is driven purely by tonal separation, so a portrait lit from one side produces far more depth than a flat, evenly lit snapshot. If the result looks shallow, raise contrast in a photo editor before uploading rather than pushing the height slider to its limit &mdash; extreme height on a low-contrast source just amplifies noise.</dd></div>
-        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">My SVG has gradients and text effects. Will extrusion handle it?</dt><dd class="text-sm text-surface-500 leading-relaxed">Extrusion works on geometry, not paint, so gradients, drop shadows, and raster filters are ignored entirely &mdash; only the underlying filled shapes are extruded. Convert text to outlines first, and flatten any effects before export. If the file still fails to extrude, the tool falls back to heightmap mode automatically, which rasterises the design and produces a usable model at the cost of crisp edges.</dd></div>
-        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">What determines the physical size of the printed part?</dt><dd class="text-sm text-surface-500 leading-relaxed">The numbers you type into the tool. STL itself carries no unit tag, so a file is only as large as the software reading it assumes &mdash; but every convention in 3D printing treats one STL unit as one millimetre, and this converter writes real millimetres: a 100&nbsp;mm width and a 3&nbsp;mm relief export as a model 100&nbsp;mm across and 3&nbsp;mm thick, sitting flush on the bed. Cura, PrusaSlicer and Bambu Studio will show that exact size without any scaling step. Sample density is a separate matter: printing the same relief twice as large does not add detail, it just spreads the same cells further apart.</dd></div>
-        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">Which is better for a lithophane: thicker or thinner?</dt><dd class="text-sm text-surface-500 leading-relaxed">Thicker prints hold more contrast but block more light and take longer. Start around 3&nbsp;mm maximum thickness with roughly a 0.8&nbsp;mm floor, then print a small test tile before committing to a full-size panel. The floor thickness matters more than the maximum &mdash; drop it too low and the panel becomes fragile and prone to light bleed between adjacent areas.</dd></div>
-        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">Why is my STL file unexpectedly huge?</dt><dd class="text-sm text-surface-500 leading-relaxed">Triangle count is the cause, and triangle count is set by the Resolution control, not by smoothness. Each cell in the height grid costs two triangles (one for the surface, one for the underside), so Ultra on a 4:3 image lands near 300,000 triangles (roughly 15&nbsp;MB of binary STL) while Medium gives you about 77,000 for the same picture. Most photographs print identically at Medium, because a 0.4&nbsp;mm nozzle cannot resolve the extra cells anyway. Drop the resolution before you reach for mesh-decimation software; smoothness only blurs the heightmap, it does not shrink the file.</dd></div>
-        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">Can I edit the model after converting, without CAD software?</dt><dd class="text-sm text-surface-500 leading-relaxed">Yes, within limits. The heightmap editor lets you crop, invert, and reshape the depth profile before export, which covers most corrective work. For anything structural &mdash; adding a base, hollowing, drilling a mounting hole &mdash; bring the STL into a free slicer or mesh tool. Because the output is a standard watertight mesh, it imports cleanly into Blender, MeshLab, or Tinkercad without repair.</dd></div>
+        {faqs.map((f) => (
+          <div>
+            <dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">{f.q}</dt>
+            <dd class="text-sm text-surface-500 leading-relaxed">{f.a}</dd>
+          </div>
+        ))}
       </dl>
       <p class="mt-8 text-sm text-surface-500 leading-relaxed max-w-3xl">Looking for something more specific &mdash; privacy, file limits, licensing, printer compatibility, or troubleshooting a preview that looks wrong? Those are answered in full on the <a href="/faq/" class="text-accent-600 dark:text-accent-400 hover:underline font-medium">FAQ page</a>, and the <a href="/how-to-convert-image-to-stl/" class="text-accent-600 dark:text-accent-400 hover:underline font-medium">step-by-step guide</a> walks through a full conversion start to finish.</p>
     </section>

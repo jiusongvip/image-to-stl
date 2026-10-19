@@ -1,9 +1,9 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { withProvenance, SITE_PUBLISHED, SITE_MODIFIED } from "../lib/site";
+import { withProvenance, faqPageSchema, SITE_PUBLISHED, SITE_MODIFIED, type FaqItem } from "../lib/site";
 import CookieCutter from "../components/CookieCutter";
 
-const schema = withProvenance({
+const softwareSchema = withProvenance({
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
   name: "Cookie Cutter Maker",
@@ -12,6 +12,24 @@ const schema = withProvenance({
   offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
   description: "Create custom 3D printable cookie cutters from any image. Learn cutter design principles, dough compatibility guide, and food safety best practices for 3D printed kitchen tools.",
 });
+
+// 唯一数据源：可见问答与 FAQPage 标记共用同一数组。
+const faqs: FaqItem[] = [
+  {
+    q: "What images work best for cookie cutters?",
+    a: "Best: simple silhouettes with one clear outer contour. Black shapes on white backgrounds. Hearts, stars, animals with simple outlines. Difficult: images with internal holes (letters like A, B, D, O need special handling), very thin sections (antlers, tails, thin legs), and images with complex internal detail. The cutter maker extracts the outermost contour — internal details of the image are ignored because they would create walls inside the cutter that trap dough.",
+  },
+  {
+    q: "How do I make a two-part cutter (outline + detail stamp)?",
+    a: "Generate the outline cutter with the Cookie Cutter Maker. For the detail stamp, create a separate design of just the internal details (eyes, texture, pattern) and convert it to a flat relief STL using the Image to STL converter's heightmap mode with a thin extrusion. Print both pieces. First press the outline cutter, then while the dough is still in the cutter, press the stamp into the top to emboss details. Remove the cutter and bake.",
+  },
+  {
+    q: "Can I put 3D printed cutters in the dishwasher?",
+    a: "Standard PLA cannot survive a dishwasher — the heat (60-70°C) will warp and soften the plastic. PLA softens around 60°C (its glass transition temperature). PETG can handle dishwasher temperatures but may still warp under sustained heat. Hand wash only with warm (not hot) water and soap. If you need dishwasher-safe cutters, use PETG and test one piece first, or coat with a heat-resistant food-grade epoxy that can withstand dishwasher temperatures.",
+  },
+];
+
+const schema = [softwareSchema, faqPageSchema("https://www.image-2-stl.com/cookie-cutter/", faqs)];
 
 const keywords = "cookie cutter maker, cookie cutter stl, custom cookie cutter, 3d print cookie cutter, cookie cutter generator, image to cookie cutter, food safe 3d print";
 ---
@@ -111,9 +129,12 @@ const keywords = "cookie cutter maker, cookie cutter stl, custom cookie cutter, 
 <section class="mt-16 sm:mt-20 border-t border-surface-200 dark:border-surface-800 pt-14 sm:pt-16 max-w-3xl" id="faq">
       <h2 class="text-xl font-semibold mb-6 text-surface-900 dark:text-surface-100">Cookie Cutter Questions</h2>
       <dl class="space-y-5">
-        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">What images work best for cookie cutters?</dt><dd class="text-sm text-surface-500 leading-relaxed"><strong>Best:</strong> Simple silhouettes with one clear outer contour. Black shapes on white backgrounds. Hearts, stars, animals with simple outlines. <strong>Difficult:</strong> Images with internal holes (letters like A, B, D, O need special handling), very thin sections (antlers, tails, thin legs), and images with complex internal detail. The cutter maker extracts the outermost contour &mdash; internal details of the image are ignored because they would create walls inside the cutter that trap dough.</dd></div>
-        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">How do I make a two-part cutter (outline + detail stamp)?</dt><dd class="text-sm text-surface-500 leading-relaxed">Generate the outline cutter with the Cookie Cutter Maker. For the detail stamp, create a separate design of just the internal details (eyes, texture, pattern) and convert it to a flat relief STL using the <a href="/" class="text-accent-500 hover:underline">Image to STL</a> heightmap mode with a thin extrusion. Print both pieces. First press the outline cutter, then while the dough is still in the cutter, press the stamp into the top to emboss details. Remove the cutter and bake.</dd></div>
-        <div><dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">Can I put 3D printed cutters in the dishwasher?</dt><dd class="text-sm text-surface-500 leading-relaxed">Standard PLA cannot survive a dishwasher &mdash; the heat (60-70&deg;C) will warp and soften the plastic. PLA softens around 60&deg;C (its glass transition temperature). PETG can handle dishwasher temperatures but may still warp under sustained heat. <strong>Hand wash only with warm (not hot) water and soap.</strong> If you need dishwasher-safe cutters, use PETG and test one piece first, or coat with a heat-resistant food-grade epoxy that can withstand dishwasher temperatures.</dd></div>
+        {faqs.map((f) => (
+          <div>
+            <dt class="font-medium text-surface-900 dark:text-surface-100 mb-1">{f.q}</dt>
+            <dd class="text-sm text-surface-500 leading-relaxed">{f.a}</dd>
+          </div>
+        ))}
       </dl>
     </section>
 
